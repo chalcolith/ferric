@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ferric", "Ferric\Ferric.csproj", "{A850AB58-FE00-4CD5-A834-7379E89AB0FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6397DD87-6BF5-4146-9E02-AA6B7821E179}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils.Regexp", "Utils\Regexp\Utils.Regexp.csproj", "{8B2269BB-541E-4D30-9101-FFA175C119D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils.Regexp.Tests", "Utils\Regexp.Tests\Utils.Regexp.Tests.csproj", "{C68AE101-9768-4129-A655-FA55C89EDE0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text", "Text\Text.csproj", "{42521DDD-9E6B-458F-87CF-DF5A292BC17D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lang.English", "Lang\English\Lang.English.csproj", "{29430E95-0EA0-4859-A864-A93F00A73900}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lang.English.Tests", "Lang\English.Tests\Lang.English.Tests.csproj", "{C7BFF387-EC7F-45AB-9BD7-DB598B8AA4DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A850AB58-FE00-4CD5-A834-7379E89AB0FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A850AB58-FE00-4CD5-A834-7379E89AB0FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A850AB58-FE00-4CD5-A834-7379E89AB0FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A850AB58-FE00-4CD5-A834-7379E89AB0FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B2269BB-541E-4D30-9101-FFA175C119D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B2269BB-541E-4D30-9101-FFA175C119D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B2269BB-541E-4D30-9101-FFA175C119D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B2269BB-541E-4D30-9101-FFA175C119D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C68AE101-9768-4129-A655-FA55C89EDE0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C68AE101-9768-4129-A655-FA55C89EDE0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C68AE101-9768-4129-A655-FA55C89EDE0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C68AE101-9768-4129-A655-FA55C89EDE0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42521DDD-9E6B-458F-87CF-DF5A292BC17D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42521DDD-9E6B-458F-87CF-DF5A292BC17D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42521DDD-9E6B-458F-87CF-DF5A292BC17D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42521DDD-9E6B-458F-87CF-DF5A292BC17D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29430E95-0EA0-4859-A864-A93F00A73900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29430E95-0EA0-4859-A864-A93F00A73900}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29430E95-0EA0-4859-A864-A93F00A73900}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29430E95-0EA0-4859-A864-A93F00A73900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7BFF387-EC7F-45AB-9BD7-DB598B8AA4DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7BFF387-EC7F-45AB-9BD7-DB598B8AA4DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7BFF387-EC7F-45AB-9BD7-DB598B8AA4DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7BFF387-EC7F-45AB-9BD7-DB598B8AA4DD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
