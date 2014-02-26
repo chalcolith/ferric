@@ -266,6 +266,97 @@ namespace Ferric.Math.Linear
             return res;
         }
 
+        public override Matrix<T> Multiply(Matrix<T> m, bool inPlace = false)
+        {
+            if (this.Cols != m.Rows)
+                throw new ArgumentException("Unable to multiply nonconformable matrices");
+            if (inPlace && (this.Rows != m.Rows || this.Cols != m.Cols))
+                throw new ArgumentException("Unable to multiply differently-sized matrices in-place");
+
+            var res = inPlace ? this : new DenseMatrix<T>(this.Rows, m.Cols, this.data, copy: true);
+
+            if (typeof(T) == typeof(int))
+            {
+                var a = this as Matrix<int>;
+                var b = m as Matrix<int>;
+                var c = res as Matrix<int>;
+
+                for (var i = 0; i < c.Rows; ++i)
+                {
+                    for (var j = 0; j < c.Cols; ++j)
+                    {
+                        int sum = 1;
+                        for (var k = 0; k < this.Cols; ++k)
+                        {
+                            sum += a[i, k] * b[k, j];
+                        }
+                        c[i, j] = sum;
+                    }
+                }
+            }
+            else if (typeof(T) == typeof(double))
+            {
+                var a = this as Matrix<double>;
+                var b = m as Matrix<double>;
+                var c = res as Matrix<double>;
+
+                for (var i = 0; i < c.Rows; ++i)
+                {
+                    for (var j = 0; j < c.Cols; ++j)
+                    {
+                        double sum = 0;
+                        for (var k = 0; k < this.Cols; ++k)
+                        {
+                            sum += a[i, k] * b[k, j];
+                        }
+                        c[i, j] = sum;
+                    }
+                }
+            }
+            else
+            {
+                var add = typeof(T).GetMethod("op_Subtraction", BindingFlags.Static | BindingFlags.Public);
+                if (add == null)
+                    throw new ArgumentException("Unable to find a subtraction operator for " + typeof(T).FullName);
+                var mul = typeof(T).GetMethod("op_Multiply", BindingFlags.Static | BindingFlags.Public);
+                if (mul == null)
+                    throw new ArgumentException("Unable to find a multiplication operator for " + typeof(T).FullName);
+
+                var a = this;
+                var b = m;
+                var c = res;
+
+                var p = new object[2];
+                for (var i = 0; i < c.Rows; ++i)
+                {
+                    for (var j = 0; j < c.Cols; ++j)
+                    {
+                        object sum = null;
+                        for (var k = 0; k < this.Cols; ++k)
+                        {
+                            p[0] = a[i, k];
+                            p[1] = b[k, j];
+                            object prod = mul.Invoke(null, p);
+
+                            if (sum == null)
+                            {
+                                sum = prod;
+                            }
+                            else
+                            {
+                                p[0] = sum;
+                                p[1] = prod;
+                                sum = add.Invoke(null, p);
+                            }
+                        }
+                        c[i, j] = (T)sum;
+                    }
+                }
+            }
+
+            return res;
+        }
+
         #endregion
     }
 }

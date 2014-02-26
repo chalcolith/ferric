@@ -42,6 +42,8 @@ namespace Ferric.Math.Linear
 
         public abstract Matrix<T> Subtract(Matrix<T> m, bool inPlace = false);
 
+        public abstract Matrix<T> Multiply(Matrix<T> m, bool inPlace = false);
+
         #region Object Implementation
 
         public override bool Equals(object obj)
@@ -93,6 +95,11 @@ namespace Ferric.Math.Linear
         public static Matrix<T> operator* (Matrix<T> a, T n)
         {
             return a.ScalarMult(n, inPlace: false);
+        }
+
+        public static Matrix<T> operator* (Matrix<T> a, Matrix<T> b)
+        {
+            return a.Multiply(b, inPlace: false);
         }
 
         public static Matrix<T> operator+ (Matrix<T> a)

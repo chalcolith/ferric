@@ -167,5 +167,10 @@ namespace Ferric.Math.Linear.Tests
             var c = new DenseMatrix<decimal>(2, 3, new decimal[2, 3] { { -5, -3, -1 }, { 1, 3, 5 } });
             Assert.AreEqual(c, diff);
         }
+
+        [TestMethod]
+        public void Math_Linear_DenseMatrix_Multiplication_Int()
+        {
+        }
     }
 }
