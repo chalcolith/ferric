@@ -1,16 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Ferric.Math.Linear
 {
-    public abstract class Matrix<T>
+    public interface Matrix<T> : IEquatable<Matrix<T>>, ISerializable
     {
+        int Rows { get; }
+        int Cols { get; }
+        T this[int row, int col] { get; }
+
+        Matrix<T> Transpose();
+        Matrix<T> ScalarMult(T n, bool inPlace = false);
+        Matrix<T> Add(Matrix<T> m, bool inPlace = false);
+        Matrix<T> Negate(bool inPlace = false);
+        Matrix<T> Subtract(Matrix<T> m, bool inPlace = false);
+        Matrix<T> Multiply(Matrix<T> m, bool inPlace = false);
+    }
+
+    public abstract class BaseMatrix<T> : Matrix<T>
+    {
+        #region Matrix<T> Members
+
         public int Rows { get; protected set; }
         public int Cols { get; protected set; }
         public abstract T this[int row, int col] { get; set; }
+
+        public Matrix<T> Transpose() { return BaseTranspose(); }
+
+        public Matrix<T> ScalarMult(T n, bool inPlace = false) { return BaseScalarMult(n, inPlace); }
+
+        public Matrix<T> Add(Matrix<T> m, bool inPlace = false) { return BaseAdd(m, inPlace); }
+
+        public Matrix<T> Negate(bool inPlace = false) { return BaseNegate(inPlace); }
+
+        public Matrix<T> Subtract(Matrix<T> m, bool inPlace = false) { return BaseSubtract(m, inPlace); }
+
+        public Matrix<T> Multiply(Matrix<T> m, bool inPlace = false) { return BaseMultiply(m, inPlace); }
+
+        #endregion
+
+        #region Object Members
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as Matrix<T>);
+        }
 
         public bool Equals(Matrix<T> m)
         {
@@ -30,25 +68,6 @@ namespace Ferric.Math.Linear
                 }
             }
             return true;
-        }
-
-        public abstract Matrix<T> Transpose();
-
-        public abstract Matrix<T> ScalarMult(T n, bool inPlace = false);
-
-        public abstract Matrix<T> Add(Matrix<T> m, bool inPlace = false);
-
-        public abstract Matrix<T> Negate(bool inPlace = false);
-
-        public abstract Matrix<T> Subtract(Matrix<T> m, bool inPlace = false);
-
-        public abstract Matrix<T> Multiply(Matrix<T> m, bool inPlace = false);
-
-        #region Object Implementation
-
-        public override bool Equals(object obj)
-        {
-            return this.Equals(obj as Matrix<T>);
         }
 
         public override int GetHashCode()
@@ -90,38 +109,56 @@ namespace Ferric.Math.Linear
 
         #endregion
 
+        #region ISerializable Members
+
+        public abstract void GetObjectData(SerializationInfo info, StreamingContext context);
+
+        #endregion
+
         #region Operators
 
-        public static Matrix<T> operator* (Matrix<T> a, T n)
+        protected abstract BaseMatrix<T> BaseTranspose();
+        protected abstract BaseMatrix<T> BaseScalarMult(T n, bool inPlace);
+        protected abstract BaseMatrix<T> BaseAdd(Matrix<T> m, bool inPlace);
+        protected abstract BaseMatrix<T> BaseNegate(bool inPlace);
+        protected abstract BaseMatrix<T> BaseSubtract(Matrix<T> m, bool inPlace);
+        protected abstract BaseMatrix<T> BaseMultiply(Matrix<T> m, bool inPlace);
+
+        public static BaseMatrix<T> operator *(BaseMatrix<T> a, T n)
         {
-            return a.ScalarMult(n, inPlace: false);
+            return a.BaseScalarMult(n, inPlace: false);
         }
 
-        public static Matrix<T> operator* (Matrix<T> a, Matrix<T> b)
+        public static BaseMatrix<T> operator *(BaseMatrix<T> a, Matrix<T> b)
         {
-            return a.Multiply(b, inPlace: false);
+            return a.BaseMultiply(b, inPlace: false);
         }
 
-        public static Matrix<T> operator+ (Matrix<T> a)
+        public static BaseMatrix<T> operator +(BaseMatrix<T> a)
         {
             return a;
         }
 
-        public static Matrix<T> operator+ (Matrix<T> a, Matrix<T> b)
+        public static BaseMatrix<T> operator +(BaseMatrix<T> a, Matrix<T> b)
         {
-            return a.Add(b, inPlace: false);
+            return a.BaseAdd(b, inPlace: false);
         }
 
-        public static Matrix<T> operator- (Matrix<T> a)
+        public static BaseMatrix<T> operator -(BaseMatrix<T> a)
         {
-            return a.Negate(inPlace: false);
+            return a.BaseNegate(inPlace: false);
         }
 
-        public static Matrix<T> operator- (Matrix<T> a, Matrix<T> b)
+        public static BaseMatrix<T> operator -(BaseMatrix<T> a, Matrix<T> b)
         {
-            return a.Subtract(b, inPlace: false);
+            return a.BaseSubtract(b, inPlace: false);
         }
 
         #endregion
+    }
+
+    public interface Vector<T> : Matrix<T>
+    {
+        int Dimensions { get; }
     }
 }

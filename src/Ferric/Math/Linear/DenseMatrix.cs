@@ -2,14 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Ferric.Math.Linear
 {
-    public class DenseMatrix<T> : Matrix<T>
+    public class DenseMatrix<T> : BaseMatrix<T>
     {
         T[,] data;
+
+        public override T this[int row, int col]
+        {
+            get { return data[row, col]; }
+            set { data[row, col] = value; }
+        }
 
         public DenseMatrix(int rows, int cols)
         {
@@ -40,15 +47,9 @@ namespace Ferric.Math.Linear
             }
         }
 
-        #region Matrix Implementation
+        #region BaseMatrix Members
 
-        public override T this[int row, int col]
-        {
-            get { return data[row, col]; }
-            set { data[row, col] = value; }
-        }
-
-        public override Matrix<T> Transpose()
+        protected override BaseMatrix<T> BaseTranspose()
         {
             var res = new DenseMatrix<T>(this.Cols, this.Rows);
             for (var i = 0; i < this.Rows; ++i)
@@ -61,26 +62,13 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        public override Matrix<T> ScalarMult(T n, bool inPlace)
+        protected override BaseMatrix<T> BaseScalarMult(T n, bool inPlace)
         {
             var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
 
-            if (typeof(T) == typeof(int))
+            if (typeof(T) == typeof(double))
             {
-                var a = res as Matrix<int>;
-                var ni = Convert.ToInt32(n);
-
-                for (var i = 0; i < a.Rows; ++i)
-                {
-                    for (var j = 0; j < a.Cols; ++j)
-                    {
-                        a[i, j] *= ni;
-                    }
-                }
-            }
-            else if (typeof(T) == typeof(double))
-            {
-                var a = res as Matrix<double>;
+                var a = res as BaseMatrix<double>;
                 var nd = Convert.ToDouble(n);
 
                 for (var i = 0; i < a.Rows; ++i)
@@ -91,7 +79,20 @@ namespace Ferric.Math.Linear
                     }
                 }
             }
-            else
+            else if (typeof(T) == typeof(int))
+            {
+                var a = res as BaseMatrix<int>;
+                var ni = Convert.ToInt32(n);
+
+                for (var i = 0; i < a.Rows; ++i)
+                {
+                    for (var j = 0; j < a.Cols; ++j)
+                    {
+                        a[i, j] *= ni;
+                    }
+                }
+            }
+            else 
             {
                 var mul = typeof(T).GetMethod("op_Multiply", BindingFlags.Static | BindingFlags.Public);
                 if (mul == null)
@@ -111,17 +112,17 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        public override Matrix<T> Add(Matrix<T> m, bool inPlace = false)
+        protected override BaseMatrix<T> BaseAdd(Matrix<T> m, bool inPlace = false)
         {
             var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
 
             if (this.Rows != m.Rows || this.Cols != m.Cols)
                 throw new ArgumentException("Unable to add matrices of different dimensions");
 
-            if (typeof(T) == typeof(int))
+            if (typeof(T) == typeof(double))
             {
-                var a = res as Matrix<int>;
-                var b = m as Matrix<int>;
+                var a = res as BaseMatrix<double>;
+                var b = m as BaseMatrix<double>;
 
                 for (var i = 0; i < a.Rows; ++i)
                 {
@@ -131,10 +132,10 @@ namespace Ferric.Math.Linear
                     }
                 }
             }
-            else if (typeof(T) == typeof(double))
+            else if (typeof(T) == typeof(int))
             {
-                var a = res as Matrix<double>;
-                var b = m as Matrix<double>;
+                var a = res as BaseMatrix<int>;
+                var b = m as BaseMatrix<int>;
 
                 for (var i = 0; i < a.Rows; ++i)
                 {
@@ -144,7 +145,7 @@ namespace Ferric.Math.Linear
                     }
                 }
             }
-            else
+            else 
             {
                 var add = typeof(T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public);
                 if (add == null)
@@ -166,13 +167,13 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        public override Matrix<T> Negate(bool inPlace = false)
+        protected override BaseMatrix<T> BaseNegate(bool inPlace = false)
         {
             var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
 
-            if (typeof(T) == typeof(int))
+            if (typeof(T) == typeof(double))
             {
-                var a = res as Matrix<int>;
+                var a = res as BaseMatrix<double>;
                 for (var i = 0; i < a.Rows; ++i)
                 {
                     for (var j = 0; j < a.Cols; ++j)
@@ -181,9 +182,9 @@ namespace Ferric.Math.Linear
                     }
                 }
             }
-            else if (typeof(T) == typeof(double))
+            else if (typeof(T) == typeof(int))
             {
-                var a = res as Matrix<double>;
+                var a = res as BaseMatrix<int>;
                 for (var i = 0; i < a.Rows; ++i)
                 {
                     for (var j = 0; j < a.Cols; ++j)
@@ -192,7 +193,7 @@ namespace Ferric.Math.Linear
                     }
                 }
             }
-            else
+            else 
             {
                 var mul = typeof(T).GetMethod("op_UnaryNegation", BindingFlags.Static | BindingFlags.Public);
                 if (mul == null)
@@ -211,17 +212,17 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        public override Matrix<T> Subtract(Matrix<T> m, bool inPlace = false)
+        protected override BaseMatrix<T> BaseSubtract(Matrix<T> m, bool inPlace = false)
         {
             var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
 
             if (this.Rows != m.Rows || this.Cols != m.Cols)
                 throw new ArgumentException("Unable to subtract matrices of different dimensions");
 
-            if (typeof(T) == typeof(int))
+            if (typeof(T) == typeof(double))
             {
-                var a = res as Matrix<int>;
-                var b = m as Matrix<int>;
+                var a = res as BaseMatrix<double>;
+                var b = m as BaseMatrix<double>;
 
                 for (var i = 0; i < a.Rows; ++i)
                 {
@@ -231,10 +232,10 @@ namespace Ferric.Math.Linear
                     }
                 }
             }
-            else if (typeof(T) == typeof(double))
+            else if (typeof(T) == typeof(int))
             {
-                var a = res as Matrix<double>;
-                var b = m as Matrix<double>;
+                var a = res as BaseMatrix<int>;
+                var b = m as BaseMatrix<int>;
 
                 for (var i = 0; i < a.Rows; ++i)
                 {
@@ -244,7 +245,7 @@ namespace Ferric.Math.Linear
                     }
                 }
             }
-            else
+            else 
             {
                 var add = typeof(T).GetMethod("op_Subtraction", BindingFlags.Static | BindingFlags.Public);
                 if (add == null)
@@ -266,7 +267,7 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        public override Matrix<T> Multiply(Matrix<T> m, bool inPlace = false)
+        protected override BaseMatrix<T> BaseMultiply(Matrix<T> m, bool inPlace = false)
         {
             if (this.Cols != m.Rows)
                 throw new ArgumentException("Unable to multiply nonconformable matrices");
@@ -275,30 +276,11 @@ namespace Ferric.Math.Linear
 
             var res = inPlace ? this : new DenseMatrix<T>(this.Rows, m.Cols, this.data, copy: true);
 
-            if (typeof(T) == typeof(int))
+            if (typeof(T) == typeof(double))
             {
-                var a = this as Matrix<int>;
-                var b = m as Matrix<int>;
-                var c = res as Matrix<int>;
-
-                for (var i = 0; i < c.Rows; ++i)
-                {
-                    for (var j = 0; j < c.Cols; ++j)
-                    {
-                        int sum = 1;
-                        for (var k = 0; k < this.Cols; ++k)
-                        {
-                            sum += a[i, k] * b[k, j];
-                        }
-                        c[i, j] = sum;
-                    }
-                }
-            }
-            else if (typeof(T) == typeof(double))
-            {
-                var a = this as Matrix<double>;
-                var b = m as Matrix<double>;
-                var c = res as Matrix<double>;
+                var a = this as BaseMatrix<double>;
+                var b = m as BaseMatrix<double>;
+                var c = res as BaseMatrix<double>;
 
                 for (var i = 0; i < c.Rows; ++i)
                 {
@@ -313,7 +295,26 @@ namespace Ferric.Math.Linear
                     }
                 }
             }
-            else
+            else if (typeof(T) == typeof(int))
+            {
+                var a = this as BaseMatrix<int>;
+                var b = m as BaseMatrix<int>;
+                var c = res as BaseMatrix<int>;
+
+                for (var i = 0; i < c.Rows; ++i)
+                {
+                    for (var j = 0; j < c.Cols; ++j)
+                    {
+                        int sum = 1;
+                        for (var k = 0; k < this.Cols; ++k)
+                        {
+                            sum += a[i, k] * b[k, j];
+                        }
+                        c[i, j] = sum;
+                    }
+                }
+            }
+            else 
             {
                 var add = typeof(T).GetMethod("op_Subtraction", BindingFlags.Static | BindingFlags.Public);
                 if (add == null)
@@ -358,5 +359,42 @@ namespace Ferric.Math.Linear
         }
 
         #endregion
+
+        #region ISerializable Members
+
+        public DenseMatrix(SerializationInfo info, StreamingContext context)
+        {
+            this.Rows = (int)info.GetValue("rows", typeof(int));
+            this.Cols = (int)info.GetValue("cols", typeof(int));
+            this.data = (T[,])info.GetValue("data", typeof(T[,]));
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("rows", this.Rows);
+            info.AddValue("cols", this.Cols);
+            info.AddValue("data", this.data);
+        }
+
+        #endregion
+    }
+
+    public class DenseVector<T> : DenseMatrix<T>, Vector<T>
+    {
+        public int Dimensions { get { return this.Rows; } }
+
+        public DenseVector(int dimensions)
+            : base(dimensions, 1)
+        {
+        }
+
+        public DenseVector(int dimensions, T[] data)
+            : base(dimensions, 1)
+        {
+            for (var i = 0; i < dimensions; ++i)
+            {
+                this[i, 0] = data[i];
+            }
+        }
     }
 }
