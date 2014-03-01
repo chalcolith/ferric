@@ -317,11 +317,9 @@ namespace Ferric.Math.Linear
             else 
             {
                 var add = typeof(T).GetMethod("op_Subtraction", BindingFlags.Static | BindingFlags.Public);
-                if (add == null)
-                    throw new ArgumentException("Unable to find a subtraction operator for " + typeof(T).FullName);
+                if (add == null) throw new ArgumentException("Unable to find a subtraction operator for " + typeof(T).FullName);
                 var mul = typeof(T).GetMethod("op_Multiply", BindingFlags.Static | BindingFlags.Public);
-                if (mul == null)
-                    throw new ArgumentException("Unable to find a multiplication operator for " + typeof(T).FullName);
+                if (mul == null) throw new ArgumentException("Unable to find a multiplication operator for " + typeof(T).FullName);
 
                 var a = this;
                 var b = m;
@@ -356,6 +354,183 @@ namespace Ferric.Math.Linear
             }
 
             return res;
+        }
+
+        // inversion algo taken from http://msdn.microsoft.com/en-us/magazine/jj863137.aspx
+
+        protected override BaseMatrix<T> BaseInvert()
+        {
+            if (this.Rows != this.Cols)
+                throw new ArgumentException("Unable to invert a non-square matrix");
+
+            var n = this.Rows;
+            var res = new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
+
+            int[] perm;
+            int toggle;
+            var lum = Decompose(res, out perm, out toggle);
+            if (lum == null)
+                throw new ArgumentException("Matrix is not invertible");
+
+            var b = new T[n];
+            for (int i = 0; i < n; ++i)
+            {
+                for (int j = 0; j < n; ++j)
+                {
+                    if (i == perm[j])
+                        b[j] = (T)Convert.ChangeType(1, typeof(T));
+                    else
+                        b[j] = (T)Convert.ChangeType(0, typeof(T));
+                }
+
+                var x = HelperSolve(lum, b);
+
+                for (int j = 0; j < n; ++j)
+                {
+                    res[j, i] = x[j];
+                }
+            }
+
+            return res;
+        }
+
+        static DenseMatrix<T> Decompose(DenseMatrix<T> m, out int[] perm, out int toggle)
+        {
+            if (m.Rows != m.Cols)
+                throw new ArgumentException("Unable to decompose a non-square matrix");
+
+            int n = m.Rows;
+            var result = new DenseMatrix<T>(m.Rows, m.Cols);
+
+            perm = new int[n];
+            for (int i = 0; i < n; ++i) { perm[i] = i; }
+
+            toggle = 1;
+
+            if (typeof(T) == typeof(double))
+            {
+                DecomposeAuxDouble(n, result as DenseMatrix<double>, perm, ref toggle);
+            }
+            else
+            {
+                var gt = typeof(T).GetMethod("op_GreaterThan", BindingFlags.Static | BindingFlags.Public);
+                if (gt == null) throw new ArgumentException("Unable to find a greater-than operator for " + typeof(T).FullName);
+
+                var divAssign = typeof(T).GetMethod("op_DivisionAssignment", BindingFlags.Static | BindingFlags.Public);
+                if (divAssign == null) throw new ArgumentException("Unable to find a division assignment operator for " + typeof(T).FullName);
+
+                var subAssign = typeof(T).GetMethod("op_SubtractionAssignment", BindingFlags.Static | BindingFlags.Public);
+                if (subAssign == null) throw new ArgumentException("Unable to find a subtraction assignment operator for " + typeof(T).FullName);
+
+                var mul = typeof(T).GetMethod("op_Multiply", BindingFlags.Static | BindingFlags.Public);
+                if (mul == null) throw new ArgumentException("Unable to find a multiply operator for " + typeof(T).FullName);
+
+            }
+
+            for (int j = 0; j < n - 1; ++j)
+            {
+                double max = System.Math.Abs(result[j, j]);
+                int maxRow = j;
+                for (int i = j + 1; i < n; ++i)
+                {
+                    if (result[i, j] > max)
+                    {
+                        max = result[i, j];
+                        maxRow = i;
+                    }
+                }
+
+                if (maxRow != j)
+                {
+                    for (int k = 0; k < n; ++k)
+                    {
+                        var temp = result[maxRow, k];
+                        result[maxRow, k] = result[j, k];
+                        result[j, k] = temp;
+                    }
+
+                    var ptmp = perm[maxRow];
+                    perm[maxRow] = perm[j];
+                    perm[j] = ptmp;
+
+                    toggle = -toggle;
+                }
+
+                if (System.Math.Abs(result[j, j]) < 1.0e-20)
+                    throw new Exception("Unable to decompose a decomposable matrix");
+
+                for (int i = j + 1; i < n; ++i)
+                {
+                    result[i, j] /= result[j, j];
+                    for (int k = j + 1; k < n; ++k)
+                    {
+                        result[i, k] -= result[i, j] * result[j, k];
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        static void DecomposeAuxDouble(int n, DenseMatrix<double> result, int[] perm, ref int toggle)
+        {
+            for (int j = 0; j < n - 1; ++j)
+            {
+                double max = System.Math.Abs(result[j, j]);
+                int maxRow = j;
+                for (int i = j + 1; i < n; ++i)
+                {
+                    if (result[i, j] > max)
+                    {
+                        max = result[i, j];
+                        maxRow = i;
+                    }
+                }
+
+                if (maxRow != j)
+                {
+                    for (int k = 0; k < n; ++k)
+                    {
+                        var temp = result[maxRow, k];
+                        result[maxRow, k] = result[j, k];
+                        result[j, k] = temp;
+                    }
+
+                    var ptmp = perm[maxRow];
+                    perm[maxRow] = perm[j];
+                    perm[j] = ptmp;
+
+                    toggle = -toggle;
+                }
+
+                if (System.Math.Abs(result[j, j]) < 1.0e-20)
+                    throw new Exception("Unable to decompose a decomposable matrix");
+
+                for (int i = j + 1; i < n; ++i)
+                {
+                    result[i, j] /= result[j, j];
+                    for (int k = j + 1; k < n; ++k)
+                    {
+                        result[i, k] -= result[i, j] * result[j, k];
+                    }
+                }
+            }
+        }
+
+        static T[] HelperSolve(Matrix<T> m, T[] b)
+        {
+            int n = m.Rows;
+            var x = new T[b.Length];
+            b.CopyTo(x, 0);
+
+            for (int i = 1; i < n; ++i)
+            {
+                T sum = x[i];
+                for (int j = 0; j < i; ++j)
+                {
+
+                }
+            }
         }
 
         #endregion

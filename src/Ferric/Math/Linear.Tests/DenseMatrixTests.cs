@@ -18,6 +18,9 @@ namespace Ferric.Math.Linear.Tests
 
             var d = new DenseMatrix<double>(2, 3, new double[2, 3] { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}});
             Assert.AreNotEqual(a, d);
+
+            var e = new DenseMatrix<double>(2, 3, new double[2, 3] { { 1.001, 2.001, 3.001 }, { 4.001, 5.001, 6.001 } });
+            Assert.IsTrue(e.Equals(e, 0.01));
         }
 
         [TestMethod]

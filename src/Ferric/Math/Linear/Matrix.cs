@@ -41,6 +41,8 @@ namespace Ferric.Math.Linear
 
         public Matrix<T> Multiply(Matrix<T> m, bool inPlace = false) { return BaseMultiply(m, inPlace); }
 
+        public Matrix<T> Invert() { return BaseInvert(); }
+
         #endregion
 
         #region Object Members
@@ -67,6 +69,31 @@ namespace Ferric.Math.Linear
                         return false;
                 }
             }
+            return true;
+        }
+
+        public bool Equals(Matrix<double> m, double epsilon)
+        {
+            if (m == null)
+                return false;
+            if (this.Rows != m.Rows)
+                return false;
+            if (this.Cols != m.Cols)
+                return false;
+
+            var a = this as Matrix<double>;
+            if (a == null)
+                throw new ArgumentException("Unable to compare double and non-double matrices");
+
+            for (var i = 0; i < this.Rows; ++i)
+            {
+                for (var j = 0; j < this.Cols; ++j)
+                {
+                    if (System.Math.Abs(a[i, j] - m[i, j]) > epsilon)
+                        return false;
+                }
+            }
+
             return true;
         }
 
@@ -123,6 +150,7 @@ namespace Ferric.Math.Linear
         protected abstract BaseMatrix<T> BaseNegate(bool inPlace);
         protected abstract BaseMatrix<T> BaseSubtract(Matrix<T> m, bool inPlace);
         protected abstract BaseMatrix<T> BaseMultiply(Matrix<T> m, bool inPlace);
+        protected abstract BaseMatrix<T> BaseInvert();
 
         public static BaseMatrix<T> operator *(BaseMatrix<T> a, T n)
         {
