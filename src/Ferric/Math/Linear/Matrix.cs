@@ -7,25 +7,7 @@ using System.Threading.Tasks;
 
 namespace Ferric.Math.Linear
 {
-    public interface Matrix<T> : IEquatable<Matrix<T>>, ISerializable
-    {
-        int Rows { get; }
-        int Cols { get; }
-        T this[int row, int col] { get; }
-
-        BaseMatrix<T> Transpose();
-        BaseMatrix<T> ScalarMultiply(T n, bool inPlace = false);
-        BaseMatrix<T> Add(Matrix<T> m, bool inPlace = false);
-        BaseMatrix<T> Negate(bool inPlace = false);
-        BaseMatrix<T> Subtract(Matrix<T> m, bool inPlace = false);
-        BaseMatrix<T> Multiply(Matrix<T> m, bool inPlace = false);
-        BaseMatrix<T> Inverse();
-
-        void CopyRow(int row, Vector<T> v);
-        void CopyCol(int col, Vector<T> v);
-    }
-
-    public abstract class BaseMatrix<T> : Matrix<T>
+    public abstract class Matrix<T>
     {
         #region Matrix<T> Members
 
@@ -33,13 +15,13 @@ namespace Ferric.Math.Linear
         public abstract int Cols { get; }
         public abstract T this[int row, int col] { get; set; }
 
-        public abstract BaseMatrix<T> Transpose();
-        public abstract BaseMatrix<T> ScalarMultiply(T n, bool inPlace = false);
-        public abstract BaseMatrix<T> Add(Matrix<T> m, bool inPlace = false);
-        public abstract BaseMatrix<T> Negate(bool inPlace = false);
-        public abstract BaseMatrix<T> Subtract(Matrix<T> m, bool inPlace = false);
-        public abstract BaseMatrix<T> Multiply(Matrix<T> m, bool inPlace = false);
-        public abstract BaseMatrix<T> Inverse();
+        public abstract Matrix<T> Transpose();
+        public abstract Matrix<T> ScalarMultiply(T n, bool inPlace = false);
+        public abstract Matrix<T> Add(Matrix<T> m, bool inPlace = false);
+        public abstract Matrix<T> Negate(bool inPlace = false);
+        public abstract Matrix<T> Subtract(Matrix<T> m, bool inPlace = false);
+        public abstract Matrix<T> Multiply(Matrix<T> m);
+        public abstract Matrix<T> Inverse();
 
         public void CopyRow(int row, Vector<T> v)
         {
@@ -164,42 +146,36 @@ namespace Ferric.Math.Linear
 
         #region Operators
 
-        public static BaseMatrix<T> operator *(BaseMatrix<T> a, T n)
+        public static Matrix<T> operator *(Matrix<T> a, T n)
         {
             return a.ScalarMultiply(n, inPlace: false);
         }
 
-        public static BaseMatrix<T> operator *(BaseMatrix<T> a, Matrix<T> b)
+        public static Matrix<T> operator *(Matrix<T> a, Matrix<T> b)
         {
-            return a.Multiply(b, inPlace: false);
+            return a.Multiply(b);
         }
 
-        public static BaseMatrix<T> operator +(BaseMatrix<T> a)
+        public static Matrix<T> operator +(Matrix<T> a)
         {
             return a;
         }
 
-        public static BaseMatrix<T> operator +(BaseMatrix<T> a, Matrix<T> b)
+        public static Matrix<T> operator +(Matrix<T> a, Matrix<T> b)
         {
             return a.Add(b, inPlace: false);
         }
 
-        public static BaseMatrix<T> operator -(BaseMatrix<T> a)
+        public static Matrix<T> operator -(Matrix<T> a)
         {
             return a.Negate(inPlace: false);
         }
 
-        public static BaseMatrix<T> operator -(BaseMatrix<T> a, Matrix<T> b)
+        public static Matrix<T> operator -(Matrix<T> a, Matrix<T> b)
         {
             return a.Subtract(b, inPlace: false);
         }
 
         #endregion
-    }
-
-    public interface Vector<T> : Matrix<T>
-    {
-        T this[int i] { get; }
-        int Dimensions { get; }
     }
 }

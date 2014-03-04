@@ -9,11 +9,12 @@ using Ferric.Math.Linear;
 
 namespace Ferric.Math.Stats
 {
-    public interface Classifier<T> : ISerializable
+    public interface Classifier<TInput, TOutput> : ISerializable
     {
-        void TrainModel(IEnumerable<Tuple<Vector<T>, Vector<T>>> trainingData);
-        void TestModel(IEnumerable<Tuple<Vector<T>, Vector<T>>> testingData);
+        void TrainModel(IEnumerable<IEnumerable<TInput>> trainingInputs, IEnumerable<IEnumerable<TOutput>> trainingOutputs);
+        double TestModel(IEnumerable<IEnumerable<TInput>> testingInputs, IEnumerable<IEnumerable<TOutput>> testingOutputs, Func<TOutput, TOutput, bool> matches = null);
 
-        Vector<T> Classify(Vector<T> input);
+        Vector<TOutput> Classify(Vector<TInput> input);
+        Vector<TOutput> Classify(IEnumerable<TInput> input);
     }
 }

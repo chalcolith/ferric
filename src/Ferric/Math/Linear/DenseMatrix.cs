@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Ferric.Math.Linear
 {
-    public class DenseMatrix<T> : BaseMatrix<T>
+    public class DenseMatrix<T> : Matrix<T>
     {
-        IEnumerable<IEnumerable<T>> jaggedData = null;
-        T[,] squareData = null;
+        protected IEnumerable<IEnumerable<T>> jaggedData = null;
+        protected T[,] squareData = null;
 
         public override int Rows
         {
@@ -124,7 +124,7 @@ namespace Ferric.Math.Linear
 
         #region BaseMatrix Members
 
-        public override BaseMatrix<T> Transpose()
+        public override Matrix<T> Transpose()
         {
             var res = new DenseMatrix<T>(this.Cols, this.Rows);
             for (var i = 0; i < this.Rows; ++i)
@@ -137,9 +137,9 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        public override BaseMatrix<T> ScalarMultiply(T n, bool inPlace)
+        public override Matrix<T> ScalarMultiply(T n, bool inPlace)
         {
-            BaseMatrix<T> res = this;
+            Matrix<T> res = this;
             if (!inPlace)
             {
                 if (this.squareData != null)
@@ -150,7 +150,7 @@ namespace Ferric.Math.Linear
 
             if (typeof(T) == typeof(double))
             {
-                var a = res as BaseMatrix<double>;
+                var a = res as Matrix<double>;
                 var nd = Convert.ToDouble(n);
 
                 for (var i = 0; i < a.Rows; ++i)
@@ -163,7 +163,7 @@ namespace Ferric.Math.Linear
             }
             else if (typeof(T) == typeof(int))
             {
-                var a = res as BaseMatrix<int>;
+                var a = res as Matrix<int>;
                 var ni = Convert.ToInt32(n);
 
                 for (var i = 0; i < a.Rows; ++i)
@@ -194,7 +194,7 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        public override BaseMatrix<T> Add(Matrix<T> m, bool inPlace = false)
+        public override Matrix<T> Add(Matrix<T> m, bool inPlace = false)
         {
             DenseMatrix<T> res = this;
             if (!inPlace)
@@ -210,8 +210,8 @@ namespace Ferric.Math.Linear
 
             if (typeof(T) == typeof(double))
             {
-                var a = res as BaseMatrix<double>;
-                var b = m as BaseMatrix<double>;
+                var a = res as Matrix<double>;
+                var b = m as Matrix<double>;
 
                 for (var i = 0; i < a.Rows; ++i)
                 {
@@ -223,8 +223,8 @@ namespace Ferric.Math.Linear
             }
             else if (typeof(T) == typeof(int))
             {
-                var a = res as BaseMatrix<int>;
-                var b = m as BaseMatrix<int>;
+                var a = res as Matrix<int>;
+                var b = m as Matrix<int>;
 
                 for (var i = 0; i < a.Rows; ++i)
                 {
@@ -256,7 +256,7 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        public override BaseMatrix<T> Negate(bool inPlace = false)
+        public override Matrix<T> Negate(bool inPlace = false)
         {
             DenseMatrix<T> res = this;
             if (!inPlace)
@@ -269,7 +269,7 @@ namespace Ferric.Math.Linear
 
             if (typeof(T) == typeof(double))
             {
-                var a = res as BaseMatrix<double>;
+                var a = res as Matrix<double>;
                 for (var i = 0; i < a.Rows; ++i)
                 {
                     for (var j = 0; j < a.Cols; ++j)
@@ -280,7 +280,7 @@ namespace Ferric.Math.Linear
             }
             else if (typeof(T) == typeof(int))
             {
-                var a = res as BaseMatrix<int>;
+                var a = res as Matrix<int>;
                 for (var i = 0; i < a.Rows; ++i)
                 {
                     for (var j = 0; j < a.Cols; ++j)
@@ -308,7 +308,7 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        public override BaseMatrix<T> Subtract(Matrix<T> m, bool inPlace = false)
+        public override Matrix<T> Subtract(Matrix<T> m, bool inPlace = false)
         {
             DenseMatrix<T> res = this;
             if (!inPlace)
@@ -324,8 +324,8 @@ namespace Ferric.Math.Linear
 
             if (typeof(T) == typeof(double))
             {
-                var a = res as BaseMatrix<double>;
-                var b = m as BaseMatrix<double>;
+                var a = res as Matrix<double>;
+                var b = m as Matrix<double>;
 
                 for (var i = 0; i < a.Rows; ++i)
                 {
@@ -337,8 +337,8 @@ namespace Ferric.Math.Linear
             }
             else if (typeof(T) == typeof(int))
             {
-                var a = res as BaseMatrix<int>;
-                var b = m as BaseMatrix<int>;
+                var a = res as Matrix<int>;
+                var b = m as Matrix<int>;
 
                 for (var i = 0; i < a.Rows; ++i)
                 {
@@ -370,27 +370,18 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        public override BaseMatrix<T> Multiply(Matrix<T> m, bool inPlace = false)
+        public override Matrix<T> Multiply(Matrix<T> m)
         {
             if (this.Cols != m.Rows)
                 throw new ArgumentException("Unable to multiply nonconformable matrices");
-            if (inPlace && (this.Rows != m.Rows || this.Cols != m.Cols))
-                throw new ArgumentException("Unable to multiply differently-sized matrices in-place");
 
-            DenseMatrix<T> res = this;
-            if (!inPlace)
-            {
-                if (this.squareData != null)
-                    res = new DenseMatrix<T>(this.squareData, copy: true);
-                else
-                    res = new DenseMatrix<T>(this.jaggedData, copy: true);
-            }
+            var res = new DenseMatrix<T>(this.Rows, m.Cols);
 
             if (typeof(T) == typeof(double))
             {
-                var a = this as BaseMatrix<double>;
-                var b = m as BaseMatrix<double>;
-                var c = res as BaseMatrix<double>;
+                var a = this as Matrix<double>;
+                var b = m as Matrix<double>;
+                var c = res as Matrix<double>;
 
                 for (var i = 0; i < c.Rows; ++i)
                 {
@@ -407,9 +398,9 @@ namespace Ferric.Math.Linear
             }
             else if (typeof(T) == typeof(int))
             {
-                var a = this as BaseMatrix<int>;
-                var b = m as BaseMatrix<int>;
-                var c = res as BaseMatrix<int>;
+                var a = this as Matrix<int>;
+                var b = m as Matrix<int>;
+                var c = res as Matrix<int>;
 
                 for (var i = 0; i < c.Rows; ++i)
                 {
@@ -466,7 +457,7 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        public override BaseMatrix<T> Inverse()
+        public override Matrix<T> Inverse()
         {
             var m = this as DenseMatrix<double>;
             if (m == null)
@@ -510,7 +501,7 @@ namespace Ferric.Math.Linear
                 }
             }
 
-            return res as BaseMatrix<T>;
+            return res as Matrix<T>;
         }
 
         static DenseMatrix<double> Decompose(DenseMatrix<double> m, out int[] perm, out int toggle)
@@ -611,97 +602,6 @@ namespace Ferric.Math.Linear
         {
             info.AddValue("squareData", this.squareData);
             info.AddValue("jaggedData", this.jaggedData);
-        }
-
-        #endregion
-    }
-
-    public class DenseVector<T> : DenseMatrix<T>, Vector<T>, IEnumerable<T>
-    {
-        public T this[int i] { get { return this[0, i]; } }
-
-        public int Dimensions { get { return this.Rows; } }
-
-        public DenseVector(int dimensions)
-            : base(dimensions, 1)
-        {
-        }
-
-        public DenseVector(int dimensions, T[] data)
-            : base(dimensions, 1)
-        {
-            for (var i = 0; i < dimensions; ++i)
-            {
-                this[i, 0] = data[i];
-            }
-        }
-
-        #region IEnumerable<T> Members
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return new VectorEnumerator(this);
-        }
-
-        #endregion
-
-        #region IEnumerable Members
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
-        #endregion
-
-        #region Enumerator Class
-
-        class VectorEnumerator : IEnumerator<T>
-        {
-            Vector<T> vector;
-            int pos = -1;
-
-            public VectorEnumerator(Vector<T> vector)
-            {
-                this.vector = vector;
-            }
-
-            #region IEnumerator<T> Members
-
-            public T Current
-            {
-                get { return vector[pos]; }
-            }
-
-            #endregion
-
-            #region IDisposable Members
-
-            public void Dispose()
-            {
-                vector = null;
-            }
-
-            #endregion
-
-            #region IEnumerator Members
-
-            object System.Collections.IEnumerator.Current
-            {
-                get { return this.Current; }
-            }
-
-            public bool MoveNext()
-            {
-                return ++pos < vector.Cols;
-            }
-
-            public void Reset()
-            {
-                pos = -1;
-            }
-
-            #endregion
         }
 
         #endregion
