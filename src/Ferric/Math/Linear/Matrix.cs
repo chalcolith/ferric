@@ -20,14 +20,17 @@ namespace Ferric.Math.Linear
         BaseMatrix<T> Subtract(Matrix<T> m, bool inPlace = false);
         BaseMatrix<T> Multiply(Matrix<T> m, bool inPlace = false);
         BaseMatrix<T> Inverse();
+
+        void CopyRow(int row, Vector<T> v);
+        void CopyCol(int col, Vector<T> v);
     }
 
     public abstract class BaseMatrix<T> : Matrix<T>
     {
         #region Matrix<T> Members
 
-        public int Rows { get; protected set; }
-        public int Cols { get; protected set; }
+        public abstract int Rows { get; }
+        public abstract int Cols { get; }
         public abstract T this[int row, int col] { get; set; }
 
         public abstract BaseMatrix<T> Transpose();
@@ -37,6 +40,28 @@ namespace Ferric.Math.Linear
         public abstract BaseMatrix<T> Subtract(Matrix<T> m, bool inPlace = false);
         public abstract BaseMatrix<T> Multiply(Matrix<T> m, bool inPlace = false);
         public abstract BaseMatrix<T> Inverse();
+
+        public void CopyRow(int row, Vector<T> v)
+        {
+            if (v.Cols != this.Cols)
+                throw new ArgumentException("Unable to copy a vector row to a matrix with different dimensions");
+
+            for (int i = 0; i < v.Cols; ++i)
+            {
+                this[row, i] = v[i];
+            }
+        }
+
+        public void CopyCol(int col, Vector<T> v)
+        {
+            if (v.Cols != this.Rows)
+                throw new ArgumentException("Unable to copy a vector column to a matrix with different dimensions");
+
+            for (int i = 0; i < v.Cols; ++i)
+            {
+                this[i, col] = v[i];
+            }
+        }
 
         #endregion
 
@@ -174,6 +199,7 @@ namespace Ferric.Math.Linear
 
     public interface Vector<T> : Matrix<T>
     {
+        T this[int i] { get; }
         int Dimensions { get; }
     }
 }

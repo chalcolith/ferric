@@ -10,40 +10,115 @@ namespace Ferric.Math.Linear
 {
     public class DenseMatrix<T> : BaseMatrix<T>
     {
-        T[,] data;
+        IEnumerable<IEnumerable<T>> jaggedData = null;
+        T[,] squareData = null;
+
+        public override int Rows
+        {
+            get
+            {
+                if (squareData != null)
+                    return squareData.GetLength(0);
+                else
+                    return jaggedData.Count();
+            }
+        }
+
+        public override int Cols
+        {
+            get
+            {
+                if (squareData != null)
+                    return squareData.GetLength(1);
+                else
+                    return jaggedData.First().Count();
+            }
+        }
 
         public override T this[int row, int col]
         {
-            get { return data[row, col]; }
-            set { data[row, col] = value; }
+            get 
+            {
+                if (squareData != null)
+                {
+                    return squareData[row, col];
+                }
+                else
+                {
+                    if (jaggedData == null)
+                        jaggedData = new T[this.Rows][];
+
+                    var rowArray = jaggedData.ElementAt(row);
+                    if (rowArray == null)
+                        return default(T);
+
+                    return rowArray.ElementAt(col);
+                }
+            }
+            set {
+                if (squareData != null)
+                {
+                    squareData[row, col] = value;
+                }
+                else
+                {
+                    if (jaggedData == null)
+                        jaggedData = new T[this.Rows][];
+                    var rowArray = jaggedData.ElementAt(row);
+                    if (rowArray == null)
+                    {
+                        var dataList = jaggedData as IList<IEnumerable<T>>;
+                        if (dataList != null)
+                            dataList[row] = rowArray = new T[this.Cols];
+                        else
+                            throw new ArgumentException("Matrix is not writable");
+                    }
+
+                    var rowList = rowArray as IList<T>;
+                    if (rowList != null)
+                        rowList[col] = value;
+                    else
+                        throw new ArgumentException("Matrix is not writable");
+                }
+            }
         }
 
         public DenseMatrix(int rows, int cols)
         {
-            this.Rows = rows;
-            this.Cols = cols;
-            data = new T[rows, cols];
+            squareData = new T[rows, cols];
         }
 
-        public DenseMatrix(int rows, int cols, T[,] data, bool copy = false)
+        public DenseMatrix(T[,] data, bool copy = false)
         {
-            this.Rows = rows;
-            this.Cols = cols;
-
             if (copy)
             {
-                this.data = new T[rows, cols];
+                var rows = data.GetLength(0);
+                var cols = data.GetLength(1);
+
+                this.squareData = new T[rows, cols];
                 for (int i = 0; i < this.Rows; ++i)
                 {
                     for (int j = 0; j < this.Cols; ++j)
                     {
-                        this.data[i, j] = data[i, j];
+                        this[i, j] = data[i, j];
                     }
                 }
             }
             else
             {
-                this.data = data;
+                this.squareData = data;
+            }
+        }
+
+        public DenseMatrix(IEnumerable<IEnumerable<T>> src, bool copy = false)
+        {
+            if (copy)
+            {
+                jaggedData = src.Select(row => row.Select(item => item).ToArray()).ToArray();
+            }
+            else
+            {
+                jaggedData = src;
             }
         }
 
@@ -64,7 +139,14 @@ namespace Ferric.Math.Linear
 
         public override BaseMatrix<T> ScalarMultiply(T n, bool inPlace)
         {
-            var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
+            BaseMatrix<T> res = this;
+            if (!inPlace)
+            {
+                if (this.squareData != null)
+                    res = new DenseMatrix<T>(this.squareData, copy: true);
+                else
+                    res = new DenseMatrix<T>(this.jaggedData, copy: true);
+            }
 
             if (typeof(T) == typeof(double))
             {
@@ -114,7 +196,14 @@ namespace Ferric.Math.Linear
 
         public override BaseMatrix<T> Add(Matrix<T> m, bool inPlace = false)
         {
-            var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
+            DenseMatrix<T> res = this;
+            if (!inPlace)
+            {
+                if (this.squareData != null)
+                    res = new DenseMatrix<T>(this.squareData, copy: true);
+                else
+                    res = new DenseMatrix<T>(this.jaggedData, copy: true);
+            }
 
             if (this.Rows != m.Rows || this.Cols != m.Cols)
                 throw new ArgumentException("Unable to add matrices of different dimensions");
@@ -169,7 +258,14 @@ namespace Ferric.Math.Linear
 
         public override BaseMatrix<T> Negate(bool inPlace = false)
         {
-            var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
+            DenseMatrix<T> res = this;
+            if (!inPlace)
+            {
+                if (this.squareData != null)
+                    res = new DenseMatrix<T>(this.squareData, copy: true);
+                else
+                    res = new DenseMatrix<T>(this.jaggedData, copy: true);
+            }
 
             if (typeof(T) == typeof(double))
             {
@@ -214,7 +310,14 @@ namespace Ferric.Math.Linear
 
         public override BaseMatrix<T> Subtract(Matrix<T> m, bool inPlace = false)
         {
-            var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
+            DenseMatrix<T> res = this;
+            if (!inPlace)
+            {
+                if (this.squareData != null)
+                    res = new DenseMatrix<T>(this.squareData, copy: true);
+                else
+                    res = new DenseMatrix<T>(this.jaggedData, copy: true);
+            }
 
             if (this.Rows != m.Rows || this.Cols != m.Cols)
                 throw new ArgumentException("Unable to subtract matrices of different dimensions");
@@ -274,7 +377,14 @@ namespace Ferric.Math.Linear
             if (inPlace && (this.Rows != m.Rows || this.Cols != m.Cols))
                 throw new ArgumentException("Unable to multiply differently-sized matrices in-place");
 
-            var res = inPlace ? this : new DenseMatrix<T>(this.Rows, m.Cols, this.data, copy: true);
+            DenseMatrix<T> res = this;
+            if (!inPlace)
+            {
+                if (this.squareData != null)
+                    res = new DenseMatrix<T>(this.squareData, copy: true);
+                else
+                    res = new DenseMatrix<T>(this.jaggedData, copy: true);
+            }
 
             if (typeof(T) == typeof(double))
             {
@@ -368,7 +478,12 @@ namespace Ferric.Math.Linear
             // inversion algo taken from http://msdn.microsoft.com/en-us/magazine/jj863137.aspx
 
             var n = m.Rows;
-            var res = new DenseMatrix<double>(m.Rows, m.Cols, m.data, copy: true);
+            var res = new DenseMatrix<double>(m.Rows, m.Cols);
+            for (int i = 0; i < m.Rows; ++i)
+            {
+                for (int j = 0; j < m.Cols; ++j)
+                    res[i, j] = m[i, j];
+            }
 
             int[] perm;
             int toggle;
@@ -404,7 +519,7 @@ namespace Ferric.Math.Linear
                 throw new ArgumentException("Unable to decompose a non-square matrix");
 
             int n = m.Rows;
-            var result = new DenseMatrix<double>(m.Rows, m.Cols, m.data, copy: true);
+            var result = new DenseMatrix<double>(m.squareData, copy: true);
 
             perm = new int[n];
             for (int i = 0; i < n; ++i) { perm[i] = i; }
@@ -488,23 +603,23 @@ namespace Ferric.Math.Linear
 
         public DenseMatrix(SerializationInfo info, StreamingContext context)
         {
-            this.Rows = (int)info.GetValue("rows", typeof(int));
-            this.Cols = (int)info.GetValue("cols", typeof(int));
-            this.data = (T[,])info.GetValue("data", typeof(T[,]));
+            this.squareData = (T[,])info.GetValue("squareData", typeof(T[,]));
+            this.jaggedData = (IEnumerable<IEnumerable<T>>)info.GetValue("jaggedData", typeof(IEnumerable<IEnumerable<T>>));
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("rows", this.Rows);
-            info.AddValue("cols", this.Cols);
-            info.AddValue("data", this.data);
+            info.AddValue("squareData", this.squareData);
+            info.AddValue("jaggedData", this.jaggedData);
         }
 
         #endregion
     }
 
-    public class DenseVector<T> : DenseMatrix<T>, Vector<T>
+    public class DenseVector<T> : DenseMatrix<T>, Vector<T>, IEnumerable<T>
     {
+        public T this[int i] { get { return this[0, i]; } }
+
         public int Dimensions { get { return this.Rows; } }
 
         public DenseVector(int dimensions)
@@ -520,5 +635,75 @@ namespace Ferric.Math.Linear
                 this[i, 0] = data[i];
             }
         }
+
+        #region IEnumerable<T> Members
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new VectorEnumerator(this);
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        #endregion
+
+        #region Enumerator Class
+
+        class VectorEnumerator : IEnumerator<T>
+        {
+            Vector<T> vector;
+            int pos = -1;
+
+            public VectorEnumerator(Vector<T> vector)
+            {
+                this.vector = vector;
+            }
+
+            #region IEnumerator<T> Members
+
+            public T Current
+            {
+                get { return vector[pos]; }
+            }
+
+            #endregion
+
+            #region IDisposable Members
+
+            public void Dispose()
+            {
+                vector = null;
+            }
+
+            #endregion
+
+            #region IEnumerator Members
+
+            object System.Collections.IEnumerator.Current
+            {
+                get { return this.Current; }
+            }
+
+            public bool MoveNext()
+            {
+                return ++pos < vector.Cols;
+            }
+
+            public void Reset()
+            {
+                pos = -1;
+            }
+
+            #endregion
+        }
+
+        #endregion
     }
 }
