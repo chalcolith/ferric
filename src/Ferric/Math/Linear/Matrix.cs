@@ -13,12 +13,13 @@ namespace Ferric.Math.Linear
         int Cols { get; }
         T this[int row, int col] { get; }
 
-        Matrix<T> Transpose();
-        Matrix<T> ScalarMult(T n, bool inPlace = false);
-        Matrix<T> Add(Matrix<T> m, bool inPlace = false);
-        Matrix<T> Negate(bool inPlace = false);
-        Matrix<T> Subtract(Matrix<T> m, bool inPlace = false);
-        Matrix<T> Multiply(Matrix<T> m, bool inPlace = false);
+        BaseMatrix<T> Transpose();
+        BaseMatrix<T> ScalarMultiply(T n, bool inPlace = false);
+        BaseMatrix<T> Add(Matrix<T> m, bool inPlace = false);
+        BaseMatrix<T> Negate(bool inPlace = false);
+        BaseMatrix<T> Subtract(Matrix<T> m, bool inPlace = false);
+        BaseMatrix<T> Multiply(Matrix<T> m, bool inPlace = false);
+        BaseMatrix<T> Inverse();
     }
 
     public abstract class BaseMatrix<T> : Matrix<T>
@@ -29,19 +30,13 @@ namespace Ferric.Math.Linear
         public int Cols { get; protected set; }
         public abstract T this[int row, int col] { get; set; }
 
-        public Matrix<T> Transpose() { return BaseTranspose(); }
-
-        public Matrix<T> ScalarMult(T n, bool inPlace = false) { return BaseScalarMult(n, inPlace); }
-
-        public Matrix<T> Add(Matrix<T> m, bool inPlace = false) { return BaseAdd(m, inPlace); }
-
-        public Matrix<T> Negate(bool inPlace = false) { return BaseNegate(inPlace); }
-
-        public Matrix<T> Subtract(Matrix<T> m, bool inPlace = false) { return BaseSubtract(m, inPlace); }
-
-        public Matrix<T> Multiply(Matrix<T> m, bool inPlace = false) { return BaseMultiply(m, inPlace); }
-
-        public Matrix<T> Invert() { return BaseInvert(); }
+        public abstract BaseMatrix<T> Transpose();
+        public abstract BaseMatrix<T> ScalarMultiply(T n, bool inPlace = false);
+        public abstract BaseMatrix<T> Add(Matrix<T> m, bool inPlace = false);
+        public abstract BaseMatrix<T> Negate(bool inPlace = false);
+        public abstract BaseMatrix<T> Subtract(Matrix<T> m, bool inPlace = false);
+        public abstract BaseMatrix<T> Multiply(Matrix<T> m, bool inPlace = false);
+        public abstract BaseMatrix<T> Inverse();
 
         #endregion
 
@@ -144,22 +139,14 @@ namespace Ferric.Math.Linear
 
         #region Operators
 
-        protected abstract BaseMatrix<T> BaseTranspose();
-        protected abstract BaseMatrix<T> BaseScalarMult(T n, bool inPlace);
-        protected abstract BaseMatrix<T> BaseAdd(Matrix<T> m, bool inPlace);
-        protected abstract BaseMatrix<T> BaseNegate(bool inPlace);
-        protected abstract BaseMatrix<T> BaseSubtract(Matrix<T> m, bool inPlace);
-        protected abstract BaseMatrix<T> BaseMultiply(Matrix<T> m, bool inPlace);
-        protected abstract BaseMatrix<T> BaseInvert();
-
         public static BaseMatrix<T> operator *(BaseMatrix<T> a, T n)
         {
-            return a.BaseScalarMult(n, inPlace: false);
+            return a.ScalarMultiply(n, inPlace: false);
         }
 
         public static BaseMatrix<T> operator *(BaseMatrix<T> a, Matrix<T> b)
         {
-            return a.BaseMultiply(b, inPlace: false);
+            return a.Multiply(b, inPlace: false);
         }
 
         public static BaseMatrix<T> operator +(BaseMatrix<T> a)
@@ -169,17 +156,17 @@ namespace Ferric.Math.Linear
 
         public static BaseMatrix<T> operator +(BaseMatrix<T> a, Matrix<T> b)
         {
-            return a.BaseAdd(b, inPlace: false);
+            return a.Add(b, inPlace: false);
         }
 
         public static BaseMatrix<T> operator -(BaseMatrix<T> a)
         {
-            return a.BaseNegate(inPlace: false);
+            return a.Negate(inPlace: false);
         }
 
         public static BaseMatrix<T> operator -(BaseMatrix<T> a, Matrix<T> b)
         {
-            return a.BaseSubtract(b, inPlace: false);
+            return a.Subtract(b, inPlace: false);
         }
 
         #endregion

@@ -172,8 +172,20 @@ namespace Ferric.Math.Linear.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Multiplication_Int()
+        public void Math_Linear_DenseMatrix_Inverse()
         {
+            var a = new DenseMatrix<double>(2, 2, new double[2, 2] { { 4, 3 }, { 3, 2 } });
+            var ai = a.Inverse();
+
+            var c = new DenseMatrix<double>(2, 2, new double[2, 2] { { -2, 3 }, { 3, -4 } });
+            Assert.AreEqual(c, ai);
+
+            var i = new DenseMatrix<double>(2, 2, new double[2, 2] { { 1, 0 }, { 0, 1 } });
+            var d = a * ai;
+            Assert.AreEqual(i, d);
+
+            var e = ai * a;
+            Assert.AreEqual(i, e);
         }
     }
 }

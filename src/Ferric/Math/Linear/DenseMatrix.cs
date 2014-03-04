@@ -49,7 +49,7 @@ namespace Ferric.Math.Linear
 
         #region BaseMatrix Members
 
-        protected override BaseMatrix<T> BaseTranspose()
+        public override BaseMatrix<T> Transpose()
         {
             var res = new DenseMatrix<T>(this.Cols, this.Rows);
             for (var i = 0; i < this.Rows; ++i)
@@ -62,7 +62,7 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        protected override BaseMatrix<T> BaseScalarMult(T n, bool inPlace)
+        public override BaseMatrix<T> ScalarMultiply(T n, bool inPlace)
         {
             var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
 
@@ -112,7 +112,7 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        protected override BaseMatrix<T> BaseAdd(Matrix<T> m, bool inPlace = false)
+        public override BaseMatrix<T> Add(Matrix<T> m, bool inPlace = false)
         {
             var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
 
@@ -167,7 +167,7 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        protected override BaseMatrix<T> BaseNegate(bool inPlace = false)
+        public override BaseMatrix<T> Negate(bool inPlace = false)
         {
             var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
 
@@ -212,7 +212,7 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        protected override BaseMatrix<T> BaseSubtract(Matrix<T> m, bool inPlace = false)
+        public override BaseMatrix<T> Subtract(Matrix<T> m, bool inPlace = false)
         {
             var res = inPlace ? this : new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
 
@@ -267,7 +267,7 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        protected override BaseMatrix<T> BaseMultiply(Matrix<T> m, bool inPlace = false)
+        public override BaseMatrix<T> Multiply(Matrix<T> m, bool inPlace = false)
         {
             if (this.Cols != m.Rows)
                 throw new ArgumentException("Unable to multiply nonconformable matrices");
@@ -356,15 +356,19 @@ namespace Ferric.Math.Linear
             return res;
         }
 
-        // inversion algo taken from http://msdn.microsoft.com/en-us/magazine/jj863137.aspx
-
-        protected override BaseMatrix<T> BaseInvert()
+        public override BaseMatrix<T> Inverse()
         {
+            var m = this as DenseMatrix<double>;
+            if (m == null)
+                throw new ArgumentException("Unable to invert a non-double matrix");
+
             if (this.Rows != this.Cols)
                 throw new ArgumentException("Unable to invert a non-square matrix");
 
-            var n = this.Rows;
-            var res = new DenseMatrix<T>(this.Rows, this.Cols, this.data, copy: true);
+            // inversion algo taken from http://msdn.microsoft.com/en-us/magazine/jj863137.aspx
+
+            var n = m.Rows;
+            var res = new DenseMatrix<double>(m.Rows, m.Cols, m.data, copy: true);
 
             int[] perm;
             int toggle;
@@ -372,15 +376,15 @@ namespace Ferric.Math.Linear
             if (lum == null)
                 throw new ArgumentException("Matrix is not invertible");
 
-            var b = new T[n];
+            var b = new double[n];
             for (int i = 0; i < n; ++i)
             {
                 for (int j = 0; j < n; ++j)
                 {
                     if (i == perm[j])
-                        b[j] = (T)Convert.ChangeType(1, typeof(T));
+                        b[j] = 1;
                     else
-                        b[j] = (T)Convert.ChangeType(0, typeof(T));
+                        b[j] = 0;
                 }
 
                 var x = HelperSolve(lum, b);
@@ -391,41 +395,21 @@ namespace Ferric.Math.Linear
                 }
             }
 
-            return res;
+            return res as BaseMatrix<T>;
         }
 
-        static DenseMatrix<T> Decompose(DenseMatrix<T> m, out int[] perm, out int toggle)
+        static DenseMatrix<double> Decompose(DenseMatrix<double> m, out int[] perm, out int toggle)
         {
             if (m.Rows != m.Cols)
                 throw new ArgumentException("Unable to decompose a non-square matrix");
 
             int n = m.Rows;
-            var result = new DenseMatrix<T>(m.Rows, m.Cols);
+            var result = new DenseMatrix<double>(m.Rows, m.Cols, m.data, copy: true);
 
             perm = new int[n];
             for (int i = 0; i < n; ++i) { perm[i] = i; }
 
             toggle = 1;
-
-            if (typeof(T) == typeof(double))
-            {
-                DecomposeAuxDouble(n, result as DenseMatrix<double>, perm, ref toggle);
-            }
-            else
-            {
-                var gt = typeof(T).GetMethod("op_GreaterThan", BindingFlags.Static | BindingFlags.Public);
-                if (gt == null) throw new ArgumentException("Unable to find a greater-than operator for " + typeof(T).FullName);
-
-                var divAssign = typeof(T).GetMethod("op_DivisionAssignment", BindingFlags.Static | BindingFlags.Public);
-                if (divAssign == null) throw new ArgumentException("Unable to find a division assignment operator for " + typeof(T).FullName);
-
-                var subAssign = typeof(T).GetMethod("op_SubtractionAssignment", BindingFlags.Static | BindingFlags.Public);
-                if (subAssign == null) throw new ArgumentException("Unable to find a subtraction assignment operator for " + typeof(T).FullName);
-
-                var mul = typeof(T).GetMethod("op_Multiply", BindingFlags.Static | BindingFlags.Public);
-                if (mul == null) throw new ArgumentException("Unable to find a multiply operator for " + typeof(T).FullName);
-
-            }
 
             for (int j = 0; j < n - 1; ++j)
             {
@@ -457,7 +441,7 @@ namespace Ferric.Math.Linear
                 }
 
                 if (System.Math.Abs(result[j, j]) < 1.0e-20)
-                    throw new Exception("Unable to decompose a decomposable matrix");
+                    throw new Exception("Unable to decompose a non-decomposable matrix");
 
                 for (int i = j + 1; i < n; ++i)
                 {
@@ -472,65 +456,30 @@ namespace Ferric.Math.Linear
             return result;
         }
 
-        static void DecomposeAuxDouble(int n, DenseMatrix<double> result, int[] perm, ref int toggle)
-        {
-            for (int j = 0; j < n - 1; ++j)
-            {
-                double max = System.Math.Abs(result[j, j]);
-                int maxRow = j;
-                for (int i = j + 1; i < n; ++i)
-                {
-                    if (result[i, j] > max)
-                    {
-                        max = result[i, j];
-                        maxRow = i;
-                    }
-                }
-
-                if (maxRow != j)
-                {
-                    for (int k = 0; k < n; ++k)
-                    {
-                        var temp = result[maxRow, k];
-                        result[maxRow, k] = result[j, k];
-                        result[j, k] = temp;
-                    }
-
-                    var ptmp = perm[maxRow];
-                    perm[maxRow] = perm[j];
-                    perm[j] = ptmp;
-
-                    toggle = -toggle;
-                }
-
-                if (System.Math.Abs(result[j, j]) < 1.0e-20)
-                    throw new Exception("Unable to decompose a decomposable matrix");
-
-                for (int i = j + 1; i < n; ++i)
-                {
-                    result[i, j] /= result[j, j];
-                    for (int k = j + 1; k < n; ++k)
-                    {
-                        result[i, k] -= result[i, j] * result[j, k];
-                    }
-                }
-            }
-        }
-
-        static T[] HelperSolve(Matrix<T> m, T[] b)
+        static double[] HelperSolve(Matrix<double> m, double[] b)
         {
             int n = m.Rows;
-            var x = new T[b.Length];
+            var x = new double[b.Length];
             b.CopyTo(x, 0);
 
             for (int i = 1; i < n; ++i)
             {
-                T sum = x[i];
+                double sum = x[i];
                 for (int j = 0; j < i; ++j)
-                {
-
-                }
+                    sum -= m[i, j] * x[j];
+                x[i] = sum;
             }
+
+            x[n - 1] /= m[n - 1, n - 1];
+            for (int i = n - 2; i >= 0; --i)
+            {
+                double sum = x[i];
+                for (int j = i + 1; j < n; ++j)
+                    sum -= m[i, j] * x[j];
+                x[i] = sum / m[i, i];
+            }
+
+            return x;
         }
 
         #endregion
