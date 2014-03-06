@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C7BFF387-EC7F-45AB-9BD7-DB598B8AA4DD}</ProjectGuid>
+    <ProjectGuid>{7079B911-C6AD-48CF-9552-8F3975555D28}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ferric.Lang.English.Tests</RootNamespace>
-    <AssemblyName>Ferric.Lang.English.Tests</AssemblyName>
+    <RootNamespace>Ferric.Text.Tests</RootNamespace>
+    <AssemblyName>Ferric.Text.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -50,16 +50,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="TokenizerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Text\Text.csproj">
+    <ProjectReference Include="..\Text\Text.csproj">
       <Project>{42521ddd-9e6b-458f-87cf-df5a292bc17d}</Project>
       <Name>Text</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\English\Lang.English.csproj">
-      <Project>{29430e95-0ea0-4859-a864-a93f00a73900}</Project>
-      <Name>Lang.English</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
