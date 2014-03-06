@@ -54,7 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Linear\Math.Common.csproj">
+    <ProjectReference Include="..\Common\Math.Common.csproj">
       <Project>{e1a05c02-6c09-45eb-90ff-1416819201e5}</Project>
       <Name>Math.Common</Name>
     </ProjectReference>

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ferric.Math.Common;
 
-namespace Ferric.Math.Stats
+namespace Ferric.Math.MachineLearning
 {
     public interface Classifier<TInput, TOutput> : ISerializable
     {

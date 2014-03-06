@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferric.Math.Stats
+namespace Ferric.Math.MachineLearning
 {
     public static class Basic
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{622DF0D6-5A3E-47D3-877A-DCA7DFCD6490}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ferric.Math.Stats</RootNamespace>
-    <AssemblyName>Ferric.Math.Stats</AssemblyName>
+    <RootNamespace>Ferric.Math.MachineLearning</RootNamespace>
+    <AssemblyName>Ferric.Math.MachineLearning</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -45,7 +45,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Linear\Math.Common.csproj">
+    <ProjectReference Include="..\Common\Math.Common.csproj">
       <Project>{e1a05c02-6c09-45eb-90ff-1416819201e5}</Project>
       <Name>Math.Common</Name>
     </ProjectReference>

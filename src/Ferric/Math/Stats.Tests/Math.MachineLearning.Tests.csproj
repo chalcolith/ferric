@@ -6,8 +6,8 @@
     <ProjectGuid>{5B0F32EE-9FE1-4694-93CC-15611493D661}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ferric.Math.Stats.Test</RootNamespace>
-    <AssemblyName>Ferric.Math.Stats.Test</AssemblyName>
+    <RootNamespace>Ferric.Math.MachineLearning.Test</RootNamespace>
+    <AssemblyName>Ferric.Math.MachineLearning.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -54,13 +54,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Linear\Math.Common.csproj">
+    <ProjectReference Include="..\Common\Math.Common.csproj">
       <Project>{e1a05c02-6c09-45eb-90ff-1416819201e5}</Project>
       <Name>Math.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Stats\Math.Stats.csproj">
+    <ProjectReference Include="..\Stats\Math.MachineLearning.csproj">
       <Project>{622df0d6-5a3e-47d3-877a-dca7dfcd6490}</Project>
-      <Name>Math.Stats</Name>
+      <Name>Math.MachineLearning</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

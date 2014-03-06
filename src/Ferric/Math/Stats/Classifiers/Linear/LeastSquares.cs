@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ferric.Math.Common;
 
-namespace Ferric.Math.Stats.Classifiers.Linear
+namespace Ferric.Math.MachineLearning.Classifiers.Linear
 {
     /// <summary>
     /// The implementation of this classifier assumes that the basis is built into 
