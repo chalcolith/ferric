@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Ferric.Math.Linear;
+using Ferric.Math.Common;
 using Ferric.Math.Stats.Classifiers.Linear;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

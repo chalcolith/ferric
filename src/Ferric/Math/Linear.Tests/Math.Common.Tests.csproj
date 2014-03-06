@@ -6,8 +6,8 @@
     <ProjectGuid>{5D76DAD3-5D36-4BCF-845D-517E55E64E82}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ferric.Math.Linear.Tests</RootNamespace>
-    <AssemblyName>Ferric.Math.Linear.Tests</AssemblyName>
+    <RootNamespace>Ferric.Math.Common.Tests</RootNamespace>
+    <AssemblyName>Ferric.Math.Common.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -54,9 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Linear\Math.Linear.csproj">
+    <ProjectReference Include="..\Linear\Math.Common.csproj">
       <Project>{e1a05c02-6c09-45eb-90ff-1416819201e5}</Project>
-      <Name>Math.Linear</Name>
+      <Name>Math.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Ferric.Math.Linear.Tests
+namespace Ferric.Math.Common.Tests
 {
     [TestClass]
     public class DenseMatrixTests

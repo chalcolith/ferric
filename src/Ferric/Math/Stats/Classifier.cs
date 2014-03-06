@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using Ferric.Math.Linear;
+using Ferric.Math.Common;
 
 namespace Ferric.Math.Stats
 {

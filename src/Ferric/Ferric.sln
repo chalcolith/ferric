@@ -24,9 +24,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lang.English.Tests", "Lang\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Math.Stats", "Math\Stats\Math.Stats.csproj", "{622DF0D6-5A3E-47D3-877A-DCA7DFCD6490}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Math.Linear", "Math\Linear\Math.Linear.csproj", "{E1A05C02-6C09-45EB-90FF-1416819201E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Math.Common", "Math\Linear\Math.Common.csproj", "{E1A05C02-6C09-45EB-90FF-1416819201E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Math.Linear.Tests", "Math\Linear.Tests\Math.Linear.Tests.csproj", "{5D76DAD3-5D36-4BCF-845D-517E55E64E82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Math.Common.Tests", "Math\Linear.Tests\Math.Common.Tests.csproj", "{5D76DAD3-5D36-4BCF-845D-517E55E64E82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Math.Stats.Tests", "Math\Stats.Tests\Math.Stats.Tests.csproj", "{5B0F32EE-9FE1-4694-93CC-15611493D661}"
 EndProject

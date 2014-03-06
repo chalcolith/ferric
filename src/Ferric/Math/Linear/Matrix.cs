@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferric.Math.Linear
+namespace Ferric.Math.Common
 {
     public abstract class Matrix<T>
     {

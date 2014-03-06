@@ -7,8 +7,8 @@
     <ProjectGuid>{E1A05C02-6C09-45EB-90FF-1416819201E5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ferric.Math.Linear</RootNamespace>
-    <AssemblyName>Ferric.Math.Linear</AssemblyName>
+    <RootNamespace>Ferric.Math.Common</RootNamespace>
+    <AssemblyName>Ferric.Math.Common</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

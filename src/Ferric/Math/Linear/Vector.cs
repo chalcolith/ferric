@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferric.Math.Linear
+namespace Ferric.Math.Common
 {
     public class Vector<T> : DenseMatrix<T>, IEnumerable<T>
     {
