@@ -16,7 +16,7 @@ namespace Ferric.Text.Tokenizer
         Other
     }
 
-    public class UnicodeTokenSpan : Ferric.Text.Tokenizer.TokenSpan
+    public class UnicodeTokenSpan : TokenSpan
     {
         public UnicodeTokenClass TokenClass { get; internal set; }
 
@@ -28,6 +28,11 @@ namespace Ferric.Text.Tokenizer
             this.CharPos = charPos;
             this.CharNext = charNext;
             this.Ordinal = ordinal;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{{ {0}:{1} {2}-{3} {4} \"{5}\" }}", this.GetType().Name, Ordinal, CharPos, CharNext, TokenClass, System.Text.RegularExpressions.Regex.Escape(Text));
         }
     }
 
@@ -55,8 +60,8 @@ namespace Ferric.Text.Tokenizer
             new UnicodeTokenRegexp(@"[\p{Nd}\p{Nl}\p{No}]+", UnicodeTokenClass.Number),
             new UnicodeTokenRegexp(@"[\p{Pc}\p{Pd}\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]", UnicodeTokenClass.Punct),
             new UnicodeTokenRegexp(@"[\p{Sm}\p{Sc}\p{Sk}\p{So}]", UnicodeTokenClass.Symbol),
-            new UnicodeTokenRegexp(@"[\p{Zs}\p{Zl}\p{Zp}]+", UnicodeTokenClass.Space),
-            new UnicodeTokenRegexp(@"[\p{Cc}\p{Cf}\p{Cs}\p{Co}\p{Cn}]", UnicodeTokenClass.Other)
+            new UnicodeTokenRegexp(@"[\p{Zs}\p{Zl}\p{Zp}\p{Cc}]+", UnicodeTokenClass.Space),
+            new UnicodeTokenRegexp(@"[\p{Cf}\p{Cs}\p{Co}\p{Cn}]", UnicodeTokenClass.Other)
         };
 
         public UnicodeRegexpTokenizer()

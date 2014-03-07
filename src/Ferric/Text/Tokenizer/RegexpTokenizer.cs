@@ -9,7 +9,7 @@ using Ferric.Utils.Regexp;
 
 namespace Ferric.Text.Tokenizer
 {
-    public abstract class RegexpTokenizer : ITransducer<char, ISpan>
+    public abstract class RegexpTokenizer : BaseTransducer<char, ISpan>
     {
         readonly IList<TokenRegexp> tokenRegexps;
 
@@ -20,7 +20,7 @@ namespace Ferric.Text.Tokenizer
 
         #region ITransducer<char,ISpan> Members
 
-        public IEnumerable<ISpan> Process(IEnumerable<char> input)
+        public override IEnumerable<ISpan> Process(IEnumerable<char> input)
         {
             Reset();
 
@@ -122,29 +122,13 @@ namespace Ferric.Text.Tokenizer
         public abstract TokenSpan OnReadToken(string text, ulong charPos, ulong charNext, ulong ordinal);
     }
 
-    public abstract class TokenSpan : ISpan
+    public abstract class TokenSpan : BaseSpan
     {
-        static readonly IList<ISpan> EmptyChildren = new List<ISpan>();
-        IList<IAnnotation> annotations = null;
-
         public string Text { get; protected set; }
 
-        #region ISpan Members
-
-        public ulong CharPos { get; protected set; }
-        public ulong CharNext { get; protected set; }
-        public ulong Ordinal { get; protected set; }
-
-        public IList<IAnnotation> Annotations
+        public override string ToString()
         {
-            get { return annotations ?? (annotations = new List<IAnnotation>()); }
+            return string.Format("{{ {0}:{1} {2}-{3} \"{4}\"}}", this.GetType().Name, Ordinal, CharPos, CharNext, System.Text.RegularExpressions.Regex.Escape(Text));
         }
-
-        public IList<ISpan> Children
-        {
-            get { return EmptyChildren; }
-        }
-
-        #endregion
     }
 }

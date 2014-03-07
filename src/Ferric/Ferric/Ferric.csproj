@@ -49,6 +49,28 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lang\English\Lang.English.csproj">
+      <Project>{29430e95-0ea0-4859-a864-a93f00a73900}</Project>
+      <Name>Lang.English</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Math\Common\Math.Common.csproj">
+      <Project>{e1a05c02-6c09-45eb-90ff-1416819201e5}</Project>
+      <Name>Math.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Math\MachineLearning\Math.MachineLearning.csproj">
+      <Project>{622df0d6-5a3e-47d3-877a-dca7dfcd6490}</Project>
+      <Name>Math.MachineLearning</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Text\Text.csproj">
+      <Project>{42521ddd-9e6b-458f-87cf-df5a292bc17d}</Project>
+      <Name>Text</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utils\Regexp\Utils.Regexp.csproj">
+      <Project>{8b2269bb-541e-4d30-9101-ffa175c119d0}</Project>
+      <Name>Utils.Regexp</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
