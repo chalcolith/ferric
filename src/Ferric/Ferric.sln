@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Math.MachineLearning.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text.Tests", "Text.Tests\Text.Tests.csproj", "{7079B911-C6AD-48CF-9552-8F3975555D28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Config", "Config\Config.csproj", "{7C36B0C0-BDB7-4A0E-A4F6-3075EC6E3DB9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,10 @@ Global
 		{7079B911-C6AD-48CF-9552-8F3975555D28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7079B911-C6AD-48CF-9552-8F3975555D28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7079B911-C6AD-48CF-9552-8F3975555D28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C36B0C0-BDB7-4A0E-A4F6-3075EC6E3DB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C36B0C0-BDB7-4A0E-A4F6-3075EC6E3DB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C36B0C0-BDB7-4A0E-A4F6-3075EC6E3DB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C36B0C0-BDB7-4A0E-A4F6-3075EC6E3DB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

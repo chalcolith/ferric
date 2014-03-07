@@ -38,6 +38,9 @@ namespace Ferric.Text
 
         protected IEnumerable<TSubOut> SubProcess<TSubIn, TSubOut>(IEnumerable<TSubIn> inputs)
         {
+            if (!SubPathIsValid(typeof(char), typeof(ISpan)))
+                throw new Exception("Sub path types are not correct");
+
             object lastEnumerable = inputs;
             foreach (var sub in SubTransducers)
             {
@@ -59,6 +62,14 @@ namespace Ferric.Text
                 curType = sub.OutputType;
             }
             return subOutputType.IsAssignableFrom(curType);
+        }
+    }
+
+    public class ContainerTransducer<TIn, TOut> : BaseTransducer<TIn, TOut>
+    {
+        public override IEnumerable<TOut> Process(IEnumerable<TIn> inputs)
+        {
+            return SubProcess<TIn, TOut>(inputs);
         }
     }
 }

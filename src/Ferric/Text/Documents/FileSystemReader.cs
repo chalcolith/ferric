@@ -18,9 +18,6 @@ namespace Ferric.Text.Documents
 
         public override IEnumerable<IDocument> Process(IEnumerable<string> paths)
         {
-            if (!SubPathIsValid(typeof(char), typeof(ISpan)))
-                throw new Exception("Sub path types are not correct");
-
             ulong ordinal = 0;
             foreach (var path in paths)
             {
