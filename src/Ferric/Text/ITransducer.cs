@@ -13,7 +13,7 @@ namespace Ferric.Text
         Type InputType { get; }
         Type OutputType { get; }
 
-        IEnumerable<ITransducer> SubTransducers { get; }
+        IEnumerable<ITransducer> SubTransducers { get; set; }
     }
 
     public interface ITransducer<TIn, TOut> : ITransducer
