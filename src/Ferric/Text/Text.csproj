@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseTransducer.cs" />
     <Compile Include="Documents\FileSystemDocument.cs" />
     <Compile Include="Documents\FileSystemReader.cs" />
     <Compile Include="Documents\IDocument.cs" />

@@ -13,22 +13,27 @@ namespace Ferric.Config
 {
     public static class Pipeline
     {
-        public static ITransducer Load(string path)
+        public static ITransducer<TIn, TOut> Load<TIn, TOut>(string path)
         {
             using (var tr = new StreamReader(path))
-                return Load(tr);
+                return Load<TIn, TOut>(tr);
         }
 
-        public static ITransducer Load(TextReader tr)
+        public static ITransducer<TIn, TOut> Load<TIn, TOut>(TextReader tr)
         {
             using (var xr = XmlReader.Create(tr))
-                return Load(xr);
+                return Load<TIn, TOut>(xr);
         }
 
-        public static ITransducer Load(XmlReader xr)
+        public static ITransducer<TIn, TOut> Load<TIn, TOut>(XmlReader xr)
         {
-            var elem = XElement.Load(xr);            
-            return Create(elem, new CreateContext());
+            var elem = XElement.Load(xr);
+            return Load<TIn, TOut>(elem);
+        }
+
+        public static ITransducer<TIn, TOut> Load<TIn, TOut>(XElement elem)
+        {
+            return Create<TIn, TOut>(elem, null, new CreateContext());
         }
 
         class CreateContext
@@ -41,46 +46,84 @@ namespace Ferric.Config
             }
         }
 
-        static ITransducer Create(XElement elem, CreateContext context)
+        static ITransducer<TIn, TOut> Create<TIn, TOut>(XElement elem, ITransducer parent, CreateContext context)
         {
             // find type
             var typeName = elem.Name.LocalName;
             var type = GetLoadedType(typeName, context);
             if (type == null)
-                throw new Exception(string.Format("Unknown transducer type {0}", typeName));
+                throw new Exception(string.Format("Unable to find a transducer of type {0}.", typeName));
 
             // get parameters
             var atts = elem.Attributes()
                 .ToDictionary(att => att.Name.LocalName, att => att.Value);
 
             // find an appropriate constructor
-            ITransducer transducer = null;
+            ITransducer<TIn, TOut> transducer = null;
 
             var ctors = type.GetConstructors(BindingFlags.Public);
-            IList<string> errors = new List<string>();
-            foreach (var ctor in ctors)
+            if (ctors.Length == 0)
             {
-                var formalParms = ctor.GetParameters();
-                var actualParms = new List<object>();
-                foreach (var formalParm in formalParms)
+                if (atts.Count > 0)
+                    throw new Exception(string.Format("Unable to find a constructor for type {0} with parameters {1}.", typeName, string.Join(", ", atts.Keys)));
+
+                transducer = (ITransducer<TIn, TOut>)Activator.CreateInstance(type);
+            }
+            else
+            {
+                foreach (var ctor in ctors)
                 {
+                    // check if we have all the right names
+                    var formalParms = ctor.GetParameters();
+                    if (formalParms.Any(p => !atts.ContainsKey(p.Name)))
+                        continue;
+
+                    // assemble the actual parameters
+                    var actualParms = formalParms.Select(formalParm =>
+                        {
+                            var actualStr = atts[formalParm.Name];
+
+                            try
+                            {
+                                object actualObj = Convert.ChangeType(actualStr, formalParm.ParameterType);
+                                if (actualObj == null)
+                                    throw new Exception("Value is empty");
+                                return actualObj;
+                            }
+                            catch (Exception e)
+                            {
+                                throw new Exception(string.Format("Unable to convert value '{0}' for paramter {2} to {3}: {4}",
+                                    actualStr, formalParm.Name, formalParm.ParameterType.FullName, e.Message));
+                            }
+                        }).ToArray();
+
+                    // call the constructor
+                    transducer = (ITransducer<TIn, TOut>)ctor.Invoke(actualParms);
                 }
             }
 
             // handle failure to launch
             if (transducer == null)
             {
-                errors = errors.Distinct().ToList();
-                if (errors.Any())
-                    throw new Exception(string.Format("Unable to find an appropriate constructor for type {0}:\n{1}", type.FullName, string.Join("\n", errors)));
-                else
-                    throw new Exception(string.Format("Unable to find an appropriate constructor for type {0}", type.FullName));
+                var sb = new StringBuilder();
+                sb.AppendFormat("Unable to find a constructor for type {0} with parameters {1}.", typeName,
+                    string.Join(", ", atts.Keys));
+                sb.AppendLine();
+                sb.AppendLine("Available constructors are:");
+                foreach (var ctor in ctors)
+                {
+                    var parms = ctor.GetParameters().Select(p => string.Format("{0} {1}", p.ParameterType, p.Name));
+                    sb.AppendFormat("  {0}({1})", typeName, string.Join(", ", parms));
+                    sb.AppendLine();
+                }
+                throw new Exception(sb.ToString());
             }
 
             // now get children
             transducer.SubTransducers = elem.Elements()
-                .Select(child => Create(child, context))
-                .Where(sub => sub != null);
+                .Select(child => Create<TIn, TOut>(child, transducer, context))
+                .Where(sub => sub != null)
+                .ToList();
 
             return transducer;
         }
@@ -94,7 +137,7 @@ namespace Ferric.Config
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 var foundType = assembly.GetType(name);
-                if (foundType != null && foundType.IsAssignableFrom(typeof(ITransducer)))
+                if (foundType != null && typeof(ITransducer).IsAssignableFrom(foundType))
                     return foundType;
             }
 
