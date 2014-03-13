@@ -13,40 +13,30 @@ namespace Ferric.Config
 {
     public static class Pipeline
     {
-        public static ITransducer<TIn, TOut> Load<TIn, TOut>(string path)
+        public static ITransducer Load(string path)
         {
             using (var tr = new StreamReader(path))
-                return Load<TIn, TOut>(tr);
+                return Load(tr);
         }
 
-        public static ITransducer<TIn, TOut> Load<TIn, TOut>(TextReader tr)
+        public static ITransducer Load(TextReader tr)
         {
             using (var xr = XmlReader.Create(tr))
-                return Load<TIn, TOut>(xr);
+                return Load(xr);
         }
 
-        public static ITransducer<TIn, TOut> Load<TIn, TOut>(XmlReader xr)
+        public static ITransducer Load(XmlReader xr)
         {
             var elem = XElement.Load(xr);
-            return Load<TIn, TOut>(elem);
+            return Load(elem);
         }
 
-        public static ITransducer<TIn, TOut> Load<TIn, TOut>(XElement elem)
+        public static ITransducer Load(XElement elem)
         {
-            return Create<TIn, TOut>(elem, null, new CreateContext());
+            return CreateFromXml(elem, null, new CreateContext());
         }
 
-        class CreateContext
-        {
-            public IDictionary<string, Type> TypeCache { get; set; }
-
-            public CreateContext()
-            {
-                TypeCache = new Dictionary<string, Type>();
-            }
-        }
-
-        static ITransducer<TIn, TOut> Create<TIn, TOut>(XElement elem, ITransducer parent, CreateContext context)
+        static ITransducer CreateFromXml(XElement elem, ITransducer parent, CreateContext context)
         {
             // find type
             var typeName = elem.Name.LocalName;
@@ -54,12 +44,15 @@ namespace Ferric.Config
             if (type == null)
                 throw new Exception(string.Format("Unable to find a transducer of type {0}.", typeName));
 
+            if (type.IsGenericType)
+                throw new Exception(string.Format("You cannot create an instance of a generic transducer from a config file."));
+
             // get parameters
             var atts = elem.Attributes()
                 .ToDictionary(att => att.Name.LocalName, att => att.Value);
 
             // find an appropriate constructor
-            ITransducer<TIn, TOut> transducer = null;
+            ITransducer transducer = null;
 
             var ctors = type.GetConstructors(BindingFlags.Public);
             if (ctors.Length == 0)
@@ -67,7 +60,7 @@ namespace Ferric.Config
                 if (atts.Count > 0)
                     throw new Exception(string.Format("Unable to find a constructor for type {0} with parameters {1}.", typeName, string.Join(", ", atts.Keys)));
 
-                transducer = (ITransducer<TIn, TOut>)Activator.CreateInstance(type);
+                transducer = (ITransducer)Activator.CreateInstance(type);
             }
             else
             {
@@ -98,7 +91,7 @@ namespace Ferric.Config
                         }).ToArray();
 
                     // call the constructor
-                    transducer = (ITransducer<TIn, TOut>)ctor.Invoke(actualParms);
+                    transducer = (ITransducer)ctor.Invoke(actualParms);
                 }
             }
 
@@ -121,11 +114,21 @@ namespace Ferric.Config
 
             // now get children
             transducer.SubTransducers = elem.Elements()
-                .Select(child => Create<TIn, TOut>(child, transducer, context))
+                .Select(child => CreateFromXml(child, transducer, context))
                 .Where(sub => sub != null)
                 .ToList();
 
             return transducer;
+        }
+
+        class CreateContext
+        {
+            public IDictionary<string, Type> TypeCache { get; set; }
+
+            public CreateContext()
+            {
+                TypeCache = new Dictionary<string, Type>();
+            }
         }
 
         static Type GetLoadedType(string name, CreateContext context)

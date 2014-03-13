@@ -24,11 +24,11 @@ namespace Ferric
 
             try
             {
-                var transducer = Pipeline.Load<string, object>(options.ConfigFilePath);
-                if (!transducer.InputType.IsAssignableFrom(typeof(IEnumerable<string>)))
+                var transducer = Pipeline.Load(options.ConfigFilePath);
+                if (!transducer.InputType.IsAssignableFrom(typeof(string)))
                     throw new Exception("The top-level transducer must take strings for its input.");
 
-                transducer.Process(options.Arguments);
+                var results = transducer.Process(options.Arguments);
             }
             catch (Exception e)
             {

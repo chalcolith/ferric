@@ -14,6 +14,7 @@ namespace Ferric.Text
         Type OutputType { get; }
 
         IEnumerable<ITransducer> SubTransducers { get; set; }
+        
         IEnumerable Process(IEnumerable inputs);
     }
 

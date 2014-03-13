@@ -11,6 +11,11 @@ namespace Ferric.Text.Documents
     {
         public static IEnumerable<char> ReadChars(this StreamReader sr)
         {
+            return ReadCharsAux(sr).AsEnumerable<char>();
+        }
+
+        static IEnumerable<char> ReadCharsAux(StreamReader sr)
+        {
             int ch;
             while ((ch = sr.Read()) != -1)
             {

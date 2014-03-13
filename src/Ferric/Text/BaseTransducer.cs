@@ -23,47 +23,46 @@ namespace Ferric.Text
 
         public IEnumerable Process(IEnumerable inputs)
         {
-            return Process((IEnumerable<TIn>)inputs);
+            return Process((IEnumerable<TIn>)inputs).ToList();
         }
 
         public abstract IEnumerable<TOut> Process(IEnumerable<TIn> inputs);
 
-        protected IEnumerable<TSubOut> SubProcess<TSubIn, TSubOut>(IEnumerable<TSubIn> inputs)
+        protected IEnumerable SubProcess<TSubIn>(IEnumerable<TSubIn> inputs)
         {
-            return (IEnumerable<TSubOut>)SubProcess(inputs as IEnumerable);
-        }
+            Type lastOutputType = typeof(TSubIn);
 
-        protected IEnumerable SubProcess(IEnumerable inputs)
-        {
-            object lastEnumerable = inputs;
+            IEnumerable lastEnumerable = inputs;
             foreach (var sub in SubTransducers)
             {
-                var process = sub.GetType().GetMethod("Process", BindingFlags.Public | BindingFlags.Instance);
+                if (!sub.InputType.IsAssignableFrom(lastOutputType))
+                    throw new Exception(string.Format("Type {0} expects inputs of {1}, not {2}.", sub.GetType().Name, sub.InputType.Name, lastOutputType.Name));
+
+                MethodInfo process = null;
+                var methods = sub.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public);
+                foreach (var method in methods)
+                {
+                    if (method.Name != "Process")
+                        continue;
+
+                    var parms = method.GetParameters();
+                    if (parms.Length == 1
+                        && typeof(IEnumerable).IsAssignableFrom(parms[0].ParameterType)
+                        && parms[0].ParameterType.IsGenericType
+                        && parms[0].ParameterType.GetGenericArguments()[0].IsAssignableFrom(lastOutputType))
+                    {
+                        process = method;
+                        break;
+                    }
+                }
+
                 if (process == null)
-                    throw new Exception("Could not find a Process method for type " + sub.GetType().FullName);
-                lastEnumerable = process.Invoke(sub, new object[] { lastEnumerable });
+                    throw new Exception(string.Format("Could not find a Process method for {0}.", sub.GetType().Name));
+                lastOutputType = sub.OutputType;
+                lastEnumerable = (IEnumerable) process.Invoke(sub, new object[] { lastEnumerable });
             }
-            return (IEnumerable)lastEnumerable;
-        }
 
-        protected bool SubPathIsValid(Type subInputType, Type subOutputType)
-        {
-            var curType = subInputType;
-            foreach (var sub in SubTransducers)
-            {
-                if (!sub.InputType.IsAssignableFrom(curType))
-                    return false;
-                curType = sub.OutputType;
-            }
-            return subOutputType.IsAssignableFrom(curType);
-        }
-    }
-
-    public class ContainerTransducer<TIn, TOut> : BaseTransducer<TIn, TOut>
-    {
-        public override IEnumerable<TOut> Process(IEnumerable<TIn> inputs)
-        {
-            return SubProcess<TIn, TOut>(inputs);
+            return lastEnumerable;
         }
     }
 

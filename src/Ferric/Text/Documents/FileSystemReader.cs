@@ -24,7 +24,7 @@ namespace Ferric.Text.Documents
                 var absPath = Path.GetFullPath(path);
                 using (var sr = new StreamReader(absPath, encoding))
                 {
-                    var spans = SubProcess<char, ISpan>(sr.ReadChars());
+                    var spans = SubProcess(sr.ReadChars()).OfType<ISpan>();
                     var doc = new FileSystemDocument
                     {
                         FileName = absPath,
