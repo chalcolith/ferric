@@ -40,8 +40,10 @@ namespace Ferric.Text.Tokenizer
 
         public override string ToString()
         {
-            return string.Format("{{ {0}:{1} {2}-{3} {4} \"{5}\" }}", 
-                this.GetType().Name, Ordinal, CharPos, CharNext, TokenClass, System.Text.RegularExpressions.Regex.Escape(Text));
+            return string.Format("{{ {0}:{1} {2}-{3} {4} \"{5}\":{6} }}", 
+                this.GetType().Name, Ordinal, CharPos, CharNext, TokenClass, 
+                System.Text.RegularExpressions.Regex.Escape(Text),
+                System.Text.RegularExpressions.Regex.Escape(Lemma));
         }
     }
 }

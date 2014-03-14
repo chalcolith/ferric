@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Ferric.Config;
@@ -24,10 +26,26 @@ namespace Ferric
 
             try
             {
+                // load all dlls in the exe directory
+                var dllDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                foreach (var entry in Directory.EnumerateFiles(dllDir, "*.dll"))
+                {
+                    try
+                    {
+                        Assembly.LoadFile(entry);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error loading {0}: {1}.", entry, e.Message);
+                    }
+                }
+
+                // load transducer
                 var transducer = Pipeline.Load(options.ConfigFilePath);
                 if (!transducer.InputType.IsAssignableFrom(typeof(string)))
                     throw new Exception("The top-level transducer must take strings for its input.");
 
+                // run
                 var results = transducer.Process(options.Arguments);
             }
             catch (Exception e)

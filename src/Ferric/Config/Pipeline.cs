@@ -114,14 +114,10 @@ namespace Ferric.Config
             }
 
             // now get sub transducers
-            var subTransducers = new List<ITransducer>();
-            foreach (var subElem in elem.Elements())
-            {
-                var sub = CreateFromXml(subElem, transducer, context);
-                if (sub != null)
-                    subTransducers.Add(sub);
-            }
-            transducer.SubTransducers = subTransducers;
+            transducer.SubTransducers = elem.Elements()
+                .Select(subElem => CreateFromXml(subElem, transducer, context))
+                .Where(subTransducer => subTransducer != null)
+                .ToList();
 
             return transducer;
         }
