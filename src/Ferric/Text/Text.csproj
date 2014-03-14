@@ -44,11 +44,13 @@
     <Compile Include="Documents\FileSystemReader.cs" />
     <Compile Include="Documents\IDocument.cs" />
     <Compile Include="Documents\IoExtensions.cs" />
+    <Compile Include="Documents\StopwordFilter.cs" />
     <Compile Include="ISpan.cs" />
     <Compile Include="ITransducer.cs" />
     <Compile Include="Tokenizer\TokenizerException.cs" />
     <Compile Include="Tokenizer\RegexpTokenizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tokenizer\TokenSpan.cs" />
     <Compile Include="Tokenizer\UnicodeRegexpTokenizer.cs" />
   </ItemGroup>
   <ItemGroup>

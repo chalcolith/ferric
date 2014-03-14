@@ -54,11 +54,11 @@ namespace Ferric.Config
             // find an appropriate constructor
             ITransducer transducer = null;
 
-            var ctors = type.GetConstructors(BindingFlags.Public);
+            var ctors = type.GetConstructors();
             if (ctors.Length == 0)
             {
                 if (atts.Count > 0)
-                    throw new Exception(string.Format("Unable to find a constructor for type {0} with parameters {1}.", typeName, string.Join(", ", atts.Keys)));
+                    throw new Exception(string.Format("Unable to find a constructor for type {0} with parameters ({1}).", typeName, string.Join(", ", atts.Keys)));
 
                 transducer = (ITransducer)Activator.CreateInstance(type);
             }
@@ -92,6 +92,7 @@ namespace Ferric.Config
 
                     // call the constructor
                     transducer = (ITransducer)ctor.Invoke(actualParms);
+                    break;
                 }
             }
 
@@ -112,21 +113,27 @@ namespace Ferric.Config
                 throw new Exception(sb.ToString());
             }
 
-            // now get children
-            transducer.SubTransducers = elem.Elements()
-                .Select(child => CreateFromXml(child, transducer, context))
-                .Where(sub => sub != null)
-                .ToList();
+            // now get sub transducers
+            var subTransducers = new List<ITransducer>();
+            foreach (var subElem in elem.Elements())
+            {
+                var sub = CreateFromXml(subElem, transducer, context);
+                if (sub != null)
+                    subTransducers.Add(sub);
+            }
+            transducer.SubTransducers = subTransducers;
 
             return transducer;
         }
 
         class CreateContext
         {
+            public string ConfigDir { get; set; }
             public IDictionary<string, Type> TypeCache { get; set; }
 
             public CreateContext()
             {
+                ConfigDir = Directory.GetCurrentDirectory();
                 TypeCache = new Dictionary<string, Type>();
             }
         }

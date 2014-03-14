@@ -121,14 +121,4 @@ namespace Ferric.Text.Tokenizer
 
         public abstract TokenSpan OnReadToken(string text, ulong charPos, ulong charNext, ulong ordinal);
     }
-
-    public abstract class TokenSpan : BaseSpan
-    {
-        public string Text { get; protected set; }
-
-        public override string ToString()
-        {
-            return string.Format("{{ {0}:{1} {2}-{3} \"{4}\"}}", this.GetType().Name, Ordinal, CharPos, CharNext, System.Text.RegularExpressions.Regex.Escape(Text));
-        }
-    }
 }

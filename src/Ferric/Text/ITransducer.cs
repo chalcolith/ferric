@@ -18,7 +18,7 @@ namespace Ferric.Text
         IEnumerable Process(IEnumerable inputs);
     }
 
-    public interface ITransducer<TIn, TOut> : ITransducer
+    public interface ITransducer<in TIn, out TOut> : ITransducer
     {
         IEnumerable<TOut> Process(IEnumerable<TIn> inputs);
     }

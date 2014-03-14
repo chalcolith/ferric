@@ -36,7 +36,7 @@ namespace Ferric.Text
             foreach (var sub in SubTransducers)
             {
                 if (!sub.InputType.IsAssignableFrom(lastOutputType))
-                    throw new Exception(string.Format("Type {0} expects inputs of {1}, not {2}.", sub.GetType().Name, sub.InputType.Name, lastOutputType.Name));
+                    throw new Exception(string.Format("Transducer type {0} expects inputs of {1}, not {2}.", sub.GetType().Name, sub.InputType.Name, lastOutputType.Name));
 
                 MethodInfo process = null;
                 var methods = sub.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public);
@@ -57,7 +57,7 @@ namespace Ferric.Text
                 }
 
                 if (process == null)
-                    throw new Exception(string.Format("Could not find a Process method for {0}.", sub.GetType().Name));
+                    throw new Exception(string.Format("Could not find a Process method in transducer type {0}.", sub.GetType().Name));
                 lastOutputType = sub.OutputType;
                 lastEnumerable = (IEnumerable) process.Invoke(sub, new object[] { lastEnumerable });
             }
