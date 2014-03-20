@@ -8,7 +8,7 @@ namespace Ferric.Math.Common.Tests
     public class DenseMatrixTests
     {
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Equality()
+        public void Math_Common_DenseMatrix_Equality()
         {
             var a = new DenseMatrix<int>(new int[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var b = new DenseMatrix<int>(new int[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
@@ -25,7 +25,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Transpose()
+        public void Math_Common_DenseMatrix_Transpose()
         {
             var a = new DenseMatrix<int>(new int[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var b = new DenseMatrix<int>(new int[3, 2] { { 1, 4 }, { 2, 5 }, { 3, 6 } });
@@ -35,7 +35,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_ScalarMult_Int()
+        public void Math_Common_DenseMatrix_ScalarMult_Int()
         {
             var a = new DenseMatrix<int>(new int[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var p = a * 2;
@@ -45,7 +45,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_ScalarMult_Double()
+        public void Math_Common_DenseMatrix_ScalarMult_Double()
         {
             var a = new DenseMatrix<double>(new double[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var p = a * 2.0;
@@ -55,7 +55,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_ScalarMult_Generic()
+        public void Math_Common_DenseMatrix_ScalarMult_Generic()
         {
             var a = new DenseMatrix<decimal>(new decimal[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var p = a * 2.0m;
@@ -66,7 +66,7 @@ namespace Ferric.Math.Common.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void Math_Linear_DenseMatrix_Addition_Dimensions()
+        public void Math_Common_DenseMatrix_Addition_Dimensions()
         {
             var a = new DenseMatrix<int>(new int[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var b = new DenseMatrix<int>(new int[1, 2] { { 1, 2 } });
@@ -74,7 +74,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Addition_Int()
+        public void Math_Common_DenseMatrix_Addition_Int()
         {
             var a = new DenseMatrix<int>(new int[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var b = new DenseMatrix<int>(new int[2, 3] { { 7, 8, 9 }, { 10, 11, 12 } });
@@ -86,7 +86,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Addition_Double()
+        public void Math_Common_DenseMatrix_Addition_Double()
         {
             var a = new DenseMatrix<double>(new double[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var b = new DenseMatrix<double>(new double[2, 3] { { 7, 8, 9 }, { 10, 11, 12 } });
@@ -98,7 +98,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Addition_Generic()
+        public void Math_Common_DenseMatrix_Addition_Generic()
         {
             var a = new DenseMatrix<decimal>(new decimal[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var b = new DenseMatrix<decimal>(new decimal[2, 3] { { 7, 8, 9 }, { 10, 11, 12 } });
@@ -110,7 +110,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Negation_Int()
+        public void Math_Common_DenseMatrix_Negation_Int()
         {
             var a = new DenseMatrix<int>(new int[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var neg = -a;
@@ -120,7 +120,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Negation_Double()
+        public void Math_Common_DenseMatrix_Negation_Double()
         {
             var a = new DenseMatrix<double>(new double[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var neg = -a;
@@ -130,7 +130,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Negation_Generic()
+        public void Math_Common_DenseMatrix_Negation_Generic()
         {
             var a = new DenseMatrix<decimal>(new decimal[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var neg = -a;
@@ -140,7 +140,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Subtraction_Int()
+        public void Math_Common_DenseMatrix_Subtraction_Int()
         {
             var a = new DenseMatrix<int>(new int[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var b = new DenseMatrix<int>(new int[2, 3] { { 6, 5, 4 }, { 3, 2, 1 } });
@@ -151,7 +151,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Subtraction_Double()
+        public void Math_Common_DenseMatrix_Subtraction_Double()
         {
             var a = new DenseMatrix<double>(new double[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var b = new DenseMatrix<double>(new double[2, 3] { { 6, 5, 4 }, { 3, 2, 1 } });
@@ -162,7 +162,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Subtraction_Generic()
+        public void Math_Common_DenseMatrix_Subtraction_Generic()
         {
             var a = new DenseMatrix<decimal>(new decimal[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
             var b = new DenseMatrix<decimal>(new decimal[2, 3] { { 6, 5, 4 }, { 3, 2, 1 } });
@@ -173,7 +173,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Inverse()
+        public void Math_Common_DenseMatrix_Inverse()
         {
             var a = new DenseMatrix<double>(new double[2, 2] { { 4, 3 }, { 3, 2 } });
             var ai = a.Inverse();
@@ -190,7 +190,7 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
-        public void Math_Linear_DenseMatrix_Inverse_Jagged()
+        public void Math_Common_DenseMatrix_Inverse_Jagged()
         {
             var a_data = new List<IEnumerable<double>>
             {

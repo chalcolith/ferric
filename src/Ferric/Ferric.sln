@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils.Regexp", "Utils\Regex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils.Regexp.Tests", "Utils\Regexp.Tests\Utils.Regexp.Tests.csproj", "{C68AE101-9768-4129-A655-FA55C89EDE0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text.Common", "Text\Text.Common.csproj", "{42521DDD-9E6B-458F-87CF-DF5A292BC17D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text.Common", "Text\Common\Text.Common.csproj", "{42521DDD-9E6B-458F-87CF-DF5A292BC17D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lang.English", "Lang\English\Lang.English.csproj", "{29430E95-0EA0-4859-A864-A93F00A73900}"
 EndProject
@@ -30,7 +30,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Math.Common.Tests", "Math\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Math.MachineLearning.Tests", "Math\MachineLearning.Tests\Math.MachineLearning.Tests.csproj", "{5B0F32EE-9FE1-4694-93CC-15611493D661}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text.Common.Tests", "Text.Tests\Text.Common.Tests.csproj", "{7079B911-C6AD-48CF-9552-8F3975555D28}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text.Common.Tests", "Text\Common.Tests\Text.Common.Tests.csproj", "{7079B911-C6AD-48CF-9552-8F3975555D28}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Config", "Config\Config.csproj", "{7C36B0C0-BDB7-4A0E-A4F6-3075EC6E3DB9}"
 EndProject

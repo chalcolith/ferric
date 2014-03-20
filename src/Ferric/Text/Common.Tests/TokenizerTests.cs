@@ -9,7 +9,7 @@ namespace Ferric.Text.Common.Tests
     public class TokenizerTests
     {
         [TestMethod]
-        public void Text_Tokenizer_TestUnicodeRegexpTokenizer()
+        public void Text_Common_Tokenizer_TestUnicodeRegexpTokenizer()
         {
             var input = @"abc123.$ i'll";
             var tokens = new UnicodeRegexpTokenizer().Process(input).OfType<TokenSpan>().ToArray();

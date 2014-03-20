@@ -54,7 +54,7 @@
     <Compile Include="Tokenizer\UnicodeRegexpTokenizer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Utils\Regexp\Utils.Regexp.csproj">
+    <ProjectReference Include="..\..\Utils\Regexp\Utils.Regexp.csproj">
       <Project>{8b2269bb-541e-4d30-9101-ffa175c119d0}</Project>
       <Name>Utils.Regexp</Name>
     </ProjectReference>

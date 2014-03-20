@@ -16,7 +16,7 @@ namespace Ferric.Math.MachineLearning.Test.Classifiers.Linear
         }
 
         [TestMethod]
-        public void Math_Stats_Classifiers_Linear_LeastSquares()
+        public void Math_MachineLearning_Classifiers_Linear_LeastSquares()
         {
             const int num = 1000;
 
