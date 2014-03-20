@@ -7,8 +7,8 @@
     <ProjectGuid>{42521DDD-9E6B-458F-87CF-DF5A292BC17D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ferric.Text</RootNamespace>
-    <AssemblyName>Ferric.Text</AssemblyName>
+    <RootNamespace>Ferric.Text.Common</RootNamespace>
+    <AssemblyName>Ferric.Text.Common</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

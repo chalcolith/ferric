@@ -43,9 +43,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Text\Text.csproj">
+    <ProjectReference Include="..\..\Text\Text.Common.csproj">
       <Project>{42521ddd-9e6b-458f-87cf-df5a292bc17d}</Project>
-      <Name>Text</Name>
+      <Name>Text.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utils\Regexp\Utils.Regexp.csproj">
       <Project>{8b2269bb-541e-4d30-9101-ffa175c119d0}</Project>

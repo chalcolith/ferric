@@ -6,9 +6,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Ferric.Config;
-using Ferric.Text;
-using Ferric.Text.Documents;
-using Ferric.Text.Tokenizer;
+using Ferric.Text.Common;
+using Ferric.Text.Common.Documents;
+using Ferric.Text.Common.Tokenizer;
 
 namespace Ferric
 {

@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferric.Text
+namespace Ferric.Text.Common
 {
     public abstract class BaseTransducer<TIn, TOut> : ITransducer<TIn, TOut>
     {

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ferric.Utils.Regexp;
 
-namespace Ferric.Text.Tokenizer
+namespace Ferric.Text.Common.Tokenizer
 {
     public abstract class RegexpTokenizer : BaseTransducer<char, ISpan>
     {

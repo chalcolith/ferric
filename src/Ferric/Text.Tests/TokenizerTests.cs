@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Ferric.Text.Tokenizer;
+using Ferric.Text.Common.Tokenizer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Ferric.Text.Tests
+namespace Ferric.Text.Common.Tests
 {
     [TestClass]
     public class TokenizerTests

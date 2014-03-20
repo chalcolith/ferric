@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Ferric.Text.Tokenizer;
+using Ferric.Text.Common.Tokenizer;
 
-namespace Ferric.Text.Documents
+namespace Ferric.Text.Common.Documents
 {
     public class StopwordFilter : BaseTransducer<ISpan, ISpan>
     {

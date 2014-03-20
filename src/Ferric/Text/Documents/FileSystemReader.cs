@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferric.Text.Documents
+namespace Ferric.Text.Common.Documents
 {
     /// <summary>
     /// Takes as input a list of path names and returns a list of documents.

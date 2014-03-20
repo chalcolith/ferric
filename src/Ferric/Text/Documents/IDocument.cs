@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferric.Text
+namespace Ferric.Text.Common
 {
     public interface IDocument : ISpan
     {

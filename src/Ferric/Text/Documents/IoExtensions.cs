@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferric.Text.Documents
+namespace Ferric.Text.Common.Documents
 {
     internal static class IoExtensions
     {
