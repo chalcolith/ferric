@@ -7,43 +7,30 @@ using System.Threading.Tasks;
 
 namespace Ferric.Math.Common
 {
-    public abstract class Matrix<T>
+    public interface IMatrix<T> : IEnumerable<IEnumerable<T>>
+        where T : struct, IComparable
     {
-        #region Matrix<T> Members
+        int Rows { get; }
+        int Cols { get; }
+        T this[int row, int col] { get; set; }
+    }
 
-        public abstract int Rows { get; }
-        public abstract int Cols { get; }
-        public abstract T this[int row, int col] { get; set; }
-
+    public abstract class Matrix<T> : IMatrix<T>
+        where T : struct, IComparable
+    {
         public abstract Matrix<T> Transpose();
         public abstract Matrix<T> ScalarMultiply(T n, bool inPlace = false);
-        public abstract Matrix<T> Add(Matrix<T> m, bool inPlace = false);
+        public abstract Matrix<T> Add(IMatrix<T> m, bool inPlace = false);
         public abstract Matrix<T> Negate(bool inPlace = false);
-        public abstract Matrix<T> Subtract(Matrix<T> m, bool inPlace = false);
-        public abstract Matrix<T> Multiply(Matrix<T> m);
+        public abstract Matrix<T> Subtract(IMatrix<T> m, bool inPlace = false);
+        public abstract Matrix<T> Multiply(IMatrix<T> m);
         public abstract Matrix<T> Inverse();
 
-        public void CopyRow(int row, Vector<T> v)
-        {
-            if (v.Cols != this.Cols)
-                throw new ArgumentException("Unable to copy a vector row to a matrix with different dimensions");
+        #region IMatrix Members
 
-            for (int i = 0; i < v.Cols; ++i)
-            {
-                this[row, i] = v[i];
-            }
-        }
-
-        public void CopyCol(int col, Vector<T> v)
-        {
-            if (v.Cols != this.Rows)
-                throw new ArgumentException("Unable to copy a vector column to a matrix with different dimensions");
-
-            for (int i = 0; i < v.Cols; ++i)
-            {
-                this[i, col] = v[i];
-            }
-        }
+        public abstract int Rows { get; protected set; }
+        public abstract int Cols { get; protected set; }
+        public abstract T this[int row, int col] { get; set; }
 
         #endregion
 
@@ -51,10 +38,10 @@ namespace Ferric.Math.Common
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as Matrix<T>);
+            return this.Equals(obj as IMatrix<T>);
         }
 
-        public bool Equals(Matrix<T> m)
+        public bool Equals(IMatrix<T> m)
         {
             if (m == null)
                 return false;
@@ -74,7 +61,7 @@ namespace Ferric.Math.Common
             return true;
         }
 
-        public bool Equals(Matrix<double> m, double epsilon)
+        public bool Equals(IMatrix<double> m, double epsilon)
         {
             if (m == null)
                 return false;
@@ -83,7 +70,7 @@ namespace Ferric.Math.Common
             if (this.Cols != m.Cols)
                 return false;
 
-            var a = this as Matrix<double>;
+            var a = this as IMatrix<double>;
             if (a == null)
                 throw new ArgumentException("Unable to compare double and non-double matrices");
 
@@ -151,7 +138,7 @@ namespace Ferric.Math.Common
             return a.ScalarMultiply(n, inPlace: false);
         }
 
-        public static Matrix<T> operator *(Matrix<T> a, Matrix<T> b)
+        public static Matrix<T> operator *(Matrix<T> a, IMatrix<T> b)
         {
             return a.Multiply(b);
         }
@@ -161,7 +148,7 @@ namespace Ferric.Math.Common
             return a;
         }
 
-        public static Matrix<T> operator +(Matrix<T> a, Matrix<T> b)
+        public static Matrix<T> operator +(Matrix<T> a, IMatrix<T> b)
         {
             return a.Add(b, inPlace: false);
         }
@@ -171,11 +158,172 @@ namespace Ferric.Math.Common
             return a.Negate(inPlace: false);
         }
 
-        public static Matrix<T> operator -(Matrix<T> a, Matrix<T> b)
+        public static Matrix<T> operator -(Matrix<T> a, IMatrix<T> b)
         {
             return a.Subtract(b, inPlace: false);
         }
 
         #endregion
+
+        #region IEnumerable<IEnumerable<T>> Members
+
+        public IEnumerator<IEnumerable<T>> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        #endregion
+
+        class ColEnumerator : IEnumerator<T>
+        {
+            Matrix<T> matrix;
+            int row, col;
+
+            public ColEnumerator(Matrix<T> m, int row)
+            {
+                this.matrix = m;
+                this.row = row;
+                this.col = -1;
+            }
+
+            public IEnumerable<T> AsEnumerable()
+            {
+                this.Reset();
+                while (this.MoveNext())
+                    yield return this.Current;
+            }
+
+            #region IEnumerator<T> Members
+
+            public T Current
+            {
+                get 
+                {
+                    if (col < 0)
+                        throw new ArgumentOutOfRangeException();
+                    return matrix[row, col];
+                }
+            }
+
+            #endregion
+
+            #region IDisposable Members
+
+            public void Dispose()
+            {
+                matrix = null;
+            }
+
+            #endregion
+
+            #region IEnumerator Members
+
+            object System.Collections.IEnumerator.Current
+            {
+                get 
+                {
+                    return Current;
+                }
+            }
+
+            public bool MoveNext()
+            {
+                if (row++ >= matrix.Rows - 1)
+                    return false;
+                return true;
+            }
+
+            public void Reset()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+        }
+
+        class RowEnumerator : IEnumerator<IEnumerable<T>>
+        {
+            Matrix<T> matrix;
+            int row;
+
+            public RowEnumerator(Matrix<T> m)
+            {
+                this.matrix = m;
+                this.row = -1;
+            }
+
+            #region IEnumerator<IEnumerable<T>> Members
+
+            public IEnumerable<T> Current
+            {
+                get 
+                {
+                    if (row < 0)
+                        throw new ArgumentOutOfRangeException();
+                    return new ColEnumerator(matrix, row).AsEnumerable();
+                }
+            }
+
+            #endregion
+
+            #region IDisposable Members
+
+            public void Dispose()
+            {
+                matrix = null;
+            }
+
+            #endregion
+
+            #region IEnumerator Members
+
+            object System.Collections.IEnumerator.Current
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public bool MoveNext()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Reset()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+        }
+
+        public void CopyRow(int row, IVector<T> v)
+        {
+            if (v.Dimensions != this.Cols)
+                throw new ArgumentException("Unable to copy a vector row to a matrix with different dimensions");
+
+            for (int i = 0; i < v.Dimensions; ++i)
+            {
+                this[row, i] = v[i];
+            }
+        }
+
+        public void CopyCol(int col, IVector<T> v)
+        {
+            if (v.Dimensions != this.Rows)
+                throw new ArgumentException("Unable to copy a vector column to a matrix with different dimensions");
+
+            for (int i = 0; i < v.Dimensions; ++i)
+            {
+                this[i, col] = v[i];
+            }
+        }
     }
 }

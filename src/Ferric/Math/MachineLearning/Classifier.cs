@@ -14,7 +14,6 @@ namespace Ferric.Math.MachineLearning
         void TrainModel(IEnumerable<IEnumerable<TInput>> trainingInputs, IEnumerable<IEnumerable<TOutput>> trainingOutputs);
         double TestModel(IEnumerable<IEnumerable<TInput>> testingInputs, IEnumerable<IEnumerable<TOutput>> testingOutputs, Func<TOutput, TOutput, bool> matches = null);
 
-        Vector<TOutput> Classify(Vector<TInput> input);
-        Vector<TOutput> Classify(IEnumerable<TInput> input);
+        IEnumerable<TOutput> Classify(IEnumerable<TInput> input);
     }
 }

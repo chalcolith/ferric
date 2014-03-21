@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace Ferric.Math.Common
 {
-    public class DenseMatrix<T> : Matrix<T>
+    public class DenseMatrix<T> : Matrix<T>, ISerializable
+        where T : struct, IComparable
     {
         protected IEnumerable<IEnumerable<T>> jaggedData = null;
         protected T[,] squareData = null;
@@ -22,6 +23,10 @@ namespace Ferric.Math.Common
                 else
                     return jaggedData.Count();
             }
+            protected set
+            {
+                throw new ArgumentException("Cannot change the size of a dense matrix.");
+            }
         }
 
         public override int Cols
@@ -32,6 +37,10 @@ namespace Ferric.Math.Common
                     return squareData.GetLength(1);
                 else
                     return jaggedData.First().Count();
+            }
+            protected set
+            {
+                throw new ArgumentException("Cannot change the size of a dense matrix.");
             }
         }
 
@@ -122,7 +131,7 @@ namespace Ferric.Math.Common
             }
         }
 
-        #region BaseMatrix Members
+        #region Matrix<T> Members
 
         public override Matrix<T> Transpose()
         {
@@ -194,7 +203,7 @@ namespace Ferric.Math.Common
             return res;
         }
 
-        public override Matrix<T> Add(Matrix<T> m, bool inPlace = false)
+        public override Matrix<T> Add(IMatrix<T> m, bool inPlace = false)
         {
             DenseMatrix<T> res = this;
             if (!inPlace)
@@ -308,7 +317,7 @@ namespace Ferric.Math.Common
             return res;
         }
 
-        public override Matrix<T> Subtract(Matrix<T> m, bool inPlace = false)
+        public override Matrix<T> Subtract(IMatrix<T> m, bool inPlace = false)
         {
             DenseMatrix<T> res = this;
             if (!inPlace)
@@ -370,7 +379,7 @@ namespace Ferric.Math.Common
             return res;
         }
 
-        public override Matrix<T> Multiply(Matrix<T> m)
+        public override Matrix<T> Multiply(IMatrix<T> m)
         {
             if (this.Cols != m.Rows)
                 throw new ArgumentException("Unable to multiply nonconformable matrices");

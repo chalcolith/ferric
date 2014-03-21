@@ -16,6 +16,7 @@ namespace Ferric.Math.MachineLearning.Classifiers.Linear
     /// <typeparam name="TOutput">The type of the output features of this model.</typeparam>
     [Serializable]
     public class LeastSquares<TInput, TOutput> : Classifier<TInput, TOutput>
+        where TInput : struct
         where TOutput : struct, IConvertible
     {
         Func<TOutput, TInput> toInput;
@@ -86,16 +87,16 @@ namespace Ferric.Math.MachineLearning.Classifiers.Linear
                 return double.NaN;
         }
 
-        public Vector<TOutput> Classify(Vector<TInput> input)
+        public DenseVector<TOutput> Classify(DenseVector<TInput> input)
         {
             var result = input * beta;
             var row = Enumerable.Range(0, result.Cols).Select(i => toOutput(result[0, i]));
-            return new Vector<TOutput>(row, copy: true);
+            return new DenseVector<TOutput>(row, copy: true);
         }
 
-        public Vector<TOutput> Classify(IEnumerable<TInput> input)
+        public IEnumerable<TOutput> Classify(IEnumerable<TInput> input)
         {
-            return Classify(new Vector<TInput>(input));
+            return Classify(new DenseVector<TInput>(input));
         }
 
         #endregion
