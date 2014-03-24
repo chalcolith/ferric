@@ -205,6 +205,9 @@ namespace Ferric.Math.Common
 
         public override Matrix<T> Add(IMatrix<T> m, bool inPlace = false)
         {
+            if (this.Rows != m.Rows || this.Cols != m.Cols)
+                throw new ArgumentException("Unable to add matrices of different dimensions");
+
             DenseMatrix<T> res = this;
             if (!inPlace)
             {
@@ -213,9 +216,6 @@ namespace Ferric.Math.Common
                 else
                     res = new DenseMatrix<T>(this.jaggedData, copy: true);
             }
-
-            if (this.Rows != m.Rows || this.Cols != m.Cols)
-                throw new ArgumentException("Unable to add matrices of different dimensions");
 
             if (typeof(T) == typeof(double))
             {

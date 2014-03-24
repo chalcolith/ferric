@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="DenseMatrixTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SparseMatrixTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Math.Common.csproj">

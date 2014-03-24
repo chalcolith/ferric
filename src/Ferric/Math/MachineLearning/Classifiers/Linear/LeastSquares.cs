@@ -16,8 +16,8 @@ namespace Ferric.Math.MachineLearning.Classifiers.Linear
     /// <typeparam name="TOutput">The type of the output features of this model.</typeparam>
     [Serializable]
     public class LeastSquares<TInput, TOutput> : Classifier<TInput, TOutput>
-        where TInput : struct
-        where TOutput : struct, IConvertible
+        where TInput : struct, IComparable
+        where TOutput : struct, IComparable
     {
         Func<TOutput, TInput> toInput;
         Func<TInput, TOutput> toOutput;

@@ -58,7 +58,7 @@ namespace Ferric.Math.Common
 
         #region IEnumerable<T> Members
 
-        public IEnumerator<T> GetEnumerator()
+        public new IEnumerator<T> GetEnumerator()
         {
             return new VectorEnumerator(this);
         }

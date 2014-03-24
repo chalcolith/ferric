@@ -167,9 +167,9 @@ namespace Ferric.Math.Common
 
         #region IEnumerable<IEnumerable<T>> Members
 
-        public IEnumerator<IEnumerable<T>> GetEnumerator()
+        public virtual IEnumerator<IEnumerable<T>> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return new RowEnumerator(this);
         }
 
         #endregion
@@ -182,6 +182,8 @@ namespace Ferric.Math.Common
         }
 
         #endregion
+
+        #region Enumerator Classes
 
         class ColEnumerator : IEnumerator<T>
         {
@@ -208,8 +210,8 @@ namespace Ferric.Math.Common
             {
                 get 
                 {
-                    if (col < 0)
-                        throw new ArgumentOutOfRangeException();
+                    if (col < 0 || col >= matrix.Cols)
+                        throw new ArgumentOutOfRangeException("Matrix index out of range.");
                     return matrix[row, col];
                 }
             }
@@ -237,14 +239,14 @@ namespace Ferric.Math.Common
 
             public bool MoveNext()
             {
-                if (row++ >= matrix.Rows - 1)
+                if (++col >= matrix.Cols)
                     return false;
                 return true;
             }
 
             public void Reset()
             {
-                throw new NotImplementedException();
+                col = -1;
             }
 
             #endregion
@@ -254,6 +256,7 @@ namespace Ferric.Math.Common
         {
             Matrix<T> matrix;
             int row;
+            IEnumerable<T> cur;
 
             public RowEnumerator(Matrix<T> m)
             {
@@ -267,9 +270,9 @@ namespace Ferric.Math.Common
             {
                 get 
                 {
-                    if (row < 0)
-                        throw new ArgumentOutOfRangeException();
-                    return new ColEnumerator(matrix, row).AsEnumerable();
+                    if (row < 0 || row >= matrix.Rows)
+                        throw new ArgumentOutOfRangeException("Matrix index out of range.");
+                    return cur ?? (cur = new ColEnumerator(matrix, row).AsEnumerable());
                 }
             }
 
@@ -288,21 +291,28 @@ namespace Ferric.Math.Common
 
             object System.Collections.IEnumerator.Current
             {
-                get { throw new NotImplementedException(); }
+                get { return Current; }
             }
 
             public bool MoveNext()
             {
-                throw new NotImplementedException();
+                cur = null;
+                if (++row >= matrix.Rows)
+                    return false;
+                return true;
             }
 
             public void Reset()
             {
-                throw new NotImplementedException();
+                row = -1;
             }
 
             #endregion
         }
+
+        #endregion
+
+        #region Utilities
 
         public void CopyRow(int row, IVector<T> v)
         {
@@ -325,5 +335,7 @@ namespace Ferric.Math.Common
                 this[i, col] = v[i];
             }
         }
+
+        #endregion
     }
 }

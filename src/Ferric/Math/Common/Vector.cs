@@ -25,7 +25,7 @@ namespace Ferric.Math.Common
 
         #region IEnumerable<T> Members
 
-        public abstract IEnumerator<T> GetEnumerator();
+        public abstract new IEnumerator<T> GetEnumerator();
 
         #endregion
 
