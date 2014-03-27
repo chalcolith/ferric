@@ -56,10 +56,10 @@ namespace Ferric.Math.Common.Tests
         [TestMethod]
         public void Math_Common_SparseMatrix_ScalarMult_Generic()
         {
-            var a = new SparseMatrix<decimal>(new decimal[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
+            var a = new SparseMatrix<decimal>(new decimal[2, 3] { { 1, 0, 3 }, { 0, 5, 0 } });
             var p = a * 2.0m;
 
-            var b = new SparseMatrix<decimal>(new decimal[2, 3] { { 2, 4, 6 }, { 8, 10, 12 } });
+            var b = new SparseMatrix<decimal>(new decimal[2, 3] { { 2, 0, 6 }, { 0, 10, 0 } });
             Assert.AreEqual(b, p);
         }
 
@@ -75,12 +75,12 @@ namespace Ferric.Math.Common.Tests
         [TestMethod]
         public void Math_Common_SparseMatrix_Addition_Int()
         {
-            var a = new SparseMatrix<int>(new int[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } });
-            var b = new SparseMatrix<int>(new int[2, 3] { { 7, 8, 9 }, { 10, 11, 12 } });
+            var a = new SparseMatrix<int>(new int[2, 3] { { 1, 0, 3 }, { 4, 0, 6 } });
+            var b = new SparseMatrix<int>(new int[2, 3] { { 0, 0, 9 }, { 0, 0, 12 } });
 
             var sum = a + b;
 
-            var c = new SparseMatrix<int>(new int[2, 3] { { 8, 10, 12 }, { 14, 16, 18 } });
+            var c = new SparseMatrix<int>(new int[2, 3] { { 1, 0, 12 }, { 4, 0, 18 } });
             Assert.AreEqual(c, sum);
         }
 
@@ -169,6 +169,54 @@ namespace Ferric.Math.Common.Tests
 
             var c = new SparseMatrix<decimal>(new decimal[2, 3] { { -5, -3, -1 }, { 1, 3, 5 } });
             Assert.AreEqual(c, diff);
+        }
+
+        [TestMethod]
+        public void Math_Common_SparseMatrix_Multiplication_Double()
+        {
+            var a = new SparseMatrix<double>(new double[4, 2] { { 1, 2 }, { 3, 4 }, { 5, 6 }, { 7, 8 } });
+            var b = new SparseMatrix<double>(new double[2, 3] { { 9, 10, 11 }, { 12, 13, 14 } });
+            var prod = a * b;
+
+            var c = new SparseMatrix<double>(new double[4, 3] {
+                { 33, 36, 39 },
+                { 75, 82, 89 },
+                { 117, 128, 139 },
+                { 159, 174, 189 }
+            });
+            Assert.AreEqual(c, prod);
+        }
+
+        [TestMethod]
+        public void Math_Common_SparseMatrix_Multiplication_Int()
+        {
+            var a = new SparseMatrix<int>(new int[4, 2] { { 1, 2 }, { 3, 4 }, { 5, 6 }, { 7, 8 } });
+            var b = new SparseMatrix<int>(new int[2, 3] { { 9, 10, 11 }, { 12, 13, 14 } });
+            var prod = a * b;
+
+            var c = new SparseMatrix<int>(new int[4, 3] {
+                { 33, 36, 39 },
+                { 75, 82, 89 },
+                { 117, 128, 139 },
+                { 159, 174, 189 }
+            });
+            Assert.AreEqual(c, prod);
+        }
+
+        [TestMethod]
+        public void Math_Common_SparseMatrix_Multiplication_Generic()
+        {
+            var a = new SparseMatrix<decimal>(new decimal[4, 2] { { 1, 2 }, { 3, 4 }, { 5, 6 }, { 7, 8 } });
+            var b = new SparseMatrix<decimal>(new decimal[2, 3] { { 9, 10, 11 }, { 12, 13, 14 } });
+            var prod = a * b;
+
+            var c = new SparseMatrix<decimal>(new decimal[4, 3] {
+                { 33, 36, 39 },
+                { 75, 82, 89 },
+                { 117, 128, 139 },
+                { 159, 174, 189 }
+            });
+            Assert.AreEqual(c, prod);
         }
 
         [TestMethod]

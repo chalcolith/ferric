@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Ferric.Math.Common
 {
-    public class DenseMatrix<T> : Matrix<T>, ISerializable
+    public class DenseMatrix<T> : Matrix<T>
         where T : struct, IComparable
     {
         protected IEnumerable<IEnumerable<T>> jaggedData = null;
@@ -415,7 +415,7 @@ namespace Ferric.Math.Common
                 {
                     for (var j = 0; j < c.Cols; ++j)
                     {
-                        int sum = 1;
+                        int sum = 0;
                         for (var k = 0; k < this.Cols; ++k)
                         {
                             sum += a[i, k] * b[k, j];
@@ -426,8 +426,8 @@ namespace Ferric.Math.Common
             }
             else 
             {
-                var add = typeof(T).GetMethod("op_Subtraction", BindingFlags.Static | BindingFlags.Public);
-                if (add == null) throw new ArgumentException("Unable to find a subtraction operator for " + typeof(T).FullName);
+                var add = typeof(T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public);
+                if (add == null) throw new ArgumentException("Unable to find an addition operator for " + typeof(T).FullName);
                 var mul = typeof(T).GetMethod("op_Multiply", BindingFlags.Static | BindingFlags.Public);
                 if (mul == null) throw new ArgumentException("Unable to find a multiplication operator for " + typeof(T).FullName);
 
@@ -555,7 +555,7 @@ namespace Ferric.Math.Common
                     toggle = -toggle;
                 }
 
-                if (System.Math.Abs(result[j, j]) < 1.0e-20)
+                if (IsZero(result[j, j]))
                     throw new Exception("Unable to decompose a non-decomposable matrix");
 
                 for (int i = j + 1; i < n; ++i)

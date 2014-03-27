@@ -28,7 +28,7 @@ namespace Ferric.Math.MachineLearning.Classifiers.Linear
 
         public LeastSquares(int inputDimensions, int outputDimensions, Func<TOutput, TInput> toInput = null, Func<TInput, TOutput> toOutput = null)
         {
-            this.beta = new DenseMatrix<TInput>(inputDimensions, outputDimensions);
+            this.beta = new SparseMatrix<TInput>(inputDimensions, outputDimensions);
             this.toInput = toInput ?? (o => (TInput)Convert.ChangeType(o, typeof(TInput)));
             this.toOutput = toOutput ?? (i => (TOutput)Convert.ChangeType(i, typeof(TOutput)));
         }
@@ -37,17 +37,17 @@ namespace Ferric.Math.MachineLearning.Classifiers.Linear
 
         public void TrainModel(IEnumerable<IEnumerable<TInput>> trainingInputs, IEnumerable<IEnumerable<TOutput>> trainingOutputs)
         {
-            var X = new DenseMatrix<TInput>(trainingInputs, copy: false);
-            DenseMatrix<TInput> y;
+            var X = new SparseMatrix<TInput>(trainingInputs);
+            SparseMatrix<TInput> y;
 
             if (typeof(TInput) == typeof(TOutput))
             {
-                y = new DenseMatrix<TInput>((IEnumerable<IEnumerable<TInput>>)trainingOutputs, copy: false);
+                y = new SparseMatrix<TInput>((IEnumerable<IEnumerable<TInput>>)trainingOutputs);
             }
             else
             {
                 var temp = trainingOutputs.Select(row => row.Select(item => toInput(item)));
-                y = new DenseMatrix<TInput>(temp, copy: true);
+                y = new SparseMatrix<TInput>(temp);
             }
 
             var Xt = X.Transpose();
@@ -87,7 +87,7 @@ namespace Ferric.Math.MachineLearning.Classifiers.Linear
                 return double.NaN;
         }
 
-        public DenseVector<TOutput> Classify(DenseVector<TInput> input)
+        public IVector<TOutput> Classify(Matrix<TInput> input)
         {
             var result = input * beta;
             var row = Enumerable.Range(0, result.Cols).Select(i => toOutput(result[0, i]));
@@ -96,7 +96,7 @@ namespace Ferric.Math.MachineLearning.Classifiers.Linear
 
         public IEnumerable<TOutput> Classify(IEnumerable<TInput> input)
         {
-            return Classify(new DenseVector<TInput>(input));
+            return Classify((Matrix<TInput>)new SparseVector<TInput>(input));
         }
 
         #endregion

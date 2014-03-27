@@ -11,31 +11,8 @@ namespace Ferric.Math.Common
     {
         T this[int i] { get; set; }
         int Dimensions { get; }
-    }
 
-    public abstract class Vector<T> : Matrix<T>, IVector<T>
-        where T : struct, IComparable
-    {
-        #region IVector<T> Members
-
-        public abstract T this[int i] {get; set;}
-        public abstract int Dimensions {get; }
-
-        #endregion
-
-        #region IEnumerable<T> Members
-
-        public abstract new IEnumerator<T> GetEnumerator();
-
-        #endregion
-
-        #region IEnumerable Members
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        #endregion
+        T AbsSquared();
+        T Abs();
     }
 }

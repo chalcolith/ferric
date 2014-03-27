@@ -38,6 +38,28 @@ namespace Ferric.Math.Common
             }
         }
 
+        public SparseMatrix(IEnumerable<IEnumerable<T>> data)
+        {
+            dok = new Dictionary<Tuple<int, int>, T>();
+
+            int i = 0;
+            foreach (var row in data)
+            {
+                int j = 0;
+                foreach (var val in row)
+                {
+                    if (!IsZero(val))
+                        dok[Tuple.Create(i, j)] = val;
+
+                    j++;
+                }
+
+                this.Cols = j;
+                i++;
+            }
+            this.Rows = i;
+        }
+
         #region Matrix<T> Members
 
         public override int Rows { get; protected set; }
@@ -119,12 +141,12 @@ namespace Ferric.Math.Common
             if (typeof(T) == typeof(double))
             {
                 double nd = Convert.ToDouble(n);
-                ScalarMultiply<double>(this as SparseMatrix<double>, result as SparseMatrix<double>, (double a) => a * nd);
+                ScalarOp<double>(this as SparseMatrix<double>, result as SparseMatrix<double>, (double a) => a * nd);
             }
             else if (typeof(T) == typeof(int))
             {
                 int ni = Convert.ToInt32(n);
-                ScalarMultiply<int>(this as SparseMatrix<int>, result as SparseMatrix<int>, (int a) => a * ni);
+                ScalarOp<int>(this as SparseMatrix<int>, result as SparseMatrix<int>, (int a) => a * ni);
             }
             else
             {
@@ -135,7 +157,7 @@ namespace Ferric.Math.Common
                 object[] parms = new object[2];
                 parms[1] = n;
 
-                ScalarMultiply<T>(this, result, (T a) =>
+                ScalarOp<T>(this, result, (T a) =>
                     {
                         parms[0] = a;
                         return (T)mul.Invoke(null, parms);
@@ -154,11 +176,11 @@ namespace Ferric.Math.Common
 
             if (typeof(T) == typeof(double))
             {
-                Add<double>(this as SparseMatrix<double>, m as IMatrix<double>, result, (double a, double b) => a + b);
+                AdditiveOp<double>(this as SparseMatrix<double>, m as IMatrix<double>, result, (double a, double b) => a + b);
             }
             else if (typeof(T) == typeof(int))
             {
-                Add<int>(this as SparseMatrix<int>, m as IMatrix<int>, result, (int a, int b) => a + b);
+                AdditiveOp<int>(this as SparseMatrix<int>, m as IMatrix<int>, result, (int a, int b) => a + b);
             }
             else
             {
@@ -167,7 +189,7 @@ namespace Ferric.Math.Common
                     throw new ArgumentException("Unable to find an addition operator for " + typeof(T).FullName);
 
                 object[] parms = new object[2];
-                Add<T>(this, m, result, (T a, T b) =>
+                AdditiveOp<T>(this, m, result, (T a, T b) =>
                     {
                         parms[0] = a;
                         parms[1] = b;
@@ -180,22 +202,246 @@ namespace Ferric.Math.Common
 
         public override Matrix<T> Negate(bool inPlace = false)
         {
-            throw new NotImplementedException();
+            var result = inPlace ? this : new SparseMatrix<T>(this.Rows, this.Cols);
+
+            if (typeof(T) == typeof(double))
+            {
+                ScalarOp<double>(this as SparseMatrix<double>, result as SparseMatrix<double>, (double a) => -a);
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                ScalarOp<int>(this as SparseMatrix<int>, result as SparseMatrix<int>, (int a) => -a);
+            }
+            else
+            {
+                var neg = typeof(T).GetMethod("op_UnaryNegation", BindingFlags.Static | BindingFlags.Public);
+                if (neg == null)
+                    throw new ArgumentException("Unable to find a unary negation operator for " + typeof(T).FullName);
+
+                object[] parms = new object[1];
+                ScalarOp<T>(this, result, (T a) =>
+                    {
+                        parms[0] = a;
+                        return (T)neg.Invoke(null, parms);
+                    });
+            }
+
+            return result;
         }
 
         public override Matrix<T> Subtract(IMatrix<T> m, bool inPlace = false)
         {
-            throw new NotImplementedException();
+            if (this.Rows != m.Rows || this.Cols != m.Cols)
+                throw new ArgumentException("Unable to subtract matrices of different dimensions.");
+
+            var result = inPlace ? this : new SparseMatrix<T>(this.Rows, this.Cols);
+
+            if (typeof(T) == typeof(double))
+            {
+                AdditiveOp<double>(this as SparseMatrix<double>, m as IMatrix<double>, result, (double a, double b) => a - b);
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                AdditiveOp<int>(this as SparseMatrix<int>, m as IMatrix<int>, result, (int a, int b) => a - b);
+            }
+            else
+            {
+                var sub = typeof(T).GetMethod("op_Subtraction", BindingFlags.Static | BindingFlags.Public);
+                if (sub == null)
+                    throw new ArgumentException("Unable to find a subtraction operator for " + typeof(T).FullName);
+
+                object[] parms = new object[2];
+                AdditiveOp<T>(this, m, result, (T a, T b) =>
+                    {
+                        parms[0] = a;
+                        parms[1] = b;
+                        return (T)sub.Invoke(null, parms);
+                    });
+            }
+
+            return result;
         }
 
         public override Matrix<T> Multiply(IMatrix<T> m)
         {
-            throw new NotImplementedException();
+            if (this.Cols != m.Rows)
+                throw new ArgumentException("Unable to multiply nonconformable matrices.");
+
+            var result = new SparseMatrix<T>(this.Rows, m.Cols);
+
+            if (typeof(T) == typeof(double))
+            {
+                Multiply<double>(this as SparseMatrix<double>, m as IMatrix<double>, result, 
+                    (double a, double b) => a + b, (double a, double b) => a * b, 
+                    (double n) => IsZero(n));
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                Multiply<int>(this as SparseMatrix<int>, m as IMatrix<int>, result,
+                    (int a, int b) => a + b, (int a, int b) => a * b,
+                    (int n) => n == 0);
+            }
+            else
+            {
+                var add = typeof(T).GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public);
+                if (add == null)
+                    throw new ArgumentException("Unable to find an addition operator for " + typeof(T).FullName);
+                var mul = typeof(T).GetMethod("op_Multiply", BindingFlags.Static | BindingFlags.Public);
+                if (mul == null)
+                    throw new ArgumentException("Unable to find a multiplication operator for " + typeof(T).FullName);
+
+                object[] parms = new object[2];
+                Multiply<T>(this, m, result,
+                    (T a, T b) =>
+                        {
+                            parms[0] = a;
+                            parms[1] = b;
+                            return (T)add.Invoke(null, parms);
+                        },
+                    (T a, T b) =>
+                        {
+                            parms[0] = a;
+                            parms[1] = b;
+                            return (T)mul.Invoke(null, parms);
+                        },
+                    (T n) => n.Equals(default(T)));
+            }
+
+            return result;
         }
 
         public override Matrix<T> Inverse()
         {
-            throw new NotImplementedException();
+            var m = this as SparseMatrix<double>;
+            if (m == null)
+                throw new ArgumentException("Unable to invert a non-double matrix");
+
+            if (this.Rows != this.Cols)
+                throw new ArgumentException("Unable to invert a non-square matrix");
+
+            // inversion algo taken from http://msdn.microsoft.com/en-us/magazine/jj863137.aspx
+
+            var n = m.Rows;
+            var res = new SparseMatrix<double>(m.Rows, m.Cols);
+            for (int i = 0; i < m.Rows; ++i)
+            {
+                for (int j = 0; j < m.Cols; ++j)
+                {
+                    if (!IsZero(m[i, j]))
+                        res[i, j] = m[i, j];
+                }
+            }
+
+            int[] perm;
+            int toggle;
+            var lum = Decompose(res, out perm, out toggle);
+            if (lum == null)
+                throw new ArgumentException("Matrix is not invertible");
+
+            var b = new double[n];
+            for (int i = 0; i < n; ++i)
+            {
+                for (int j = 0; j < n; ++j)
+                {
+                    if (i == perm[j])
+                        b[j] = 1;
+                    else
+                        b[j] = 0;
+                }
+
+                var x = HelperSolve(lum, b);
+
+                for (int j = 0; j < n; ++j)
+                {
+                    res[j, i] = x[j];
+                }
+            }
+
+            return res as Matrix<T>;
+        }
+
+        static Matrix<double> Decompose(Matrix<double> m, out int[] perm, out int toggle)
+        {
+            if (m.Rows != m.Cols)
+                throw new ArgumentException("Unable to decompose a non-square matrix");
+
+            int n = m.Rows;
+            var result = new SparseMatrix<double>(m);
+
+            perm = new int[n];
+            for (int i = 0; i < n; ++i) { perm[i] = i; }
+
+            toggle = 1;
+
+            for (int j = 0; j < n - 1; ++j)
+            {
+                double max = System.Math.Abs(result[j, j]);
+                int maxRow = j;
+                for (int i = j + 1; i < n; ++i)
+                {
+                    if (result[i, j] > max)
+                    {
+                        max = result[i, j];
+                        maxRow = i;
+                    }
+                }
+
+                if (maxRow != j)
+                {
+                    for (int k = 0; k < n; ++k)
+                    {
+                        var temp = result[maxRow, k];
+                        result[maxRow, k] = result[j, k];
+                        result[j, k] = temp;
+                    }
+
+                    var ptmp = perm[maxRow];
+                    perm[maxRow] = perm[j];
+                    perm[j] = ptmp;
+
+                    toggle = -toggle;
+                }
+
+                if (IsZero(result[j, j]))
+                    throw new Exception("Unable to decompose a non-decomposable matrix");
+
+                for (int i = j + 1; i < n; ++i)
+                {
+                    result[i, j] /= result[j, j];
+                    for (int k = j + 1; k < n; ++k)
+                    {
+                        result[i, k] -= result[i, j] * result[j, k];
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        static double[] HelperSolve(Matrix<double> m, double[] b)
+        {
+            int n = m.Rows;
+            var x = new double[b.Length];
+            b.CopyTo(x, 0);
+
+            for (int i = 1; i < n; ++i)
+            {
+                double sum = x[i];
+                for (int j = 0; j < i; ++j)
+                    sum -= m[i, j] * x[j];
+                x[i] = sum;
+            }
+
+            x[n - 1] /= m[n - 1, n - 1];
+            for (int i = n - 2; i >= 0; --i)
+            {
+                double sum = x[i];
+                for (int j = i + 1; j < n; ++j)
+                    sum -= m[i, j] * x[j];
+                x[i] = sum / m[i, i];
+            }
+
+            return x;
         }
 
         #endregion
@@ -422,7 +668,7 @@ namespace Ferric.Math.Common
             }
         }
 
-        static void ScalarMultiply<Tt>(SparseMatrix<Tt> src, SparseMatrix<Tt> dest, Func<Tt, Tt> mult)
+        static void ScalarOp<Tt>(SparseMatrix<Tt> src, SparseMatrix<Tt> dest, Func<Tt, Tt> f)
             where Tt : struct, IComparable
         {
             if (src != dest)
@@ -446,16 +692,16 @@ namespace Ferric.Math.Common
             if (src.values != null)
             {
                 for (int i = 0; i < src.values.Length; ++i)
-                    dest.values[i] = mult(src.values[i]);
+                    dest.values[i] = f(src.values[i]);
             }
             else if (src.dok != null)
             {
                 foreach (var kv in src.dok)
-                    dest.dok[kv.Key] = mult(kv.Value);
+                    dest.dok[kv.Key] = f(kv.Value);
             }
         }
 
-        static void Add<Tt>(SparseMatrix<Tt> a, IMatrix<Tt> b, SparseMatrix<T> result, Func<Tt, Tt, Tt> add)
+        static void AdditiveOp<Tt>(SparseMatrix<Tt> a, IMatrix<Tt> b, SparseMatrix<T> result, Func<Tt, Tt, Tt> add)
             where Tt : struct, IComparable
         {
             var new_dok = new Dictionary<Tuple<int, int>, Tt>();
@@ -480,6 +726,31 @@ namespace Ferric.Math.Common
                 }
 
                 row++;
+            }
+
+            result.dok = (IDictionary<Tuple<int, int>, T>)new_dok;
+            result.values = null;
+            result.row_offsets = null;
+            result.col_offsets = null;
+        }
+
+        static void Multiply<Tt>(SparseMatrix<Tt> a, IMatrix<Tt> b, SparseMatrix<T> result, Func<Tt, Tt, Tt> add, Func<Tt, Tt, Tt> mul, Func<Tt, bool> isZero)
+            where Tt : struct, IComparable
+        {
+            // TODO: use a faster algo
+            var new_dok = new Dictionary<Tuple<int, int>, Tt>();
+            for (int i = 0; i < a.Rows; ++i)
+            {
+                for (int j = 0; j < b.Cols; ++j)
+                {
+                    Tt sum = default(Tt);
+                    for (int k = 0; k < a.Cols; ++k)
+                    {
+                        sum = add(sum, mul(a[i, k], b[k, j]));
+                    }
+                    if (!isZero(sum))
+                        new_dok[Tuple.Create(i, j)] = sum;
+                }
             }
 
             result.dok = (IDictionary<Tuple<int, int>, T>)new_dok;

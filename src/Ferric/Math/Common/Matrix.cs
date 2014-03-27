@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Ferric.Math.Common
 {
-    public interface IMatrix<T> : IEnumerable<IEnumerable<T>>
+    public interface IMatrix<T> : IEnumerable<IEnumerable<T>>, ISerializable
         where T : struct, IComparable
     {
         int Rows { get; }
@@ -128,40 +128,6 @@ namespace Ferric.Math.Common
         #region ISerializable Members
 
         public abstract void GetObjectData(SerializationInfo info, StreamingContext context);
-
-        #endregion
-
-        #region Operators
-
-        public static Matrix<T> operator *(Matrix<T> a, T n)
-        {
-            return a.ScalarMultiply(n, inPlace: false);
-        }
-
-        public static Matrix<T> operator *(Matrix<T> a, IMatrix<T> b)
-        {
-            return a.Multiply(b);
-        }
-
-        public static Matrix<T> operator +(Matrix<T> a)
-        {
-            return a;
-        }
-
-        public static Matrix<T> operator +(Matrix<T> a, IMatrix<T> b)
-        {
-            return a.Add(b, inPlace: false);
-        }
-
-        public static Matrix<T> operator -(Matrix<T> a)
-        {
-            return a.Negate(inPlace: false);
-        }
-
-        public static Matrix<T> operator -(Matrix<T> a, IMatrix<T> b)
-        {
-            return a.Subtract(b, inPlace: false);
-        }
 
         #endregion
 
@@ -314,6 +280,23 @@ namespace Ferric.Math.Common
 
         #region Utilities
 
+        public static bool IsZero<Tt>(Tt n)
+            where Tt : struct, IComparable
+        {
+            if (typeof(Tt) == typeof(double))
+            {
+                return System.Math.Abs((double)(object)n) < 1.0e-20;
+            }
+            else if (typeof(Tt) == typeof(int))
+            {
+                return (int)(object)n == 0;
+            }
+            else
+            {
+                return n.Equals(default(Tt));
+            }
+        }
+
         public void CopyRow(int row, IVector<T> v)
         {
             if (v.Dimensions != this.Cols)
@@ -334,6 +317,40 @@ namespace Ferric.Math.Common
             {
                 this[i, col] = v[i];
             }
+        }
+
+        #endregion
+
+        #region Operators
+
+        public static Matrix<T> operator *(Matrix<T> a, T n)
+        {
+            return a.ScalarMultiply(n, inPlace: false);
+        }
+
+        public static Matrix<T> operator *(Matrix<T> a, IMatrix<T> b)
+        {
+            return a.Multiply(b);
+        }
+
+        public static Matrix<T> operator +(Matrix<T> a)
+        {
+            return a;
+        }
+
+        public static Matrix<T> operator +(Matrix<T> a, IMatrix<T> b)
+        {
+            return a.Add(b, inPlace: false);
+        }
+
+        public static Matrix<T> operator -(Matrix<T> a)
+        {
+            return a.Negate(inPlace: false);
+        }
+
+        public static Matrix<T> operator -(Matrix<T> a, IMatrix<T> b)
+        {
+            return a.Subtract(b, inPlace: false);
         }
 
         #endregion

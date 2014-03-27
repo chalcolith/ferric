@@ -173,6 +173,54 @@ namespace Ferric.Math.Common.Tests
         }
 
         [TestMethod]
+        public void Math_Common_DenseMatrix_Multiplication_Double()
+        {
+            var a = new DenseMatrix<double>(new double[4, 2] { { 1, 2 }, { 3, 4 }, { 5, 6 }, { 7, 8 } });
+            var b = new DenseMatrix<double>(new double[2, 3] { { 9, 10, 11 }, { 12, 13, 14 } });
+            var prod = a * b;
+
+            var c = new DenseMatrix<double>(new double[4, 3] {
+                { 33, 36, 39 },
+                { 75, 82, 89 },
+                { 117, 128, 139 },
+                { 159, 174, 189 }
+            });
+            Assert.AreEqual(c, prod);
+        }
+
+        [TestMethod]
+        public void Math_Common_DenseMatrix_Multiplication_Int()
+        {
+            var a = new DenseMatrix<int>(new int[4, 2] { { 1, 2 }, { 3, 4 }, { 5, 6 }, { 7, 8 } });
+            var b = new DenseMatrix<int>(new int[2, 3] { { 9, 10, 11 }, { 12, 13, 14 } });
+            var prod = a * b;
+
+            var c = new DenseMatrix<int>(new int[4, 3] {
+                { 33, 36, 39 },
+                { 75, 82, 89 },
+                { 117, 128, 139 },
+                { 159, 174, 189 }
+            });
+            Assert.AreEqual(c, prod);
+        }
+
+        [TestMethod]
+        public void Math_Common_DenseMatrix_Multiplication_Generic()
+        {
+            var a = new DenseMatrix<decimal>(new decimal[4, 2] { { 1, 2 }, { 3, 4 }, { 5, 6 }, { 7, 8 } });
+            var b = new DenseMatrix<decimal>(new decimal[2, 3] { { 9, 10, 11 }, { 12, 13, 14 } });
+            var prod = a * b;
+
+            var c = new DenseMatrix<decimal>(new decimal[4, 3] {
+                { 33, 36, 39 },
+                { 75, 82, 89 },
+                { 117, 128, 139 },
+                { 159, 174, 189 }
+            });
+            Assert.AreEqual(c, prod);
+        }
+
+        [TestMethod]
         public void Math_Common_DenseMatrix_Inverse()
         {
             var a = new DenseMatrix<double>(new double[2, 2] { { 4, 3 }, { 3, 2 } });

@@ -9,18 +9,6 @@ namespace Ferric.Math.Common
     public class DenseVector<T> : DenseMatrix<T>, IVector<T>
         where T: struct, IComparable
     {
-        #region IVector<T> Members
-
-        public T this[int i]
-        {
-            get { return this[0, i]; }
-            set { this[0, i] = value; }
-        }
-
-        public int Dimensions { get { return this.Cols; } }
-
-        #endregion
-
         public DenseVector(int cols)
             : base(1, cols)
         {
@@ -39,22 +27,36 @@ namespace Ferric.Math.Common
             }
         }
 
-        public double AbsSquared()
-        {
-            var m = this as DenseVector<double>;
-            if (m == null)
-                throw new ArgumentException("Cannot take the absolute value of a non-double vector");
+        #region IVector<T> Members
 
-            double sum = 0;
-            for (int i = 0; i < m.Dimensions; ++i)
-                sum += m[i] * m[i];
-            return sum;
+        public T this[int i]
+        {
+            get { return this[0, i]; }
+            set { this[0, i] = value; }
         }
 
-        public double Abs()
+        public int Dimensions { get { return this.Cols; } }
+
+        public T AbsSquared()
         {
-            return System.Math.Sqrt(AbsSquared());
+            throw new NotImplementedException();
+
+            //var m = this as DenseVector<double>;
+            //if (m == null)
+            //    throw new ArgumentException("Cannot take the absolute value of a non-double vector");
+
+            //double sum = 0;
+            //for (int i = 0; i < m.Dimensions; ++i)
+            //    sum += m[i] * m[i];
+            //return sum;
         }
+
+        public T Abs()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
         #region IEnumerable<T> Members
 
