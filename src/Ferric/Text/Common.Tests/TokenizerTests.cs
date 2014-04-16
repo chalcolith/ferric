@@ -12,7 +12,7 @@ namespace Ferric.Text.Common.Tests
         public void Text_Common_Tokenizer_TestUnicodeRegexpTokenizer()
         {
             var input = @"abc123.$ i'll";
-            var tokens = new UnicodeRegexpTokenizer().Process(input).OfType<TokenSpan>().ToArray();
+            var tokens = new UnicodeRegexpTokenizer(null).Process(input).OfType<TokenSpan>().ToArray();
 
             Assert.AreEqual(TokenClass.Word, tokens[0].TokenClass);
             Assert.AreEqual("abc", tokens[0].Text);

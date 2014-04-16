@@ -10,18 +10,10 @@ namespace Ferric.Text.Common.Documents
 {
     public class StopwordFilter : BaseTransducer<ISpan, ISpan>
     {
-        ulong classFilters = 0;
         ISet<string> stopWords;
 
-        public StopwordFilter(string file, string filter)
-            : base()
-        {
-            LoadClassesToFilter(filter);
-            LoadStopwords(file);
-        }
-
-        public StopwordFilter(string file)
-            : base()
+        public StopwordFilter(ICreateContext context, string file)
+            : base(context)
         {
             LoadStopwords(file);
         }
@@ -33,9 +25,6 @@ namespace Ferric.Text.Common.Documents
                 var token = input as TokenSpan;
                 if (token != null)
                 {
-                    if ((classFilters & (1ul << (int)token.TokenClass)) == 0)
-                        continue;
-
                     if (stopWords.Contains(token.Lemma))
                         continue;
                 }
@@ -43,25 +32,10 @@ namespace Ferric.Text.Common.Documents
             }
         }
 
-        void LoadClassesToFilter(string classesToFilter)
-        {
-            classFilters = 0;
-            if (string.IsNullOrWhiteSpace(classesToFilter))
-                return;
-
-            foreach (var classStr in classesToFilter.Split(','))
-            {
-                TokenClass tc;
-                if (Enum.TryParse<TokenClass>(classStr.Trim(), out tc))
-                {
-                    classFilters |= (1ul << (int)tc);
-                }
-            }
-        }
-
         void LoadStopwords(string stopWordsFilePath)
         {
-            stopWordsFilePath = Path.GetFullPath(stopWordsFilePath);
+            if (!Path.IsPathRooted(stopWordsFilePath))
+                stopWordsFilePath = Path.GetFullPath(Path.Combine(CreateContext.ConfigDir, stopWordsFilePath));
 
             if (!File.Exists(stopWordsFilePath))
                 throw new Exception(string.Format("Unable to find stopwords file {0}", stopWordsFilePath));

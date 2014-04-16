@@ -12,6 +12,8 @@ namespace Ferric.Text.Common
     {
         IEnumerable<ITransducer> subTransducers;
 
+        protected ICreateContext CreateContext { get; set; }
+
         public Type InputType { get { return typeof(TIn); } }
         public Type OutputType { get { return typeof(TOut); } }
 
@@ -19,6 +21,11 @@ namespace Ferric.Text.Common
         {
             get { return subTransducers ?? Enumerable.Empty<ITransducer>(); }
             set { subTransducers = value; }
+        }
+
+        public BaseTransducer(ICreateContext context)
+        {
+            CreateContext = context;
         }
 
         public IEnumerable Process(IEnumerable inputs)
@@ -63,21 +70,6 @@ namespace Ferric.Text.Common
             }
 
             return lastEnumerable;
-        }
-    }
-
-    public class DebugPrintTransducer : BaseTransducer<string, string>
-    {
-        public override IEnumerable<string> Process(IEnumerable<string> inputs)
-        {
-            var outputs = SubProcess(inputs);
-            foreach (object output in outputs)
-            {
-                var span = output as ISpan;
-                var str = span != null ? span.ToString("") : output.ToString();
-                Console.WriteLine(str);
-                yield return str;
-            }
         }
     }
 }

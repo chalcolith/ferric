@@ -22,4 +22,9 @@ namespace Ferric.Text.Common
     {
         IEnumerable<TOut> Process(IEnumerable<TIn> inputs);
     }
+
+    public interface ICreateContext
+    {
+        string ConfigDir { get; }
+    }
 }

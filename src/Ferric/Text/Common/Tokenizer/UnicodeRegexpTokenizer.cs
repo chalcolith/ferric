@@ -34,13 +34,13 @@ namespace Ferric.Text.Common.Tokenizer
             new UnicodeTokenRegexp(@"[\p{Cf}\p{Cs}\p{Co}\p{Cn}]", TokenClass.Other)
         };
 
-        public UnicodeRegexpTokenizer()
-            : this(defaultTokens)
+        public UnicodeRegexpTokenizer(ICreateContext context)
+            : this(context, defaultTokens)
         {
         }
 
-        public UnicodeRegexpTokenizer(IList<TokenRegexp> tokens)
-            : base(tokens)
+        public UnicodeRegexpTokenizer(ICreateContext context, IList<TokenRegexp> tokens)
+            : base(context, tokens)
         {
         }
     }

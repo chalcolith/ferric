@@ -16,6 +16,11 @@ namespace Ferric.Text.Common.Documents
 
         Encoding encoding = Encoding.UTF8;
 
+        public FileSystemReader(ICreateContext context)
+            : base(context)
+        {
+        }
+
         public override IEnumerable<IDocument> Process(IEnumerable<string> paths)
         {
             ulong ordinal = 0;

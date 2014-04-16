@@ -13,7 +13,8 @@ namespace Ferric.Lang.English
         static object my_lock = new object();
         static Stack<StemmerState> free_states = new Stack<StemmerState>();
 
-        public PorterStemmer()
+        public PorterStemmer(ICreateContext context)
+            : base(context)
         {
         }
 

@@ -40,11 +40,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseTransducer.cs" />
+    <Compile Include="DebugPrintTransducer.cs" />
     <Compile Include="Documents\FileSystemDocument.cs" />
     <Compile Include="Documents\FileSystemReader.cs" />
     <Compile Include="Documents\IDocument.cs" />
     <Compile Include="Documents\IoExtensions.cs" />
     <Compile Include="Documents\StopwordFilter.cs" />
+    <Compile Include="Documents\TokenTypeFilter.cs" />
     <Compile Include="ISpan.cs" />
     <Compile Include="ITransducer.cs" />
     <Compile Include="Tokenizer\TokenizerException.cs" />

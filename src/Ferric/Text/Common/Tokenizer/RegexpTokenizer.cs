@@ -13,7 +13,8 @@ namespace Ferric.Text.Common.Tokenizer
     {
         readonly IList<TokenRegexp> tokenRegexps;
 
-        public RegexpTokenizer(IList<TokenRegexp> tokenRegexps)
+        public RegexpTokenizer(ICreateContext context, IList<TokenRegexp> tokenRegexps)
+            : base(context)
         {
             this.tokenRegexps = tokenRegexps;
         }

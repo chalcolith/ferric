@@ -13,27 +13,34 @@ namespace Ferric.Config
 {
     public static class Pipeline
     {
-        public static ITransducer Load(string path)
+        public const string ContextParameterName = "context";
+
+        public static ITransducer Load(string path, string configDir = null)
         {
             using (var tr = new StreamReader(path))
-                return Load(tr);
+                return Load(tr, Path.GetDirectoryName(path));
         }
 
-        public static ITransducer Load(TextReader tr)
+        public static ITransducer Load(TextReader tr, string configDir = null)
         {
             using (var xr = XmlReader.Create(tr))
-                return Load(xr);
+                return Load(xr, configDir);
         }
 
-        public static ITransducer Load(XmlReader xr)
+        public static ITransducer Load(XmlReader xr, string configDir = null)
         {
             var elem = XElement.Load(xr);
-            return Load(elem);
+            return Load(elem, configDir);
         }
 
-        public static ITransducer Load(XElement elem)
+        public static ITransducer Load(XElement elem, string configDir = null)
         {
-            return CreateFromXml(elem, null, new CreateContext());
+            var context = new CreateContext
+            {
+                ConfigDir = string.IsNullOrWhiteSpace(configDir) ? Directory.GetCurrentDirectory() : configDir
+            };
+
+            return CreateFromXml(elem, null, context);
         }
 
         static ITransducer CreateFromXml(XElement elem, ITransducer parent, CreateContext context)
@@ -50,6 +57,8 @@ namespace Ferric.Config
             // get parameters
             var atts = elem.Attributes()
                 .ToDictionary(att => att.Name.LocalName, att => att.Value);
+            if (!atts.ContainsKey(ContextParameterName))
+                atts.Add(ContextParameterName, "");
 
             // find an appropriate constructor
             ITransducer transducer = null;
@@ -74,6 +83,9 @@ namespace Ferric.Config
                     // assemble the actual parameters
                     var actualParms = formalParms.Select(formalParm =>
                         {
+                            if (formalParm.Name == ContextParameterName)
+                                return context;
+
                             var actualStr = atts[formalParm.Name];
 
                             try
@@ -122,18 +134,6 @@ namespace Ferric.Config
             return transducer;
         }
 
-        class CreateContext
-        {
-            public string ConfigDir { get; set; }
-            public IDictionary<string, Type> TypeCache { get; set; }
-
-            public CreateContext()
-            {
-                ConfigDir = Directory.GetCurrentDirectory();
-                TypeCache = new Dictionary<string, Type>();
-            }
-        }
-
         static Type GetLoadedType(string name, CreateContext context)
         {
             Type loadedType;
@@ -144,7 +144,10 @@ namespace Ferric.Config
             {
                 var foundType = assembly.GetType(name);
                 if (foundType != null && typeof(ITransducer).IsAssignableFrom(foundType))
+                {
+                    context.TypeCache[name] = foundType;
                     return foundType;
+                }
             }
 
             return null;
