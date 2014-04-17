@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Ferric.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,10 +19,10 @@ namespace Ferric.Tests
         }
 
         [TestMethod]
-        public void Ferric_Pipeline_SamplePipeline()
+        public void Ferric_Pipeline_TokenizerPipeline()
         {
-            var configPath = Path.GetFullPath(@"..\..\..\..\..\data\english\samples\sample.config");
-            var textPath = Path.GetFullPath(@"..\..\..\..\..\data\english\samples\sample.txt");
+            var configPath = Path.GetFullPath(@"..\..\..\..\..\data\english\samples\tokenize.config");
+            var textPath = Path.GetFullPath(@"..\..\..\..\..\data\english\samples\sample1.txt");
 
             var transducer = Pipeline.Load(configPath);
             var results = transducer.Process(new[] { textPath });
@@ -36,6 +37,30 @@ namespace Ferric.Tests
   { TokenSpan:13 31-36 Word ""kings"":king }
   { TokenSpan:14 36-37 Punct ""\."":\. }
 ", result);
+            }
+        }
+
+        [TestMethod]
+        public void Ferric_Pipeline_DTMPipeline()
+        {
+            var configPath = Path.GetFullPath(@"..\..\..\..\..\data\english\samples\dtm.config");
+            var textFiles = Enumerable.Range(0, 3).Select(i => Path.GetFullPath(string.Format(@"..\..\..\..\..\data\english\samples\sample{0}.txt", i+1)));
+
+            const string expected = @"documents: 3
+lemmas:    12	Ferric.Text.Common.Lexicon.AdHocLexicon
+
+	?unkn..	name	ozyma..	king	second	random	sentenc	four	score	seven	year	ago
+0		1	1	2								
+1					1	1	1					
+2								1	1	1	1	1
+";
+
+            var transducer = Pipeline.Load(configPath);
+            var results = transducer.Process(textFiles);
+
+            foreach (string result in results)
+            {
+                Assert.AreEqual(expected, result);
             }
         }
     }

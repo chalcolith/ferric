@@ -41,14 +41,18 @@
   <ItemGroup>
     <Compile Include="BaseTransducer.cs" />
     <Compile Include="DebugPrintTransducer.cs" />
+    <Compile Include="Documents\DocumentCollection.cs" />
     <Compile Include="Documents\FileSystemDocument.cs" />
     <Compile Include="Documents\FileSystemReader.cs" />
     <Compile Include="Documents\IDocument.cs" />
+    <Compile Include="Documents\IDocumentCollection.cs" />
     <Compile Include="Documents\IoExtensions.cs" />
     <Compile Include="Documents\StopwordFilter.cs" />
     <Compile Include="Documents\TokenTypeFilter.cs" />
     <Compile Include="ISpan.cs" />
     <Compile Include="ITransducer.cs" />
+    <Compile Include="Lexicon\AdHocLexicon.cs" />
+    <Compile Include="Lexicon\ILexicon.cs" />
     <Compile Include="Tokenizer\TokenizerException.cs" />
     <Compile Include="Tokenizer\RegexpTokenizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -56,6 +60,10 @@
     <Compile Include="Tokenizer\UnicodeRegexpTokenizer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Math\Common\Math.Common.csproj">
+      <Project>{e1a05c02-6c09-45eb-90ff-1416819201e5}</Project>
+      <Name>Math.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Utils\Regexp\Utils.Regexp.csproj">
       <Project>{8b2269bb-541e-4d30-9101-ffa175c119d0}</Project>
       <Name>Utils.Regexp</Name>

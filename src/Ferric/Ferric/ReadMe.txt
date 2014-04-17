@@ -1,2 +1,3 @@
-﻿For suitable sample for debugging, set the Debug arguments to 
-..\..\..\..\..\data\english\samples\sample.config ..\..\..\..\..\data\english\samples\sample.txt
+﻿Set Debug arguments to config file and input file(s), e.g.:
+
+..\..\..\..\..\data\english\samples\tokenize.config ..\..\..\..\..\data\english\samples\sample01.txt
