@@ -26,13 +26,13 @@ namespace Ferric.Text.Common.Documents
             sb.AppendFormat("documents: {0}", Documents.Count);
             sb.AppendLine();
 
-            sb.AppendFormat("lemmas:    {0}\t{1}", Lexicon.Lemmas.Count, Lexicon.GetType().FullName);
+            sb.AppendFormat("lemmas:    {0}\t{1}", Lexicon.IndicesByLemma.Count, Lexicon.GetType().FullName);
             sb.AppendLine();
             sb.AppendLine();
 
-            sb.AppendFormat("\t{0}", string.Join("\t", Enumerable.Range(0, Lexicon.Lemmas.Count).Select(i =>
+            sb.AppendFormat("\t{0}", string.Join("\t", Enumerable.Range(0, Lexicon.IndicesByLemma.Count).Select(i =>
                 {
-                    var lemma = Lexicon.Indices[i];
+                    var lemma = Lexicon.LemmasByIndex[i];
                     return lemma.Length < 8
                         ? lemma
                         : lemma.Substring(0, 5) + "..";
@@ -41,7 +41,7 @@ namespace Ferric.Text.Common.Documents
 
             for (int row = 0; row < DocumentTermMatrix.Rows; row++)
             {
-                sb.AppendFormat("{0}\t{1}", row, string.Join("\t", Enumerable.Range(0, Lexicon.Lemmas.Count).Select(col =>
+                sb.AppendFormat("{0}\t{1}", row, string.Join("\t", Enumerable.Range(0, Lexicon.IndicesByLemma.Count).Select(col =>
                     {
                         var count = DocumentTermMatrix[row, col];
                         return count > 0 ? count.ToString() : "";

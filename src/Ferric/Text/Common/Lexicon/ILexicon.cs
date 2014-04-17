@@ -8,8 +8,8 @@ namespace Ferric.Text.Common.Lexicon
 {
     public interface ILexicon
     {
-        IDictionary<string, int> Lemmas { get; }
-        IDictionary<int, string> Indices { get; }
+        IDictionary<string, int> IndicesByLemma { get; }
+        IDictionary<int, string> LemmasByIndex { get; }
     }
 
     public static class Constants

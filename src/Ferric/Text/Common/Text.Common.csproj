@@ -42,6 +42,7 @@
     <Compile Include="BaseTransducer.cs" />
     <Compile Include="DebugPrintTransducer.cs" />
     <Compile Include="Documents\DocumentCollection.cs" />
+    <Compile Include="Documents\DtmBuilder.cs" />
     <Compile Include="Documents\FileSystemDocument.cs" />
     <Compile Include="Documents\FileSystemReader.cs" />
     <Compile Include="Documents\IDocument.cs" />
@@ -51,7 +52,8 @@
     <Compile Include="Documents\TokenTypeFilter.cs" />
     <Compile Include="ISpan.cs" />
     <Compile Include="ITransducer.cs" />
-    <Compile Include="Lexicon\AdHocLexicon.cs" />
+    <Compile Include="Lexicon\AdHocLexiconBuilder.cs" />
+    <Compile Include="Lexicon\BaseLexicon.cs" />
     <Compile Include="Lexicon\ILexicon.cs" />
     <Compile Include="Tokenizer\TokenizerException.cs" />
     <Compile Include="Tokenizer\RegexpTokenizer.cs" />
