@@ -5,3 +5,4 @@ syntax: glob
 bin/
 obj/
 packages/
+data/english/wordnet/sqlite-31.db

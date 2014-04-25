@@ -13,13 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ferric", "Ferric\Ferric.csp
 		{42521DDD-9E6B-458F-87CF-DF5A292BC17D} = {42521DDD-9E6B-458F-87CF-DF5A292BC17D}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6397DD87-6BF5-4146-9E02-AA6B7821E179}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils.Regexp", "Utils\Regexp\Utils.Regexp.csproj", "{8B2269BB-541E-4D30-9101-FFA175C119D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils.Regexp.Tests", "Utils\Regexp.Tests\Utils.Regexp.Tests.csproj", "{C68AE101-9768-4129-A655-FA55C89EDE0D}"
@@ -46,6 +39,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Config", "Config\Config.csproj", "{7C36B0C0-BDB7-4A0E-A4F6-3075EC6E3DB9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ferric.Tests", "Ferric.Tests\Ferric.Tests.csproj", "{3CF4A18E-49D6-4784-8428-7B4A5B1DB5F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text.WordNet", "Text\WordNet\Text.WordNet.csproj", "{2AEA3F34-B2D1-4B12-80E5-5FD0AD52C493}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text.WordNet.Tests", "Text\WordNet.Tests\Text.WordNet.Tests.csproj", "{A71EC538-99DF-4233-9683-A7141ECB1DC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +102,14 @@ Global
 		{3CF4A18E-49D6-4784-8428-7B4A5B1DB5F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CF4A18E-49D6-4784-8428-7B4A5B1DB5F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CF4A18E-49D6-4784-8428-7B4A5B1DB5F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AEA3F34-B2D1-4B12-80E5-5FD0AD52C493}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AEA3F34-B2D1-4B12-80E5-5FD0AD52C493}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AEA3F34-B2D1-4B12-80E5-5FD0AD52C493}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AEA3F34-B2D1-4B12-80E5-5FD0AD52C493}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A71EC538-99DF-4233-9683-A7141ECB1DC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A71EC538-99DF-4233-9683-A7141ECB1DC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A71EC538-99DF-4233-9683-A7141ECB1DC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A71EC538-99DF-4233-9683-A7141ECB1DC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
