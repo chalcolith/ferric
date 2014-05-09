@@ -1,4 +1,4 @@
-data/english/wordnet/sqlite-31.db
+App_Data/
 
 # Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
 [Bb]in/

@@ -9,5 +9,18 @@ namespace Ferric.Text.WordNet.Builder
     class BuilderInfo
     {
         public IDictionary<int, Synset> SynsetsByWordNetId = new Dictionary<int, Synset>();
+
+        public static SynsetType GetSynsetType(string ss_type)
+        {
+            switch (ss_type)
+            {
+                case "n": return SynsetType.Noun;
+                case "v": return SynsetType.Verb;
+                case "a": return SynsetType.Adjective;
+                case "s": return SynsetType.AdjectiveSatellite;
+                case "r": return SynsetType.Adverb;
+            }
+            throw new Exception("Unknown synset type " + ss_type);
+        }
     }
 }

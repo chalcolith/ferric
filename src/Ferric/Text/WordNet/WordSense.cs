@@ -16,7 +16,7 @@ namespace Ferric.Text.WordNet
         public virtual int SenseNumber { get; set; }
         public virtual int TagCount { get; set; }
         public virtual int SenseKey { get; set; }
-        public virtual string Syntax { get; set; }
+        public virtual AdjectiveSyntax Syntax { get; set; }
         public virtual int Frame { get; set; }
 
         public virtual IEnumerable<WordSense> GroupedWith { get; set; }

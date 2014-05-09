@@ -11,6 +11,7 @@ namespace Ferric.Text.WordNet
         public virtual int Id { get; set; }
 
         public virtual int WordNetId { get; set; }
+        public virtual SynsetType SynsetType { get; set; }
         public virtual string Gloss { get; set; }
         
         public virtual IEnumerable<WordSense> Senses { get; set; }
