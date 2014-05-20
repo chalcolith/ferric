@@ -8,22 +8,23 @@ namespace Ferric.Text.WordNet
 {
     public class WordSense
     {
-        public virtual int Id { get; set; }
+        public int WordSenseId { get; set; }
 
         public virtual Synset Synset { get; set; }
-        public virtual int WordNum { get; set; }
-        public virtual string Lemma { get; set; }
-        public virtual int SenseNumber { get; set; }
-        public virtual int TagCount { get; set; }
-        public virtual int SenseKey { get; set; }
-        public virtual AdjectiveSyntax Syntax { get; set; }
-        public virtual int Frame { get; set; }
 
-        public virtual IEnumerable<WordSense> GroupedWith { get; set; }
-        public virtual IEnumerable<WordSense> Antonyms { get; set; }
-        public virtual IEnumerable<WordSense> SeeAlso { get; set; }
-        public virtual IEnumerable<WordSense> Participles { get; set; }
-        public virtual IEnumerable<WordSense> Pertains { get; set; }
+        public int WordNum { get; set; }
+        public string Lemma { get; set; }
+        public int SenseNumber { get; set; }
+        public int TagCount { get; set; }
+        public string SenseKey { get; set; }
+        public AdjectiveSyntax Syntax { get; set; }
+        public int Frame { get; set; }
+
+        public virtual ICollection<WordSense> GroupedWith { get; set; }
+        public virtual ICollection<WordSense> Antonyms { get; set; }
+        public virtual ICollection<WordSense> SeeAlso { get; set; }
+        public virtual ICollection<WordSense> Participles { get; set; }
+        public virtual ICollection<WordSense> Pertains { get; set; }
     }
 
     public enum AdjectiveSyntax

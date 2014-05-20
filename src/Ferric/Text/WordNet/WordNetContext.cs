@@ -14,8 +14,13 @@ namespace Ferric.Text.WordNet
         {
         }
 
-        public virtual DbSet<WordSense> WordSenses { get; set; }
+        public WordNetContext(string connectionString)
+            : base(connectionString)
+        {
+        }
+
         public virtual DbSet<Synset> Synsets { get; set; }
+        public virtual DbSet<WordSense> WordSenses { get; set; }
         public virtual DbSet<SemanticClass> SemanticClasses { get; set; }
     }
 }

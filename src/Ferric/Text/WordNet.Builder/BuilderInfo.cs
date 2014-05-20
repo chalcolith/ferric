@@ -8,6 +8,9 @@ namespace Ferric.Text.WordNet.Builder
 {
     class BuilderInfo
     {
+        public const int NumToLoad = int.MaxValue;
+        public const int DisplayStep = 10000;
+
         public IDictionary<int, Synset> SynsetsByWordNetId = new Dictionary<int, Synset>();
 
         public static SynsetType GetSynsetType(string ss_type)
