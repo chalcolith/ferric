@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Ferric.Text.WordNet.Data;
 
 namespace Ferric.Text.WordNet.Builder
 {

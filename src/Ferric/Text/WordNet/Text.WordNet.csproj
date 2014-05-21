@@ -39,6 +39,8 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,16 +48,40 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Enums.cs" />
+    <Compile Include="Migrations\201405212324365_InitialCreate.cs" />
+    <Compile Include="Migrations\201405212324365_InitialCreate.Designer.cs">
+      <DependentUpon>201405212324365_InitialCreate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="SemanticClass.cs" />
-    <Compile Include="Synset.cs" />
-    <Compile Include="WordNetContext.cs" />
-    <Compile Include="WordSense.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Data\SemanticClass.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Synset.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\WordNet.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\WordSense.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\create.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201405212324365_InitialCreate.resx">
+      <DependentUpon>201405212324365_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

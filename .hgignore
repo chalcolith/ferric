@@ -6,3 +6,5 @@ bin/
 obj/
 packages/
 App_Data/
+data/english/wordnet/lemmas.txt
+*.ldf

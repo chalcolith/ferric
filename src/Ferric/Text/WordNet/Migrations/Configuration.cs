@@ -5,14 +5,14 @@ namespace Ferric.Text.WordNet.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    public sealed class Configuration : DbMigrationsConfiguration<Ferric.Text.WordNet.WordNetContext>
+    public sealed class Configuration : DbMigrationsConfiguration<Ferric.Text.WordNet.Data.WordNet>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(Ferric.Text.WordNet.WordNetContext context)
+        protected override void Seed(Ferric.Text.WordNet.Data.WordNet context)
         {
             //  This method will be called after migrating to the latest version.
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -36,14 +37,13 @@ namespace Ferric.Text.WordNet.Builder
                 WriteLemmas(info);
 
                 // add to db
-                Database.SetInitializer(new MigrateDatabaseToLatestVersion<WordNetContext, Migrations.Configuration>());
                 var csBuilder = new SqlConnectionStringBuilder();
                 csBuilder.DataSource = @"(LocalDB)\v11.0";
-                csBuilder.AttachDBFilename = Path.GetFullPath(Path.Combine(BasePath, @"wordnet.mdf"));
+                csBuilder.AttachDBFilename = Path.GetFullPath(Path.Combine(BasePath, @"WordNet.mdf"));
                 csBuilder.IntegratedSecurity = true;
 
                 Console.WriteLine("connecting to " + csBuilder.ConnectionString);
-                using (var context = new WordNetContext(csBuilder.ConnectionString))
+                using (var context = new Data.WordNet(csBuilder.ConnectionString))
                 {
                     // clear the db
                     Console.WriteLine("clearing...");
@@ -55,10 +55,6 @@ namespace Ferric.Text.WordNet.Builder
                         // add to context
                         Console.WriteLine("assimilating...");
                         AddToContext(context, info);
-
-                        // save
-                        Console.WriteLine("saving...");
-                        context.SaveChanges();
                     }
                 }
             }
@@ -105,17 +101,22 @@ namespace Ferric.Text.WordNet.Builder
             }
         }
 
-        void AddToContext(WordNetContext context, BuilderInfo builderInfo)
+        void AddToContext(Data.WordNet context, BuilderInfo builderInfo)
         {
             context.Configuration.AutoDetectChangesEnabled = false;
             context.Configuration.ValidateOnSaveEnabled = false;
 
+            int num = 0;
             foreach (var synset in builderInfo.SynsetsByWordNetId.Values)
             {
+                if ((num++ % 1000) == 0)
+                    context.SaveChanges();
+
                 foreach (var wordsense in synset.Senses)
                     context.WordSenses.Add(wordsense);
                 context.Synsets.Add(synset);
             }
+            context.SaveChanges();
         }
 
         void PrintException(StringBuilder sb, Exception e, string indent = null)
