@@ -13,10 +13,13 @@ namespace Ferric.Text.WordNet.Data
         public int WordNum { get; set; }
 
         [Required]
+        [MaxLength(200)]
         public string Lemma { get; set; }
 
         public int SenseNumber { get; set; }
         public int? TagCount { get; set; }
+
+        [MaxLength(200)]
         public string SenseKey { get; set; }
 
         public AdjectiveSyntax? Syntax { get; set; }

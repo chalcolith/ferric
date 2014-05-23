@@ -13,6 +13,8 @@ namespace Ferric.Text.WordNet.Data
         public int WordNetId { get; set; }
 
         public SynsetType SynsetType { get; set; }
+
+        [MaxLength(1000)]
         public string Gloss { get; set; }
 
         public virtual ICollection<WordSense> Senses { get; set; }

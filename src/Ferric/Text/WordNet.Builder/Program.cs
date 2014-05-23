@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using EntityFramework.BulkInsert.Extensions;
+using Ferric.Text.WordNet.Data;
 
 namespace Ferric.Text.WordNet.Builder
 {
@@ -32,9 +36,9 @@ namespace Ferric.Text.WordNet.Builder
                 Load<LoaderS>("wn_s.pl", info);
                 Load<LoaderSk>("wn_sk.pl", info);
                 Load<LoaderG>("wn_g.pl", info);
-
-                // write lemmas
-                WriteLemmas(info);
+                Load<LoaderSyntax>("wn_syntax.pl", info);
+                Load<LoaderHyp>("wn_hyp.pl", info);
+                Load<LoaderIns>("wn_ins.pl", info);
 
                 // add to db
                 var csBuilder = new SqlConnectionStringBuilder();
@@ -50,17 +54,39 @@ namespace Ferric.Text.WordNet.Builder
                     context.Database.Delete();
                     context.Database.Create();
 
-                    using (var scope = new TransactionScope(TransactionScopeOption.Required))
+                    Console.WriteLine("saving...");
+                    using (var transactionScope = new TransactionScope())
                     {
-                        // add to context
-                        Console.WriteLine("assimilating...");
-                        AddToContext(context, info);
+                        var options = new BulkInsertOptions
+                        {
+                            EnableStreaming = true,
+                            NotifyAfter = 10000,
+                            Callback = (s, e) => { Console.WriteLine(e.RowsCopied.ToString()); }
+                        };
+
+                        context.BulkInsert(info.Synsets.Values, options);
+                        context.BulkInsert(info.Synsets.Values.SelectMany(s => s.Senses));
+                        context.SaveChanges();
+
+                        Console.WriteLine("relations...");
+                        context.Database.Connection.Open();
+
+                        SaveRelation<Synset>(context, info.Synsets.Values, "Hypernyms");
+                        SaveRelation<Synset>(context, info.Synsets.Values, "Hyponyms");
+                        SaveRelation<Synset>(context, info.Synsets.Values, "Prototypes");
+                        SaveRelation<Synset>(context, info.Synsets.Values, "Instances");
+
+                        transactionScope.Complete();
                     }
                 }
+  
+                // write lemmas
+                WriteLemmas(info);
             }
             catch (Exception e)
             {
                 var sb = new StringBuilder();
+                sb.Append("EXCEPTION: ");
                 PrintException(sb, e);
                 Console.Write(sb.ToString());
                 Console.WriteLine();
@@ -84,39 +110,31 @@ namespace Ferric.Text.WordNet.Builder
             }
         }
 
+        void SaveRelation<T>(WordNet.Data.WordNet context, IEnumerable<T> source, string destPropertyName)
+        {
+            Console.Write(destPropertyName);
+            Console.Write(": ");
+
+            using (var bc = new SqlBulkCopy(context.Database.Connection as SqlConnection))
+            {
+                var dr = new RelationReader<T>(source, destPropertyName);
+
+                bc.DestinationTableName = destPropertyName;
+                bc.EnableStreaming = true;
+                bc.WriteToServer(dr);
+
+                Console.WriteLine(dr.RecordsAffected);
+            }
+        }
+
         void WriteLemmas(BuilderInfo builderInfo)
         {
             Console.WriteLine("writing lemmas...");
             using (var tr = new StreamWriter(Path.GetFullPath(Path.Combine(BasePath, "lemmas.txt"))))
             {
-                var lemmas = new HashSet<string>();
-                foreach (var synset in builderInfo.SynsetsByWordNetId.Values)
-                {
-                    foreach (var wordsense in synset.Senses)
-                        lemmas.Add(wordsense.Lemma);
-                }
-
-                foreach (var lemma in lemmas)
+                foreach (var lemma in builderInfo.Lemmas)
                     tr.WriteLine(lemma);
             }
-        }
-
-        void AddToContext(Data.WordNet context, BuilderInfo builderInfo)
-        {
-            context.Configuration.AutoDetectChangesEnabled = false;
-            context.Configuration.ValidateOnSaveEnabled = false;
-
-            int num = 0;
-            foreach (var synset in builderInfo.SynsetsByWordNetId.Values)
-            {
-                if ((num++ % 1000) == 0)
-                    context.SaveChanges();
-
-                foreach (var wordsense in synset.Senses)
-                    context.WordSenses.Add(wordsense);
-                context.Synsets.Add(synset);
-            }
-            context.SaveChanges();
         }
 
         void PrintException(StringBuilder sb, Exception e, string indent = null)

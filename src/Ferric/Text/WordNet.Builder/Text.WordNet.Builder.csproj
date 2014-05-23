@@ -35,6 +35,12 @@
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework.BulkInsert">
+      <HintPath>..\..\packages\EntityFramework.BulkInsert-ef6.6.0.2.8\lib\Net45\EntityFramework.BulkInsert.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.MappingAPI">
+      <HintPath>..\..\packages\EntityFramework.MappingAPI.6.0.0.7\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
@@ -52,10 +58,14 @@
     <Compile Include="BuilderInfo.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="LoaderG.cs" />
+    <Compile Include="LoaderHyp.cs" />
+    <Compile Include="LoaderIns.cs" />
     <Compile Include="LoaderS.cs" />
     <Compile Include="LoaderSk.cs" />
+    <Compile Include="LoaderSyntax.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RelationReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

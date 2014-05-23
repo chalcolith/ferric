@@ -15,24 +15,25 @@ namespace Ferric.Text.WordNet.Migrations
                         ClassType = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.SemanticClassId);
-            
+
             CreateTable(
                 "dbo.WordSenses",
                 c => new
                     {
                         WordSenseId = c.Int(nullable: false, identity: true),
                         WordNum = c.Int(nullable: false),
-                        Lemma = c.String(nullable: false),
+                        Lemma = c.String(nullable: false, maxLength: 200),
                         SenseNumber = c.Int(nullable: false),
                         TagCount = c.Int(),
-                        SenseKey = c.String(),
+                        SenseKey = c.String(maxLength: 200),
                         Syntax = c.Int(),
                         Frame = c.Int(),
                         SynsetId = c.Int(),
                     })
                 .PrimaryKey(t => t.WordSenseId)
                 .ForeignKey("dbo.Synsets", t => t.SynsetId)
-                .Index(t => t.SynsetId);
+                .Index(t => new { t.SynsetId, t.WordNum })
+                .Index(t => t.Lemma);
             
             CreateTable(
                 "dbo.Synsets",
@@ -41,9 +42,10 @@ namespace Ferric.Text.WordNet.Migrations
                         SynsetId = c.Int(nullable: false, identity: true),
                         WordNetId = c.Int(nullable: false),
                         SynsetType = c.Int(nullable: false),
-                        Gloss = c.String(),
+                        Gloss = c.String(maxLength: 1000),
                     })
-                .PrimaryKey(t => t.SynsetId);
+                .PrimaryKey(t => t.SynsetId)
+                .Index(t => t.WordNetId);
             
             CreateTable(
                 "dbo.Antonyms",
@@ -330,6 +332,7 @@ namespace Ferric.Text.WordNet.Migrations
                 .ForeignKey("dbo.WordSenses", t => t.WordSenseId, cascadeDelete: true)
                 .Index(t => t.SemanticClassId)
                 .Index(t => t.WordSenseId);
+            
         }
         
         public override void Down()
