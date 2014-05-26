@@ -10,6 +10,8 @@ namespace Ferric.Text.Common.Lexicon
     {
         IDictionary<string, int> IndicesByLemma { get; }
         IDictionary<int, string> LemmasByIndex { get; }
+
+        int AddLemma(string lemma);
     }
 
     public static class Constants

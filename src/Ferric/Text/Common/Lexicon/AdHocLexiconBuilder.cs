@@ -10,20 +10,17 @@ namespace Ferric.Text.Common.Lexicon
 {
     public class AdHocLexiconBuilder : BaseTransducer<IDocument, IDocumentCollection>
     {
-        public AdHocLexiconBuilder(ICreateContext context)
+        string fname;
+
+        public AdHocLexiconBuilder(ICreateContext context, string file)
             : base(context)
         {
+            this.fname = file;
         }
 
         public override IEnumerable<IDocumentCollection> Process(IEnumerable<IDocument> inputs)
         {
-            var lexicon = new BaseLexicon();
-
-            lexicon.IndicesByLemma.Clear();
-            lexicon.IndicesByLemma[Constants.UnknownToken] = 0;
-
-            lexicon.LemmasByIndex.Clear();
-            lexicon.LemmasByIndex[0] = Constants.UnknownToken;
+            var lexicon = new FileLexicon(CreateContext.GetFullPath(fname), true);
 
             var collection = new DocumentCollection()
             {
@@ -32,26 +29,18 @@ namespace Ferric.Text.Common.Lexicon
             };
 
             // collect tokens and counts
-            int nextColumn = 1;
             foreach (var document in inputs)
             {
                 collection.Documents.Add(document);
 
-                foreach (var token in document.ChildrenOfType<TokenSpan>()
-                                        .Where(t => t.TokenClass == TokenClass.Word))
+                foreach (var token in document.ChildrenOfType<TokenSpan>().Where(t => t.TokenClass == TokenClass.Word))
                 {
-                    // get column (term index)
-                    int column;
-                    if (!lexicon.IndicesByLemma.TryGetValue(token.Lemma, out column))
-                    {
-                        column = nextColumn++;
-                        lexicon.IndicesByLemma[token.Lemma] = column;
-                        lexicon.LemmasByIndex[column] = token.Lemma;
-                    }
+                    lexicon.AddLemma(token.Lemma);
                 }
             }
 
             //
+            lexicon.Save();
             return new[] { collection };
         }
     }

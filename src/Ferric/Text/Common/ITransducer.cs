@@ -26,5 +26,6 @@ namespace Ferric.Text.Common
     public interface ICreateContext
     {
         string ConfigDir { get; }
+        string GetFullPath(string path);
     }
 }

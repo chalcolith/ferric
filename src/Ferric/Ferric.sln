@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ferric", "Ferric\Ferric.csproj", "{A850AB58-FE00-4CD5-A834-7379E89AB0FB}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -45,6 +45,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text.WordNet", "Text\WordNet\Text.WordNet.csproj", "{7FC9B042-F38C-4D52-95B3-D8E42B58E7C7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text.WordNet.Builder", "Text\WordNet.Builder\Text.WordNet.Builder.csproj", "{B60B29F4-531D-4D8B-AAA0-FF141185A85A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{A5405CF4-DDEB-473B-93B7-BB840F910317}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\data\english\samples\dtm.config = ..\..\data\english\samples\dtm.config
+		..\..\data\english\samples\tokenize.config = ..\..\data\english\samples\tokenize.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -34,8 +34,7 @@ namespace Ferric.Text.Common.Documents
 
         void LoadStopwords(string stopWordsFilePath)
         {
-            if (!Path.IsPathRooted(stopWordsFilePath))
-                stopWordsFilePath = Path.GetFullPath(Path.Combine(CreateContext.ConfigDir, stopWordsFilePath));
+            stopWordsFilePath = CreateContext.GetFullPath(stopWordsFilePath);
 
             if (!File.Exists(stopWordsFilePath))
                 throw new Exception(string.Format("Unable to find stopwords file {0}", stopWordsFilePath));

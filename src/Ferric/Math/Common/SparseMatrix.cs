@@ -11,6 +11,7 @@ namespace Ferric.Math.Common
     public class SparseMatrix<T> : Matrix<T>, ISerializable
         where T : struct, IComparable
     {
+        object changeLock = new object();
         IDictionary<Tuple<int, int>, T> dok = null;
         
         T[] values = null;
@@ -60,6 +61,15 @@ namespace Ferric.Math.Common
             this.Rows = i;
         }
 
+        public IEnumerable<Tuple<int, int, T>> GetDictionaryOfKeys()
+        {
+            lock (changeLock)
+            {
+                ChangeToDok();
+                return dok.Select(kv => Tuple.Create(kv.Key.Item1, kv.Key.Item2, kv.Value));
+            }
+        }
+
         #region Matrix<T> Members
 
         public override int Rows { get; protected set; }
@@ -74,62 +84,73 @@ namespace Ferric.Math.Common
                 if (col < 0 || col >= Cols)
                     throw new ArgumentOutOfRangeException("col");
 
-                if (values != null)
+                lock (changeLock)
                 {
-                    int first = row_offsets[row];
-                    int next = row_offsets[row + 1];
-                    int index = Array.BinarySearch<int>(col_offsets, first, next - first, col);
-                    if (index < 0)
+                    if (values != null)
+                    {
+                        int first = row_offsets[row];
+                        int next = row_offsets[row + 1];
+                        int index = Array.BinarySearch<int>(col_offsets, first, next - first, col);
+                        if (index < 0)
+                            return default(T);
+                        return values[col_offsets[index]];
+                    }
+                    else if (dok != null)
+                    {
+                        T result;
+                        dok.TryGetValue(Tuple.Create(row, col), out result);
+                        return result;
+                    }
+                    else
+                    {
                         return default(T);
-                    return values[col_offsets[index]];
-                }
-                else if (dok != null)
-                {
-                    T result;
-                    dok.TryGetValue(Tuple.Create(row, col), out result);
-                    return result;
-                }
-                else
-                {
-                    return default(T);
+                    }
                 }
             }
             set
             {
-                if (!value.Equals(default(T)))
+                lock (changeLock)
                 {
+                    var key = Tuple.Create(row, col);
+
                     if (values != null)
                         ChangeToDok();
                     if (dok == null)
                         dok = new Dictionary<Tuple<int, int>, T>();
-                    dok[Tuple.Create(row, col)] = value;
+                    if (value.Equals(default(T)))
+                        dok.Remove(key);
+                    else
+                        dok[key] = value;
                 }
             }
         }
 
         public override Matrix<T> Transpose()
         {
-            var result = new SparseMatrix<T>(this.Cols, this.Rows);
-            result.dok = new Dictionary<Tuple<int, int>, T>();
-
-            if (values != null)
+            lock (changeLock)
             {
-                int row_index = 1;
-                for (int i = 0; i < values.Length; ++i)
+                var result = new SparseMatrix<T>(this.Cols, this.Rows);
+                result.dok = new Dictionary<Tuple<int, int>, T>();
+
+                if (values != null)
                 {
-                    if (i >= row_offsets[row_index])
-                        row_index++;
+                    int row_index = 1;
+                    for (int i = 0; i < values.Length; ++i)
+                    {
+                        if (i >= row_offsets[row_index])
+                            row_index++;
 
-                    result.dok[Tuple.Create(row_index - 1, col_offsets[i])] = values[i];
+                        result.dok[Tuple.Create(row_index - 1, col_offsets[i])] = values[i];
+                    }
                 }
-            }
-            else if (dok != null)
-            {
-                foreach (var kv in dok)
-                    result.dok[Tuple.Create(kv.Key.Item2, kv.Key.Item1)] = kv.Value;
-            }
+                else if (dok != null)
+                {
+                    foreach (var kv in dok)
+                        result.dok[Tuple.Create(kv.Key.Item2, kv.Key.Item1)] = kv.Value;
+                }
 
-            return result;
+                return result;
+            }
         }
 
         public override Matrix<T> ScalarMultiply(T n, bool inPlace = false)
@@ -462,7 +483,10 @@ namespace Ferric.Math.Common
             public RowEnumerator(SparseMatrix<T> matrix)
             {
                 this.matrix = matrix;
-                matrix.ChangeToYale();
+                lock (matrix.changeLock)
+                {
+                    matrix.ChangeToYale();
+                }
             }
 
             #region IEnumerator<IEnumerable<T>> Members
@@ -603,11 +627,14 @@ namespace Ferric.Math.Common
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            ChangeToDok();
+            lock (changeLock)
+            {
+                ChangeToDok();
 
-            info.AddValue("rows", this.Rows);
-            info.AddValue("cols", this.Cols);
-            info.AddValue("dok", this.dok);
+                info.AddValue("rows", this.Rows);
+                info.AddValue("cols", this.Cols);
+                info.AddValue("dok", this.dok);
+            }
         }
 
         #endregion

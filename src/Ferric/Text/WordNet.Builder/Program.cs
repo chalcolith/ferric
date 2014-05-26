@@ -33,12 +33,7 @@ namespace Ferric.Text.WordNet.Builder
                 Console.WriteLine("reading...");
                 var info = new BuilderInfo();
 
-                Load<LoaderS>("wn_s.pl", info);
-                Load<LoaderSk>("wn_sk.pl", info);
-                Load<LoaderG>("wn_g.pl", info);
-                Load<LoaderSyntax>("wn_syntax.pl", info);
-                Load<LoaderHyp>("wn_hyp.pl", info);
-                Load<LoaderIns>("wn_ins.pl", info);
+                LoadData(info);
 
                 // add to db
                 var csBuilder = new SqlConnectionStringBuilder();
@@ -71,10 +66,7 @@ namespace Ferric.Text.WordNet.Builder
                         Console.WriteLine("relations...");
                         context.Database.Connection.Open();
 
-                        SaveRelation<Synset>(context, info.Synsets.Values, "Hypernyms");
-                        SaveRelation<Synset>(context, info.Synsets.Values, "Hyponyms");
-                        SaveRelation<Synset>(context, info.Synsets.Values, "Prototypes");
-                        SaveRelation<Synset>(context, info.Synsets.Values, "Instances");
+                        SaveRelations(info, context);
 
                         transactionScope.Complete();
                     }
@@ -91,6 +83,41 @@ namespace Ferric.Text.WordNet.Builder
                 Console.Write(sb.ToString());
                 Console.WriteLine();
             }
+        }
+
+        private void LoadData(BuilderInfo info)
+        {
+            Load<LoaderS>("wn_s.pl", info);
+            Load<LoaderSk>("wn_sk.pl", info);
+            Load<LoaderG>("wn_g.pl", info);
+            Load<LoaderSyntax>("wn_syntax.pl", info);
+            Load<LoaderHyp>("wn_hyp.pl", info);
+            Load<LoaderIns>("wn_ins.pl", info);
+            Load<LoaderEnt>("wn_ent.pl", info);
+            Load<LoaderSim>("wn_sim.pl", info);
+            Load<LoaderMm>("wn_mm.pl", info);
+            Load<LoaderMs>("wn_ms.pl", info);
+            Load<LoaderMp>("wn_mp.pl", info);
+            Load<LoaderDer>("wn_der.pl", info);
+        }
+
+        private void SaveRelations(BuilderInfo info, Data.WordNet context)
+        {
+            var synsets = info.Synsets.Values;
+
+            SaveRelation<Synset>(context, synsets, "Hypernyms");
+            SaveRelation<Synset>(context, synsets, "Hyponyms");
+            SaveRelation<Synset>(context, synsets, "Prototypes");
+            SaveRelation<Synset>(context, synsets, "Instances");
+            SaveRelation<Synset>(context, synsets, "Entailments");
+            SaveRelation<Synset>(context, synsets, "Satellites");
+            SaveRelation<Synset>(context, synsets, "MemberMeronyms");
+            SaveRelation<Synset>(context, synsets, "MemberHolonyms");
+            SaveRelation<Synset>(context, synsets, "SubstanceMeronyms");
+            SaveRelation<Synset>(context, synsets, "SubstanceHolonyms");
+            SaveRelation<Synset>(context, synsets, "PartMeronyms");
+            SaveRelation<Synset>(context, synsets, "PartHolonyms");
+            SaveRelation<Synset>(context, synsets, "Derivations");
         }
 
         static Type[] CtorTypes = new[] { typeof(TextReader), typeof(BuilderInfo) };

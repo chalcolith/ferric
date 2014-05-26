@@ -28,11 +28,52 @@ namespace Ferric.Text.Common.Documents
 
             sb.AppendFormat("lemmas:    {0}\t{1}", Lexicon.IndicesByLemma.Count, Lexicon.GetType().FullName);
             sb.AppendLine();
-            sb.AppendLine();
 
-            sb.AppendFormat("\t{0}", string.Join("\t", Enumerable.Range(0, Lexicon.IndicesByLemma.Count).Select(i =>
+            var words = new Dictionary<int, IDictionary<int, int>>();
+
+            var sparse = DocumentTermMatrix as SparseMatrix<double>;
+            if (sparse != null)
+            {
+                foreach (var tuple in sparse.GetDictionaryOfKeys())
                 {
-                    var lemma = Lexicon.LemmasByIndex[i];
+                    var doc = tuple.Item1;
+                    var index = tuple.Item2;
+                    var count = (int)tuple.Item3;
+
+                    IDictionary<int, int> counts;
+                    if (!words.TryGetValue(index, out counts))
+                    {
+                        counts = new Dictionary<int, int>();
+                        words[index] = counts;
+                    }
+
+                    if (count != 0)
+                        counts[doc] = count;
+                }
+            }
+            else
+            {
+                for (int row = 0; row < DocumentTermMatrix.Rows; row++)
+                {
+                    for (int col = 0; col < DocumentTermMatrix.Cols; col++)
+                    {
+                        IDictionary<int, int> counts;
+                        if (!words.TryGetValue(col, out counts))
+                        {
+                            counts = new Dictionary<int, int>();
+                            words[row] = counts;
+                        }
+
+                        var count = (int)DocumentTermMatrix[row, col];
+                        if (count != 0)
+                            counts[row] = count;
+                    }
+                }
+            }
+
+            sb.AppendFormat("\t{0}", string.Join("\t", words.Select(kv =>
+                {
+                    var lemma = Lexicon.LemmasByIndex[kv.Key];
                     return lemma.Length < 8
                         ? lemma
                         : lemma.Substring(0, 5) + "..";
@@ -41,10 +82,10 @@ namespace Ferric.Text.Common.Documents
 
             for (int row = 0; row < DocumentTermMatrix.Rows; row++)
             {
-                sb.AppendFormat("{0}\t{1}", row, string.Join("\t", Enumerable.Range(0, Lexicon.IndicesByLemma.Count).Select(col =>
+                sb.AppendFormat("{0}\t{1}", row, string.Join("\t", words.Select(kv =>
                     {
-                        var count = DocumentTermMatrix[row, col];
-                        return count > 0 ? count.ToString() : "";
+                        int count;
+                        return kv.Value.TryGetValue(row, out count) ? count.ToString() : "";
                     })));
                 sb.AppendLine();
             }

@@ -12,7 +12,7 @@ namespace Ferric.Text.WordNet.Builder
     class LoaderIns : LoaderRel
     {
         public LoaderIns(TextReader tr, BuilderInfo info)
-            : base("prototype/instance", "ins", tr, info)
+            : base("prototype/instances...", "ins", tr, info)
         {
         }
 

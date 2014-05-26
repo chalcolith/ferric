@@ -57,10 +57,16 @@
   <ItemGroup>
     <Compile Include="BuilderInfo.cs" />
     <Compile Include="Loader.cs" />
+    <Compile Include="LoaderDer.cs" />
+    <Compile Include="LoaderEnt.cs" />
     <Compile Include="LoaderG.cs" />
     <Compile Include="LoaderHyp.cs" />
     <Compile Include="LoaderIns.cs" />
+    <Compile Include="LoaderMm.cs" />
+    <Compile Include="LoaderMp.cs" />
+    <Compile Include="LoaderMs.cs" />
     <Compile Include="LoaderS.cs" />
+    <Compile Include="LoaderSim.cs" />
     <Compile Include="LoaderSk.cs" />
     <Compile Include="LoaderSyntax.cs" />
     <Compile Include="Program.cs" />

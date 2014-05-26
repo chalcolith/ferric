@@ -18,5 +18,12 @@ namespace Ferric.Config
             ConfigDir = Directory.GetCurrentDirectory();
             TypeCache = new Dictionary<string, Type>();
         }
+
+        public string GetFullPath(string path)
+        {
+            if (!Path.IsPathRooted(path))
+                path = Path.GetFullPath(Path.Combine(ConfigDir, path));
+            return path;
+        }
     }
 }

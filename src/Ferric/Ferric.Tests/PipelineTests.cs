@@ -47,12 +47,11 @@ namespace Ferric.Tests
             var textFiles = Enumerable.Range(0, 3).Select(i => Path.GetFullPath(string.Format(@"..\..\..\..\..\data\english\samples\sample{0}.txt", i+1)));
 
             const string expected = @"documents: 3
-lemmas:    12	Ferric.Text.Common.Lexicon.BaseLexicon
-
-	?unkn..	name	ozyma..	king	second	random	sentenc	four	score	seven	year	ago
-0		1	1	2								
-1					1	1	1					
-2								1	1	1	1	1
+lemmas:    12	Ferric.Text.Common.Lexicon.FileLexicon
+	name	ozyma..	king	second	random	sentenc	four	score	seven	year	ago
+0	1	1	2								
+1				1	1	1					
+2							1	1	1	1	1
 ";
 
             var transducer = Pipeline.Load(configPath);
