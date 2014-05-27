@@ -28,7 +28,7 @@ namespace Ferric.Text.WordNet.Data
         public int? SynsetId { get; set; }
         public virtual Synset Synset { get; set; }
 
-        public virtual ICollection<WordSense> Groups { get; set; }
+        public virtual ICollection<WordSense> Derivations { get; set; }
         public virtual ICollection<WordSense> Antonyms { get; set; }
         public virtual ICollection<WordSense> SeeAlsos { get; set; }
         public virtual ICollection<WordSense> Participles { get; set; }

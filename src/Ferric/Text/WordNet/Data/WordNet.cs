@@ -38,8 +38,8 @@ namespace Ferric.Text.WordNet.Data
                 .Map(m => { m.ToTable("SemanticClassMembers"); m.MapLeftKey("SemanticClassId"); m.MapRightKey("WordSenseId"); });
 
             // word sense relations
-            modelBuilder.Entity<WordSense>().HasMany(ws => ws.Groups).WithMany()
-                .Map(m => { m.ToTable("Groups"); m.MapLeftKey("FirstWordSenseId"); m.MapRightKey("SecondWordSenseId"); });
+            modelBuilder.Entity<WordSense>().HasMany(ws => ws.Derivations).WithMany()
+                .Map(m => { m.ToTable("Derivations"); m.MapLeftKey("FirstWordSenseId"); m.MapRightKey("SecondWordSenseId"); });
 
             modelBuilder.Entity<WordSense>().HasMany(ws => ws.Antonyms).WithMany()
                 .Map(m => { m.ToTable("Antonyms"); m.MapLeftKey("FirstWordSenseId"); m.MapRightKey("SecondWordSenseId"); });
@@ -90,11 +90,11 @@ namespace Ferric.Text.WordNet.Data
             modelBuilder.Entity<Synset>().HasMany(s => s.PartHolonyms).WithMany()
                 .Map(m => { m.ToTable("PartHolonyms"); m.MapLeftKey("FirstSynsetId"); m.MapRightKey("SecondSynsetId"); });
 
-            modelBuilder.Entity<Synset>().HasMany(s => s.Derivations).WithMany()
-                .Map(m => { m.ToTable("Derivations"); m.MapLeftKey("FirstSynsetId"); m.MapRightKey("SecondSynsetId"); });
-
             modelBuilder.Entity<Synset>().HasMany(s => s.Causes).WithMany()
                 .Map(m => { m.ToTable("Causes"); m.MapLeftKey("FirstSynsetId"); m.MapRightKey("SecondSynsetId"); });
+
+            modelBuilder.Entity<Synset>().HasMany(ws => ws.Groups).WithMany()
+                .Map(m => { m.ToTable("Groups"); m.MapLeftKey("FirstSynsetId"); m.MapRightKey("SecondSynsetId"); });
 
             modelBuilder.Entity<Synset>().HasMany(s => s.Attributes).WithMany()
                 .Map(m => { m.ToTable("Attributes"); m.MapLeftKey("FirstSynsetId"); m.MapRightKey("SecondSynsetId"); });

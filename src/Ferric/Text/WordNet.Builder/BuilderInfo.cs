@@ -14,6 +14,7 @@ namespace Ferric.Text.WordNet.Builder
         public const int DisplayStep = 10000;
 
         public IDictionary<int, Synset> Synsets = new Dictionary<int, Synset>();
+        public IDictionary<int, SemanticClass> SemanticClasses = new Dictionary<int, SemanticClass>();
         public ISet<string> Lemmas = new HashSet<string>();
     }
 }

@@ -57,18 +57,27 @@
   <ItemGroup>
     <Compile Include="BuilderInfo.cs" />
     <Compile Include="Loader.cs" />
+    <Compile Include="LoaderAnt.cs" />
+    <Compile Include="LoaderAt.cs" />
+    <Compile Include="LoaderCls.cs" />
+    <Compile Include="LoaderCs.cs" />
     <Compile Include="LoaderDer.cs" />
     <Compile Include="LoaderEnt.cs" />
+    <Compile Include="LoaderFr.cs" />
     <Compile Include="LoaderG.cs" />
     <Compile Include="LoaderHyp.cs" />
     <Compile Include="LoaderIns.cs" />
     <Compile Include="LoaderMm.cs" />
     <Compile Include="LoaderMp.cs" />
     <Compile Include="LoaderMs.cs" />
+    <Compile Include="LoaderPer.cs" />
+    <Compile Include="LoaderPpl.cs" />
     <Compile Include="LoaderS.cs" />
+    <Compile Include="LoaderSa.cs" />
     <Compile Include="LoaderSim.cs" />
     <Compile Include="LoaderSk.cs" />
     <Compile Include="LoaderSyntax.cs" />
+    <Compile Include="LoaderVgp.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelationReader.cs" />

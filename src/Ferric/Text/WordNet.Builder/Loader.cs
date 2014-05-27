@@ -64,6 +64,14 @@ namespace Ferric.Text.WordNet.Builder
             return result;
         }
 
+        protected WordSense GetWordSense(int wordNetId, int wordNum)
+        {
+            Synset synset;
+            if (Info.Synsets.TryGetValue(wordNetId, out synset))
+                return synset.Senses.FirstOrDefault(ws => ws.WordNum == wordNum);
+            return null;
+        }
+
         public static SynsetType GetSynsetType(string ss_type)
         {
             switch (ss_type)
@@ -86,6 +94,17 @@ namespace Ferric.Text.WordNet.Builder
                 case "ip": return AdjectiveSyntax.Postnominal;
             }
             throw new Exception("Unknown syntax " + syntax);
+        }
+
+        public static SemanticClassType GetClassType(string classType)
+        {
+            switch (classType)
+            {
+                case "t": return SemanticClassType.Topical;
+                case "u": return SemanticClassType.Usage;
+                case "r": return SemanticClassType.Regional;
+            }
+            throw new Exception("Unknown class type " + classType);
         }
     }
 

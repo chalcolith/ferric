@@ -9,38 +9,37 @@ using Ferric.Text.WordNet.Data;
 
 namespace Ferric.Text.WordNet.Builder
 {
-    class LoaderDer : Loader
+    class LoaderVgp : Loader
     {
-        static readonly Regex reg = new Regex(@"der\( 
+        static readonly Regex reg = new Regex(@"vgp\( 
                                                     (?<synset_id1>\d\d\d\d\d\d\d\d\d),
                                                     (?<w_num1>\d+),
                                                     (?<synset_id2>\d\d\d\d\d\d\d\d\d),
                                                     (?<w_num2>\d+)
                                                 \)\.", RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
 
-        public LoaderDer(TextReader tr, BuilderInfo info)
-            : base("derivations...", reg, tr, info)
+        public LoaderVgp(TextReader tr, BuilderInfo info)
+            : base("verb groups...", reg, tr, info)
         {
         }
 
-        protected override void ProcessLine(System.Text.RegularExpressions.Match match)
+        protected override void ProcessLine(Match match)
         {
             var synset_id1 = GetValue<int>(match, "synset_id1");
             var w_num1 = GetValue<int>(match, "w_num1");
             var synset_id2 = GetValue<int>(match, "synset_id2");
             var w_num2 = GetValue<int>(match, "w_num2");
 
-            var ws1 = GetWordSense(synset_id1, w_num1);
-            var ws2 = GetWordSense(synset_id2, w_num2);
+            var synset1 = GetSynset(synset_id1);
+            var synset2 = GetSynset(synset_id2);
 
-            if (ws1.Derivations == null) ws1.Derivations = new List<WordSense>();
-            if (ws2.Derivations == null) ws2.Derivations = new List<WordSense>();
+            if (synset1.Groups == null) synset1.Groups = new List<Synset>();
+            if (synset2.Groups == null) synset2.Groups = new List<Synset>();
 
-            if (ws1.Derivations.All(ws => ws.WordSenseId != ws2.WordSenseId))
-                ws1.Derivations.Add(ws2);
-
-            if (ws2.Derivations.All(ws => ws.WordSenseId != ws1.WordSenseId))
-                ws2.Derivations.Add(ws1);
+            if (synset1.Groups.All(s => s.WordNetId != synset2.WordNetId))
+                synset1.Groups.Add(synset2);
+            if (synset2.Groups.All(s => s.WordNetId != synset1.WordNetId))
+                synset2.Groups.Add(synset1);
         }
     }
 }

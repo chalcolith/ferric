@@ -15,7 +15,7 @@ namespace Ferric.Text.WordNet.Migrations
                         ClassType = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.SemanticClassId);
-
+            
             CreateTable(
                 "dbo.WordSenses",
                 c => new
@@ -32,8 +32,7 @@ namespace Ferric.Text.WordNet.Migrations
                     })
                 .PrimaryKey(t => t.WordSenseId)
                 .ForeignKey("dbo.Synsets", t => t.SynsetId)
-                .Index(t => new { t.SynsetId, t.WordNum })
-                .Index(t => t.Lemma);
+                .Index(t => t.SynsetId);
             
             CreateTable(
                 "dbo.Synsets",
@@ -44,8 +43,7 @@ namespace Ferric.Text.WordNet.Migrations
                         SynsetType = c.Int(nullable: false),
                         Gloss = c.String(maxLength: 1000),
                     })
-                .PrimaryKey(t => t.SynsetId)
-                .Index(t => t.WordNetId);
+                .PrimaryKey(t => t.SynsetId);
             
             CreateTable(
                 "dbo.Antonyms",
@@ -61,7 +59,7 @@ namespace Ferric.Text.WordNet.Migrations
                 .Index(t => t.SecondWordSenseId);
             
             CreateTable(
-                "dbo.Groups",
+                "dbo.Derivations",
                 c => new
                     {
                         FirstWordSenseId = c.Int(nullable: false),
@@ -139,7 +137,7 @@ namespace Ferric.Text.WordNet.Migrations
                 .Index(t => t.SecondSynsetId);
             
             CreateTable(
-                "dbo.Derivations",
+                "dbo.Entailments",
                 c => new
                     {
                         FirstSynsetId = c.Int(nullable: false),
@@ -152,7 +150,7 @@ namespace Ferric.Text.WordNet.Migrations
                 .Index(t => t.SecondSynsetId);
             
             CreateTable(
-                "dbo.Entailments",
+                "dbo.Groups",
                 c => new
                     {
                         FirstSynsetId = c.Int(nullable: false),
@@ -364,10 +362,10 @@ namespace Ferric.Text.WordNet.Migrations
             DropForeignKey("dbo.Hyponyms", "FirstSynsetId", "dbo.Synsets");
             DropForeignKey("dbo.Hypernyms", "SecondSynsetId", "dbo.Synsets");
             DropForeignKey("dbo.Hypernyms", "FirstSynsetId", "dbo.Synsets");
+            DropForeignKey("dbo.Groups", "SecondSynsetId", "dbo.Synsets");
+            DropForeignKey("dbo.Groups", "FirstSynsetId", "dbo.Synsets");
             DropForeignKey("dbo.Entailments", "SecondSynsetId", "dbo.Synsets");
             DropForeignKey("dbo.Entailments", "FirstSynsetId", "dbo.Synsets");
-            DropForeignKey("dbo.Derivations", "SecondSynsetId", "dbo.Synsets");
-            DropForeignKey("dbo.Derivations", "FirstSynsetId", "dbo.Synsets");
             DropForeignKey("dbo.Causes", "SecondSynsetId", "dbo.Synsets");
             DropForeignKey("dbo.Causes", "FirstSynsetId", "dbo.Synsets");
             DropForeignKey("dbo.Attributes", "SecondSynsetId", "dbo.Synsets");
@@ -378,8 +376,8 @@ namespace Ferric.Text.WordNet.Migrations
             DropForeignKey("dbo.PertainsTo", "FirstWordSenseId", "dbo.WordSenses");
             DropForeignKey("dbo.Participles", "SecondWordSenseId", "dbo.WordSenses");
             DropForeignKey("dbo.Participles", "FirstWordSenseId", "dbo.WordSenses");
-            DropForeignKey("dbo.Groups", "SecondWordSenseId", "dbo.WordSenses");
-            DropForeignKey("dbo.Groups", "FirstWordSenseId", "dbo.WordSenses");
+            DropForeignKey("dbo.Derivations", "SecondWordSenseId", "dbo.WordSenses");
+            DropForeignKey("dbo.Derivations", "FirstWordSenseId", "dbo.WordSenses");
             DropForeignKey("dbo.Antonyms", "SecondWordSenseId", "dbo.WordSenses");
             DropForeignKey("dbo.Antonyms", "FirstWordSenseId", "dbo.WordSenses");
             DropIndex("dbo.SemanticClassMembers", new[] { "WordSenseId" });
@@ -408,10 +406,10 @@ namespace Ferric.Text.WordNet.Migrations
             DropIndex("dbo.Hyponyms", new[] { "FirstSynsetId" });
             DropIndex("dbo.Hypernyms", new[] { "SecondSynsetId" });
             DropIndex("dbo.Hypernyms", new[] { "FirstSynsetId" });
+            DropIndex("dbo.Groups", new[] { "SecondSynsetId" });
+            DropIndex("dbo.Groups", new[] { "FirstSynsetId" });
             DropIndex("dbo.Entailments", new[] { "SecondSynsetId" });
             DropIndex("dbo.Entailments", new[] { "FirstSynsetId" });
-            DropIndex("dbo.Derivations", new[] { "SecondSynsetId" });
-            DropIndex("dbo.Derivations", new[] { "FirstSynsetId" });
             DropIndex("dbo.Causes", new[] { "SecondSynsetId" });
             DropIndex("dbo.Causes", new[] { "FirstSynsetId" });
             DropIndex("dbo.Attributes", new[] { "SecondSynsetId" });
@@ -422,8 +420,8 @@ namespace Ferric.Text.WordNet.Migrations
             DropIndex("dbo.PertainsTo", new[] { "FirstWordSenseId" });
             DropIndex("dbo.Participles", new[] { "SecondWordSenseId" });
             DropIndex("dbo.Participles", new[] { "FirstWordSenseId" });
-            DropIndex("dbo.Groups", new[] { "SecondWordSenseId" });
-            DropIndex("dbo.Groups", new[] { "FirstWordSenseId" });
+            DropIndex("dbo.Derivations", new[] { "SecondWordSenseId" });
+            DropIndex("dbo.Derivations", new[] { "FirstWordSenseId" });
             DropIndex("dbo.Antonyms", new[] { "SecondWordSenseId" });
             DropIndex("dbo.Antonyms", new[] { "FirstWordSenseId" });
             DropIndex("dbo.WordSenses", new[] { "SynsetId" });
@@ -440,14 +438,14 @@ namespace Ferric.Text.WordNet.Migrations
             DropTable("dbo.Instances");
             DropTable("dbo.Hyponyms");
             DropTable("dbo.Hypernyms");
+            DropTable("dbo.Groups");
             DropTable("dbo.Entailments");
-            DropTable("dbo.Derivations");
             DropTable("dbo.Causes");
             DropTable("dbo.Attributes");
             DropTable("dbo.SeeAlsos");
             DropTable("dbo.PertainsTo");
             DropTable("dbo.Participles");
-            DropTable("dbo.Groups");
+            DropTable("dbo.Derivations");
             DropTable("dbo.Antonyms");
             DropTable("dbo.Synsets");
             DropTable("dbo.WordSenses");

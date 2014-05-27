@@ -31,8 +31,8 @@ namespace Ferric.Text.WordNet.Data
         public virtual ICollection<Synset> SubstanceHolonyms { get; set; }
         public virtual ICollection<Synset> PartMeronyms { get; set; }
         public virtual ICollection<Synset> PartHolonyms { get; set; }
-        public virtual ICollection<Synset> Derivations { get; set; }
         public virtual ICollection<Synset> Causes { get; set; }
+        public virtual ICollection<Synset> Groups { get; set; }
         public virtual ICollection<Synset> Attributes { get; set; }
     }
 }

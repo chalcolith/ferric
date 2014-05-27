@@ -44,7 +44,6 @@ namespace Ferric.Text.WordNet.Builder
                 Console.WriteLine("connecting to " + csBuilder.ConnectionString);
                 using (var context = new Data.WordNet(csBuilder.ConnectionString))
                 {
-                    // clear the db
                     Console.WriteLine("clearing...");
                     context.Database.Delete();
                     context.Database.Create();
@@ -52,16 +51,7 @@ namespace Ferric.Text.WordNet.Builder
                     Console.WriteLine("saving...");
                     using (var transactionScope = new TransactionScope())
                     {
-                        var options = new BulkInsertOptions
-                        {
-                            EnableStreaming = true,
-                            NotifyAfter = 10000,
-                            Callback = (s, e) => { Console.WriteLine(e.RowsCopied.ToString()); }
-                        };
-
-                        context.BulkInsert(info.Synsets.Values, options);
-                        context.BulkInsert(info.Synsets.Values.SelectMany(s => s.Senses));
-                        context.SaveChanges();
+                        SaveEntities(info, context);
 
                         Console.WriteLine("relations...");
                         context.Database.Connection.Open();
@@ -85,6 +75,21 @@ namespace Ferric.Text.WordNet.Builder
             }
         }
 
+        private static void SaveEntities(BuilderInfo info, Data.WordNet context)
+        {
+            var options = new BulkInsertOptions
+            {
+                EnableStreaming = true,
+                NotifyAfter = 10000,
+                Callback = (s, e) => { Console.WriteLine(e.RowsCopied.ToString()); }
+            };
+
+            context.BulkInsert(info.Synsets.Values, options);
+            context.BulkInsert(info.Synsets.Values.SelectMany(s => s.Senses), options);
+            context.BulkInsert(info.SemanticClasses.Values, options);
+            context.SaveChanges();
+        }
+
         private void LoadData(BuilderInfo info)
         {
             Load<LoaderS>("wn_s.pl", info);
@@ -99,11 +104,21 @@ namespace Ferric.Text.WordNet.Builder
             Load<LoaderMs>("wn_ms.pl", info);
             Load<LoaderMp>("wn_mp.pl", info);
             Load<LoaderDer>("wn_der.pl", info);
+            Load<LoaderCls>("wn_cls.pl", info);
+            Load<LoaderCs>("wn_cs.pl", info);
+            Load<LoaderVgp>("wn_vgp.pl", info);
+            Load<LoaderAt>("wn_at.pl", info);
+            Load<LoaderAnt>("wn_ant.pl", info);
+            Load<LoaderSa>("wn_sa.pl", info);
+            Load<LoaderPpl>("wn_ppl.pl", info);
+            Load<LoaderPer>("wn_per.pl", info);
+            Load<LoaderFr>("wn_fr.pl", info);
         }
 
         private void SaveRelations(BuilderInfo info, Data.WordNet context)
         {
             var synsets = info.Synsets.Values;
+            var wordSenses = info.Synsets.Values.SelectMany(s => s.Senses);
 
             SaveRelation<Synset>(context, synsets, "Hypernyms");
             SaveRelation<Synset>(context, synsets, "Hyponyms");
@@ -117,7 +132,14 @@ namespace Ferric.Text.WordNet.Builder
             SaveRelation<Synset>(context, synsets, "SubstanceHolonyms");
             SaveRelation<Synset>(context, synsets, "PartMeronyms");
             SaveRelation<Synset>(context, synsets, "PartHolonyms");
-            SaveRelation<Synset>(context, synsets, "Derivations");
+            SaveRelation<WordSense>(context, wordSenses, "Derivations");
+            SaveRelation<Synset>(context, synsets, "Causes");
+            SaveRelation<Synset>(context, synsets, "Groups");
+            SaveRelation<Synset>(context, synsets, "Attributes");
+            SaveRelation<WordSense>(context, wordSenses, "Antonyms");
+            SaveRelation<WordSense>(context, wordSenses, "SeeAlsos");
+            SaveRelation<WordSense>(context, wordSenses, "Participles");
+            SaveRelation<WordSense>(context, wordSenses, "PertainsTo");
         }
 
         static Type[] CtorTypes = new[] { typeof(TextReader), typeof(BuilderInfo) };
