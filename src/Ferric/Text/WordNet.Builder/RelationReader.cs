@@ -8,25 +8,30 @@ using System.Threading.Tasks;
 
 namespace Ferric.Text.WordNet.Builder
 {
-    class RelationReader<T> : IDataReader
+    class RelationReader<TSrc, TDest> : IDataReader
     {
         DataTable schemaTable;
         bool closed;
 
-        PropertyInfo idProperty;
+        IEnumerable<TSrc> source;
+        string tableName;
 
-        IEnumerable<T> source;
-        PropertyInfo destProperty;
+        PropertyInfo srcProperty;
+        PropertyInfo srcIdProperty;
+        PropertyInfo destIdProperty;
 
         IEnumerator<Tuple<int, int>> results;
 
         int numRead = 0;
 
-        public RelationReader(IEnumerable<T> source, string propertyName)
+        public RelationReader(IEnumerable<TSrc> source, string srcPropertyName, string tableName)
         {
             this.source = source;
-            this.destProperty = typeof(T).GetProperty(propertyName);
-            this.idProperty = typeof(T).GetProperty(typeof(T).Name + "Id");
+            this.tableName = tableName;
+
+            this.srcProperty = typeof(TSrc).GetProperty(srcPropertyName);
+            this.srcIdProperty = typeof(TSrc).GetProperty(typeof(TSrc).Name + "Id");
+            this.destIdProperty = typeof(TDest).GetProperty(typeof(TDest).Name + "Id");
         }
 
         private IEnumerable<Tuple<int, int>> GetResults()
@@ -34,16 +39,16 @@ namespace Ferric.Text.WordNet.Builder
             var sourceEnum = source.GetEnumerator();
             while (sourceEnum.MoveNext())
             {
-                int sourceId = (int)idProperty.GetValue(sourceEnum.Current);
+                int sourceId = (int)srcIdProperty.GetValue(sourceEnum.Current);
 
-                var dest = destProperty.GetValue(sourceEnum.Current) as IEnumerable<T>;
+                var dest = srcProperty.GetValue(sourceEnum.Current) as IEnumerable<TDest>;
                 if (dest == null)
                     continue;
                 
                 var destEnum = dest.GetEnumerator();
                 while (destEnum.MoveNext())
                 {
-                    int destId = (int)idProperty.GetValue(destEnum.Current);
+                    int destId = (int)destIdProperty.GetValue(destEnum.Current);
                     yield return Tuple.Create(sourceId, destId);
                 }
             }
@@ -65,9 +70,19 @@ namespace Ferric.Text.WordNet.Builder
         {
             if (schemaTable == null)
             {
-                schemaTable = new DataTable(destProperty.Name);
-                schemaTable.Columns.Add("First" + typeof(T).Name + "Id", typeof(int));
-                schemaTable.Columns.Add("Second" + typeof(T).Name + "Id", typeof(int));
+                schemaTable = new DataTable(tableName);
+
+                var firstName = typeof(TSrc).Name + "Id";
+                var secondName = typeof(TDest).Name + "Id";
+
+                if (typeof(TSrc) == typeof(TDest))
+                {
+                    firstName = "First" + firstName;
+                    secondName = "Second" + secondName;
+                }
+
+                schemaTable.Columns.Add(firstName, typeof(int));
+                schemaTable.Columns.Add(secondName, typeof(int));
             }
             return schemaTable;
         }

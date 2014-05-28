@@ -119,27 +119,30 @@ namespace Ferric.Text.WordNet.Builder
         {
             var synsets = info.Synsets.Values;
             var wordSenses = info.Synsets.Values.SelectMany(s => s.Senses);
+            var semanticClasses = info.SemanticClasses.Values;
 
-            SaveRelation<Synset>(context, synsets, "Hypernyms");
-            SaveRelation<Synset>(context, synsets, "Hyponyms");
-            SaveRelation<Synset>(context, synsets, "Prototypes");
-            SaveRelation<Synset>(context, synsets, "Instances");
-            SaveRelation<Synset>(context, synsets, "Entailments");
-            SaveRelation<Synset>(context, synsets, "Satellites");
-            SaveRelation<Synset>(context, synsets, "MemberMeronyms");
-            SaveRelation<Synset>(context, synsets, "MemberHolonyms");
-            SaveRelation<Synset>(context, synsets, "SubstanceMeronyms");
-            SaveRelation<Synset>(context, synsets, "SubstanceHolonyms");
-            SaveRelation<Synset>(context, synsets, "PartMeronyms");
-            SaveRelation<Synset>(context, synsets, "PartHolonyms");
-            SaveRelation<WordSense>(context, wordSenses, "Derivations");
-            SaveRelation<Synset>(context, synsets, "Causes");
-            SaveRelation<Synset>(context, synsets, "Groups");
-            SaveRelation<Synset>(context, synsets, "Attributes");
-            SaveRelation<WordSense>(context, wordSenses, "Antonyms");
-            SaveRelation<WordSense>(context, wordSenses, "SeeAlsos");
-            SaveRelation<WordSense>(context, wordSenses, "Participles");
-            SaveRelation<WordSense>(context, wordSenses, "PertainsTo");
+            SaveRelation<Synset, Synset>(context, synsets, "Hypernyms");
+            SaveRelation<Synset, Synset>(context, synsets, "Hyponyms");
+            SaveRelation<Synset, Synset>(context, synsets, "Prototypes");
+            SaveRelation<Synset, Synset>(context, synsets, "Instances");
+            SaveRelation<Synset, Synset>(context, synsets, "Entailments");
+            SaveRelation<Synset, Synset>(context, synsets, "Satellites");
+            SaveRelation<Synset, Synset>(context, synsets, "MemberMeronyms");
+            SaveRelation<Synset, Synset>(context, synsets, "MemberHolonyms");
+            SaveRelation<Synset, Synset>(context, synsets, "SubstanceMeronyms");
+            SaveRelation<Synset, Synset>(context, synsets, "SubstanceHolonyms");
+            SaveRelation<Synset, Synset>(context, synsets, "PartMeronyms");
+            SaveRelation<Synset, Synset>(context, synsets, "PartHolonyms");
+            SaveRelation<WordSense, WordSense>(context, wordSenses, "Derivations");
+            SaveRelation<Synset, Synset>(context, synsets, "Causes");
+            SaveRelation<Synset, Synset>(context, synsets, "Groups");
+            SaveRelation<Synset, Synset>(context, synsets, "Attributes");
+            SaveRelation<WordSense, WordSense>(context, wordSenses, "Antonyms");
+            SaveRelation<WordSense, WordSense>(context, wordSenses, "SeeAlsos");
+            SaveRelation<WordSense, WordSense>(context, wordSenses, "Participles");
+            SaveRelation<WordSense, WordSense>(context, wordSenses, "PertainsTo");
+            SaveRelation<SemanticClass, WordSense>(context, semanticClasses, "Heads", "SemanticClassHeads");
+            SaveRelation<SemanticClass, WordSense>(context, semanticClasses, "Members", "SemanticClassMembers");
         }
 
         static Type[] CtorTypes = new[] { typeof(TextReader), typeof(BuilderInfo) };
@@ -159,16 +162,16 @@ namespace Ferric.Text.WordNet.Builder
             }
         }
 
-        void SaveRelation<T>(WordNet.Data.WordNet context, IEnumerable<T> source, string destPropertyName)
+        void SaveRelation<TSrc, TDest>(WordNet.Data.WordNet context, IEnumerable<TSrc> source, string srcPropertyName, string tableName = null)
         {
-            Console.Write(destPropertyName);
+            Console.Write(srcPropertyName ?? tableName);
             Console.Write(": ");
 
             using (var bc = new SqlBulkCopy(context.Database.Connection as SqlConnection))
             {
-                var dr = new RelationReader<T>(source, destPropertyName);
+                var dr = new RelationReader<TSrc, TDest>(source, srcPropertyName, tableName ?? srcPropertyName);
 
-                bc.DestinationTableName = destPropertyName;
+                bc.DestinationTableName = tableName ?? srcPropertyName;
                 bc.EnableStreaming = true;
                 bc.WriteToServer(dr);
 
