@@ -76,6 +76,10 @@
       <Project>{42521ddd-9e6b-458f-87cf-df5a292bc17d}</Project>
       <Name>Text.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Text\WordNet\Text.WordNet.csproj">
+      <Project>{7fc9b042-f38c-4d52-95b3-d8e42b58e7c7}</Project>
+      <Name>Text.WordNet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utils\Regexp\Utils.Regexp.csproj">
       <Project>{8b2269bb-541e-4d30-9101-ffa175c119d0}</Project>
       <Name>Utils.Regexp</Name>

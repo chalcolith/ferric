@@ -16,16 +16,41 @@ namespace Ferric.Text.Common.Tokenizer
         Other
     }
 
+    public struct TokenLemma
+    {
+        public double Weight;
+        public string Lemma;
+    }
+
     public class TokenSpan : BaseSpan
     {
-        string lemma;
+        IList<TokenLemma> lemmas;
 
         public TokenClass TokenClass { get; internal set; }
         public string Text { get; protected set; }
+        
+        public IEnumerable<TokenLemma> Lemmas
+        {
+            get
+            {
+                if (lemmas == null)
+                {
+                    lemmas = new List<TokenLemma>() { new TokenLemma { Weight = 1.0, Lemma = Text.Trim().ToLowerInvariant() } };
+                }
+                return lemmas;
+            }
+            set
+            {
+                lemmas = value.ToList();
+            }
+        }
+
         public string Lemma
         {
-            get { return lemma ?? (lemma = Text.ToLowerInvariant()); }
-            set { lemma = value; }
+            set
+            {
+                lemmas = new List<TokenLemma>() { new TokenLemma { Weight = 1.0, Lemma = value.Trim().ToLowerInvariant() } };
+            }
         }
 
         public TokenSpan(TokenClass tokenClass, string text, ulong charPos, ulong charNext, ulong ordinal)
@@ -40,10 +65,12 @@ namespace Ferric.Text.Common.Tokenizer
 
         public override string ToString()
         {
-            return string.Format("{{ {0}:{1} {2}-{3} {4} \"{5}\":{6} }}", 
+            var ll = string.Join(", ", lemmas.Select(l => string.Format("{0}/{1}", l.Lemma, l.Weight)));
+
+            return string.Format("{{ {0}:{1} {2}-{3} {4} \"{5}\":{{{6}}} }}", 
                 this.GetType().Name, Ordinal, CharPos, CharNext, TokenClass, 
                 System.Text.RegularExpressions.Regex.Escape(Text),
-                System.Text.RegularExpressions.Regex.Escape(Lemma));
+                System.Text.RegularExpressions.Regex.Escape(ll));
         }
     }
 }

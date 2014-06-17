@@ -35,7 +35,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -50,8 +59,34 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="PipelineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Config\Config.csproj">
+      <Project>{7c36b0c0-bdb7-4a0e-a4f6-3075ec6e3db9}</Project>
+      <Name>Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lang\English\Lang.English.csproj">
+      <Project>{29430e95-0ea0-4859-a864-a93f00a73900}</Project>
+      <Name>Lang.English</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\Regexp\Utils.Regexp.csproj">
+      <Project>{8b2269bb-541e-4d30-9101-ffa175c119d0}</Project>
+      <Name>Utils.Regexp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Text.Common.csproj">
+      <Project>{42521ddd-9e6b-458f-87cf-df5a292bc17d}</Project>
+      <Name>Text.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WordNet\Text.WordNet.csproj">
+      <Project>{7fc9b042-f38c-4d52-95b3-d8e42b58e7c7}</Project>
+      <Name>Text.WordNet</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

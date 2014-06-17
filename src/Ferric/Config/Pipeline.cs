@@ -140,7 +140,27 @@ namespace Ferric.Config
             if (context.TypeCache.TryGetValue(name, out loadedType))
                 return loadedType;
 
+            // try to find dlls
+            var allAssemblies = new List<Assembly>();
+
+            var executableDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            foreach (var dllFile in Directory.EnumerateFiles(executableDir, "*.dll"))
+            {
+                try
+                {
+                    allAssemblies.Add(Assembly.LoadFile(dllFile));
+                }
+                catch
+                {
+                }
+            }
+
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                allAssemblies.Add(assembly);
+            }
+
+            foreach (var assembly in allAssemblies)
             {
                 var foundType = assembly.GetType(name);
                 if (foundType != null && typeof(ITransducer).IsAssignableFrom(foundType))

@@ -23,11 +23,12 @@ namespace Ferric.Text.Common.Documents
             foreach (var input in inputs)
             {
                 var token = input as TokenSpan;
-                if (token != null)
-                {
-                    if (stopWords.Contains(token.Lemma))
-                        continue;
-                }
+                if (token == null)
+                    continue;
+
+                if (token.Lemmas.Any(l => stopWords.Contains(l.Lemma)))
+                    continue;
+
                 yield return input;
             }
         }

@@ -30,12 +30,12 @@ namespace Ferric.Tests
             foreach (string result in results)
             {
                 Assert.AreEqual(@"{ FileSystemDocument:0 3-37 " + textPath + @" }
-  { TokenSpan:2 3-7 Word ""name"":name }
-  { TokenSpan:6 11-21 Word ""Ozymandias"":ozymandia }
-  { TokenSpan:7 21-22 Punct "","":, }
-  { TokenSpan:9 23-27 Word ""king"":king }
-  { TokenSpan:13 31-36 Word ""kings"":king }
-  { TokenSpan:14 36-37 Punct ""\."":\. }
+  { TokenSpan:2 3-7 Word ""name"":{name/1} }
+  { TokenSpan:6 11-21 Word ""Ozymandias"":{ozymandia/1} }
+  { TokenSpan:7 21-22 Punct "","":{,/1} }
+  { TokenSpan:9 23-27 Word ""king"":{king/1} }
+  { TokenSpan:13 31-36 Word ""kings"":{king/1} }
+  { TokenSpan:14 36-37 Punct ""\."":{\./1} }
 ", result);
             }
         }

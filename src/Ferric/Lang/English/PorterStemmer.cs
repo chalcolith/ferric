@@ -23,11 +23,16 @@ namespace Ferric.Lang.English
             foreach (var input in inputs)
             {
                 var token = input as TokenSpan;
-                if (token != null)
+                if (token == null)
+                    continue;
+
+                token.Lemmas = token.Lemmas.Select(l =>
                 {
-                    token.Lemma = Stem(token.Lemma);
-                }
-                yield return input;
+                    l.Lemma = Stem(l.Lemma);
+                    return l;
+                });
+
+                yield return token;
             }
         }
 

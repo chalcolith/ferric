@@ -10,7 +10,7 @@ namespace Ferric.Text.Common.Lexicon
 {
     public class FileLexicon : BaseLexicon
     {
-        private int nextIndex = 1;
+        protected int nextIndex = 1;
 
         public string FullPath { get; private set; }
 
@@ -63,7 +63,7 @@ namespace Ferric.Text.Common.Lexicon
             }
         }
 
-        public void Save()
+        public virtual void Save()
         {
             using (var sw = new StreamWriter(FullPath))
             {

@@ -50,6 +50,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{A540
 	ProjectSection(SolutionItems) = preProject
 		..\..\data\english\samples\dtm.config = ..\..\data\english\samples\dtm.config
 		..\..\data\english\samples\tokenize.config = ..\..\data\english\samples\tokenize.config
+		..\..\data\english\samples\wndtm.config = ..\..\data\english\samples\wndtm.config
 	EndProjectSection
 EndProject
 Global

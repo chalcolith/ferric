@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +19,23 @@ namespace Ferric.Text.WordNet.Data
         public WordNet(string connectionString)
             : base(connectionString)
         {
+        }
+
+        public static WordNet CreateContext(string fname)
+        {
+            if (!File.Exists(fname))
+                throw new ArgumentException("Database file does not exist: " + fname, "fname");
+
+            var csBuilder = new SqlConnectionStringBuilder();
+            csBuilder.DataSource = @"(LocalDB)\v11.0";
+            csBuilder.AttachDBFilename = fname;
+            csBuilder.IntegratedSecurity = true;
+
+            var context = new WordNet(csBuilder.ConnectionString);
+            if (!context.Database.Exists())
+                throw new ArgumentException("Database does not exist in: " + fname, "fname");
+
+            return context;
         }
 
         static WordNet()

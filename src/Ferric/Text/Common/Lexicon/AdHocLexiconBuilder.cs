@@ -35,7 +35,8 @@ namespace Ferric.Text.Common.Lexicon
 
                 foreach (var token in document.ChildrenOfType<TokenSpan>().Where(t => t.TokenClass == TokenClass.Word))
                 {
-                    lexicon.AddLemma(token.Lemma);
+                    foreach (var lemma in token.Lemmas)
+                        lexicon.AddLemma(lemma.Lemma);
                 }
             }
 

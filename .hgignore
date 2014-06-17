@@ -7,4 +7,6 @@ obj/
 packages/
 App_Data/
 data/english/wordnet/lemmas.txt
+data/english/samples/adhoc.lex
+data/english/samples/wnextra.lex
 *.ldf

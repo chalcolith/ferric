@@ -19,21 +19,32 @@ namespace Ferric.Text.Common.Documents
         {
             foreach (var collection in inputs)
             {
-                var rows = new List<IDictionary<int, int>>();
+                var rows = new List<IDictionary<int, double>>();
                 foreach (var document in collection.Documents)
                 {
-                    var row = new Dictionary<int, int>();
+                    var row = new Dictionary<int, double>();
                     rows.Add(row);
 
-                    foreach (var token in document.ChildrenOfType<TokenSpan>()
-                                            .Where(t => t.TokenClass == TokenClass.Word))
+                    foreach (var token in document.ChildrenOfType<TokenSpan>().Where(t => t.TokenClass == TokenClass.Word))
                     {
-                        int col;
-                        collection.Lexicon.IndicesByLemma.TryGetValue(token.Lemma, out col);
+                        int num = 0;
+                        foreach (var lemma in token.Lemmas)
+                        {
+                            int col;
+                            collection.Lexicon.IndicesByLemma.TryGetValue(lemma.Lemma, out col);
 
-                        int count;
-                        row.TryGetValue(col, out count);
-                        row[col] = count + 1;
+                            double count;
+                            row.TryGetValue(col, out count);
+                            row[col] = count + lemma.Weight;
+                            num++;
+                        }
+
+                        if (num == 0)
+                        {
+                            double count;
+                            row.TryGetValue(0, out count);
+                            row[0] = count + 1;
+                        }
                     }
                 }
 
