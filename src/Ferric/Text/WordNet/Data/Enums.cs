@@ -22,6 +22,7 @@ namespace Ferric.Text.WordNet.Data
 
     public enum SynsetType
     {
+        Unknown,
         Noun,
         Verb,
         Adjective,

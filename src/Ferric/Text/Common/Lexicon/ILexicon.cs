@@ -6,16 +6,20 @@ using System.Threading.Tasks;
 
 namespace Ferric.Text.Common.Lexicon
 {
-    public interface ILexicon
+    public interface ILexicon<TEntry>
     {
-        IDictionary<string, int> IndicesByLemma { get; }
-        IDictionary<int, string> LemmasByIndex { get; }
+        IDictionary<TEntry, ISet<int>> IndicesByEntry { get; }
+        IDictionary<int, ISet<TEntry>> EntriesByIndex { get; }
 
-        int AddLemma(string lemma);
+        IEnumerable<int> GetIndices(string token);
+        IEnumerable<string> GetLemmas(int index);
+
+        ISet<int> AddEntry(TEntry entry);
     }
 
     public static class Constants
     {
-        public const string UnknownToken = "?unknown?";
+        public const int UnknownIndex = 0;
+        public const string UnknownLemma = "?unknown?";
     }
 }

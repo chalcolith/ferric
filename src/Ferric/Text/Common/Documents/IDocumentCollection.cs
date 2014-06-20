@@ -8,9 +8,9 @@ using Ferric.Text.Common.Lexicon;
 
 namespace Ferric.Text.Common.Documents
 {
-    public interface IDocumentCollection
+    public interface IDocumentCollection<TLexiconEntry>
     {
-        ILexicon Lexicon { get; set; }
+        ILexicon<TLexiconEntry> Lexicon { get; set; }
         IList<IDocument> Documents { get; set; }
         IMatrix<double> DocumentTermMatrix { get; set; }
     }

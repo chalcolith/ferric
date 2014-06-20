@@ -46,21 +46,30 @@ namespace Ferric.Config
         static ITransducer CreateFromXml(XElement elem, ITransducer parent, CreateContext context)
         {
             // find type
-            var typeName = elem.Name.LocalName;
-            var type = GetLoadedType(typeName, context);
-            if (type == null)
-                throw new Exception(string.Format("Unable to find a transducer of type {0}.", typeName));
+            string typeName;
+            Type type;
+            FindType(elem, context, out typeName, out type);
 
-            if (type.IsGenericType)
-                throw new Exception(string.Format("You cannot create an instance of a generic transducer from a config file."));
+            // construct instance
+            var transducer = CreateTransducer(elem, context, typeName, type);
 
-            // get parameters
+            // now get sub transducers
+            transducer.SubTransducers = elem.Elements()
+                .Select(subElem => CreateFromXml(subElem, transducer, context))
+                .Where(subTransducer => subTransducer != null)
+                .ToList();
+
+            return transducer;
+        }
+
+        static ITransducer CreateTransducer(XElement elem, CreateContext context, string typeName, Type type)
+        {
             var atts = elem.Attributes()
+                .Where(att => att.Name != "typeargs")
                 .ToDictionary(att => att.Name.LocalName, att => att.Value);
             if (!atts.ContainsKey(ContextParameterName))
                 atts.Add(ContextParameterName, "");
 
-            // find an appropriate constructor
             ITransducer transducer = null;
 
             var ctors = type.GetConstructors();
@@ -82,25 +91,25 @@ namespace Ferric.Config
 
                     // assemble the actual parameters
                     var actualParms = formalParms.Select(formalParm =>
+                    {
+                        if (formalParm.Name == ContextParameterName)
+                            return context;
+
+                        var actualStr = atts[formalParm.Name];
+
+                        try
                         {
-                            if (formalParm.Name == ContextParameterName)
-                                return context;
-
-                            var actualStr = atts[formalParm.Name];
-
-                            try
-                            {
-                                object actualObj = Convert.ChangeType(actualStr, formalParm.ParameterType);
-                                if (actualObj == null)
-                                    throw new Exception("Value is empty");
-                                return actualObj;
-                            }
-                            catch (Exception e)
-                            {
-                                throw new Exception(string.Format("Unable to convert value '{0}' for paramter {2} to {3}: {4}",
-                                    actualStr, formalParm.Name, formalParm.ParameterType.FullName, e.Message));
-                            }
-                        }).ToArray();
+                            object actualObj = Convert.ChangeType(actualStr, formalParm.ParameterType);
+                            if (actualObj == null)
+                                throw new Exception("Value is empty");
+                            return actualObj;
+                        }
+                        catch (Exception e)
+                        {
+                            throw new Exception(string.Format("Unable to convert value '{0}' for paramter {2} to {3}: {4}",
+                                actualStr, formalParm.Name, formalParm.ParameterType.FullName, e.Message));
+                        }
+                    }).ToArray();
 
                     // call the constructor
                     transducer = (ITransducer)ctor.Invoke(actualParms);
@@ -124,53 +133,91 @@ namespace Ferric.Config
                 }
                 throw new Exception(sb.ToString());
             }
-
-            // now get sub transducers
-            transducer.SubTransducers = elem.Elements()
-                .Select(subElem => CreateFromXml(subElem, transducer, context))
-                .Where(subTransducer => subTransducer != null)
-                .ToList();
-
             return transducer;
         }
 
-        static Type GetLoadedType(string name, CreateContext context)
+        static void FindType(XElement elem, CreateContext context, out string typeName, out Type type)
         {
-            Type loadedType;
-            if (context.TypeCache.TryGetValue(name, out loadedType))
-                return loadedType;
+            typeName = elem.Name.LocalName;
+            var typeArgs = elem.Attributes("typeArgs").FirstOrDefault();
 
+            type = null;
+            if (typeArgs != null)
+            {
+                var args = typeArgs.Value.Split(',')
+                    .Select(name => GetLoadedType(name, context, expectTransducer: false))
+                    .Where(t => t != null)
+                    .ToArray();
+                if (args.Any())
+                {
+                    var gen = GetLoadedType(string.Format("{0}`{1}", typeName, args.Length), context, expectTransducer: false);
+                    if (gen != null)
+                        type = gen.MakeGenericType(args);
+                }
+            }
+
+            if (type == null)
+                type = GetLoadedType(typeName, context);
+            if (type == null)
+                throw new Exception(string.Format("Unable to find a transducer of type {0}.", typeName));
+        }
+
+        static IList<Assembly> allAssemblies;
+        static object assemblyLock = new object();
+
+        static Type GetLoadedType(string name, CreateContext context, bool expectTransducer = true)
+        {
             // try to find dlls
-            var allAssemblies = new List<Assembly>();
-
-            var executableDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            foreach (var dllFile in Directory.EnumerateFiles(executableDir, "*.dll"))
+            lock (assemblyLock)
             {
-                try
+                if (allAssemblies == null)
                 {
-                    allAssemblies.Add(Assembly.LoadFile(dllFile));
+                    allAssemblies = new List<Assembly>();
+
+                    var executableDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    foreach (var dllFile in Directory.EnumerateFiles(executableDir, "*.dll"))
+                    {
+                        try
+                        {
+                            allAssemblies.Add(Assembly.LoadFile(dllFile));
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                    {
+                        allAssemblies.Add(assembly);
+                    }
                 }
-                catch
+
+                Type loadedType;
+                if (context.TypeCache.TryGetValue(name, out loadedType))
                 {
+                    if (expectTransducer && !typeof(ITransducer).IsAssignableFrom(loadedType))
+                        return null;
+                    else
+                        return loadedType;
                 }
-            }
 
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                allAssemblies.Add(assembly);
-            }
-
-            foreach (var assembly in allAssemblies)
-            {
-                var foundType = assembly.GetType(name);
-                if (foundType != null && typeof(ITransducer).IsAssignableFrom(foundType))
+                foreach (var assembly in allAssemblies)
                 {
-                    context.TypeCache[name] = foundType;
-                    return foundType;
-                }
-            }
+                    var type = assembly.GetType(name);
+                    if (type != null)
+                    {
+                        context.TypeCache[name] = type;
 
-            return null;
+                        if (!expectTransducer || typeof(ITransducer).IsAssignableFrom(type))
+                        {
+                            loadedType = type;
+                            break;
+                        }
+                    }
+                }
+
+                return loadedType;
+            }
         }
     }
 }

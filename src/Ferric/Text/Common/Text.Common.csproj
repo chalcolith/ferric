@@ -53,7 +53,6 @@
     <Compile Include="ISpan.cs" />
     <Compile Include="ITransducer.cs" />
     <Compile Include="Lexicon\AdHocLexiconBuilder.cs" />
-    <Compile Include="Lexicon\BaseLexicon.cs" />
     <Compile Include="Lexicon\FileLexicon.cs" />
     <Compile Include="Lexicon\ILexicon.cs" />
     <Compile Include="Tokenizer\TokenizerException.cs" />

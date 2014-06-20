@@ -8,14 +8,21 @@ using Ferric.Text.Common.Tokenizer;
 
 namespace Ferric.Text.Common.Documents
 {
-    public class DtmBuilder : BaseTransducer<IDocumentCollection, IDocumentCollection>
+    public class DtmBuilder<TLexiconEntry> : BaseTransducer<IDocumentCollection<TLexiconEntry>, IDocumentCollection<TLexiconEntry>>
     {
         public DtmBuilder(ICreateContext context)
             : base(context)
         {
         }
 
-        public override IEnumerable<IDocumentCollection> Process(IEnumerable<IDocumentCollection> inputs)
+        void AddCount(IDictionary<int, double> row, int col, double weight)
+        {
+            double count;
+            row.TryGetValue(col, out count);
+            row[col] = count + weight;
+        }
+
+        public override IEnumerable<IDocumentCollection<TLexiconEntry>> Process(IEnumerable<IDocumentCollection<TLexiconEntry>> inputs)
         {
             foreach (var collection in inputs)
             {
@@ -28,15 +35,25 @@ namespace Ferric.Text.Common.Documents
                     foreach (var token in document.ChildrenOfType<TokenSpan>().Where(t => t.TokenClass == TokenClass.Word))
                     {
                         int num = 0;
-                        foreach (var lemma in token.Lemmas)
+                        foreach (var entry in token.Possibilities)
                         {
-                            int col;
-                            collection.Lexicon.IndicesByLemma.TryGetValue(lemma.Lemma, out col);
-
-                            double count;
-                            row.TryGetValue(col, out count);
-                            row[col] = count + lemma.Weight;
-                            num++;
+                            if (entry.Indices != null)
+                            {
+                                foreach (var index in entry.Indices)
+                                {
+                                    AddCount(row, index, entry.Weight / entry.Indices.Count);
+                                    num++;
+                                }
+                            }
+                            else
+                            {
+                                var indices = collection.Lexicon.GetIndices(entry.Lemma).ToList();
+                                foreach (var index in indices)
+                                {
+                                    AddCount(row, index, entry.Weight / indices.Count);
+                                    num++;
+                                }
+                            }
                         }
 
                         if (num == 0)
@@ -49,7 +66,7 @@ namespace Ferric.Text.Common.Documents
                 }
 
                 // build document-term matrix
-                int numColumns = collection.Lexicon.IndicesByLemma.Count;
+                int numColumns = collection.Lexicon.IndicesByEntry.Count;
                 int numRows = rows.Count;
 
                 var dtm = new SparseMatrix<double>(numRows, numColumns);

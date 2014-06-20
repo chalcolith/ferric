@@ -7,11 +7,11 @@ using Ferric.Math.Common;
 
 namespace Ferric.Text.Common.Documents
 {
-    public class DocumentCollection : IDocumentCollection
+    public class DocumentCollection<TLexiconEntry> : IDocumentCollection<TLexiconEntry>
     {
         #region IDocumentCollection Members
 
-        public Lexicon.ILexicon Lexicon { get; set; }
+        public Lexicon.ILexicon<TLexiconEntry> Lexicon { get; set; }
 
         public IList<IDocument> Documents { get; set; }
 
@@ -26,10 +26,10 @@ namespace Ferric.Text.Common.Documents
             sb.AppendFormat("documents: {0}", Documents.Count);
             sb.AppendLine();
 
-            sb.AppendFormat("lemmas:    {0}\t{1}", Lexicon.IndicesByLemma.Count, Lexicon.GetType().FullName);
+            sb.AppendFormat("lexemes:   {0}\t{1}", Lexicon.IndicesByEntry.Count, Lexicon.GetType().FullName);
             sb.AppendLine();
 
-            var words = new Dictionary<int, IDictionary<int, int>>();
+            var words = new Dictionary<int, IDictionary<int, double>>();
 
             var sparse = DocumentTermMatrix as SparseMatrix<double>;
             if (sparse != null)
@@ -38,12 +38,12 @@ namespace Ferric.Text.Common.Documents
                 {
                     var doc = tuple.Item1;
                     var index = tuple.Item2;
-                    var count = (int)tuple.Item3;
+                    var count = tuple.Item3;
 
-                    IDictionary<int, int> counts;
+                    IDictionary<int, double> counts;
                     if (!words.TryGetValue(index, out counts))
                     {
-                        counts = new Dictionary<int, int>();
+                        counts = new Dictionary<int, double>();
                         words[index] = counts;
                     }
 
@@ -57,10 +57,10 @@ namespace Ferric.Text.Common.Documents
                 {
                     for (int col = 0; col < DocumentTermMatrix.Cols; col++)
                     {
-                        IDictionary<int, int> counts;
+                        IDictionary<int, double> counts;
                         if (!words.TryGetValue(col, out counts))
                         {
-                            counts = new Dictionary<int, int>();
+                            counts = new Dictionary<int, double>();
                             words[row] = counts;
                         }
 
@@ -73,10 +73,11 @@ namespace Ferric.Text.Common.Documents
 
             sb.AppendFormat("\t{0}", string.Join("\t", words.Select(kv =>
                 {
-                    var lemma = Lexicon.LemmasByIndex[kv.Key];
-                    return lemma.Length < 8
-                        ? lemma
-                        : lemma.Substring(0, 5) + "..";
+                    var text = string.Join(",", Lexicon.GetLemmas(kv.Key));
+
+                    return text.Length < 8
+                        ? text
+                        : text.Substring(0, 5) + "..";
                 })));
             sb.AppendLine();
 
@@ -84,7 +85,7 @@ namespace Ferric.Text.Common.Documents
             {
                 sb.AppendFormat("{0}\t{1}", row, string.Join("\t", words.Select(kv =>
                     {
-                        int count;
+                        double count;
                         return kv.Value.TryGetValue(row, out count) ? count.ToString() : "";
                     })));
                 sb.AppendLine();

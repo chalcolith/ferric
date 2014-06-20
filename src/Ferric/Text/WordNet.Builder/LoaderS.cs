@@ -32,7 +32,7 @@ namespace Ferric.Text.WordNet.Builder
         {
             var synset_id = GetValue<int>(match, "synset_id");
             var w_num = GetValue<int>(match, "w_num");
-            var word = GetValue<string>(match, "word");
+            var word = GetValue<string>(match, "word").Trim().Trim('\'').ToLowerInvariant();
             var ss_type = GetSynsetType(GetValue<string>(match, "ss_type"));
 
             int sense_number, tag_count;

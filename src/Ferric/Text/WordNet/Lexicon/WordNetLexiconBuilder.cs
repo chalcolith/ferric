@@ -7,58 +7,90 @@ using System.Text;
 using System.Threading.Tasks;
 using Ferric.Text.Common;
 using Ferric.Text.Common.Documents;
+using Ferric.Text.Common.Lexicon;
 using Ferric.Text.Common.Tokenizer;
 
 namespace Ferric.Text.WordNet.Lexicon
 {
-    public class WordNetLexiconBuilder : BaseTransducer<IDocument, IDocumentCollection>
+    public class WordNetLexiconBuilder : BaseTransducer<IDocument, IDocumentCollection<WordNetEntry>>
     {
         readonly string wordNetDir;
         readonly string extrasFname;
+        readonly bool addUnknown;
 
-        public WordNetLexiconBuilder(ICreateContext context, string wordNetDir, string extras)
+        public WordNetLexiconBuilder(ICreateContext context, string wordNetDir, string extras, bool addUnknown)
             : base(context)
         {
             this.wordNetDir = wordNetDir;
             this.extrasFname = extras;
+            this.addUnknown = addUnknown;
         }
 
-        public override IEnumerable<IDocumentCollection> Process(IEnumerable<IDocument> inputs)
+        public override IEnumerable<IDocumentCollection<WordNetEntry>> Process(IEnumerable<IDocument> inputs)
         {
-            var dbPath = CreateContext.GetFullPath(Path.Combine(wordNetDir, "WordNet.mdf"));
+            var wnPath = CreateContext.GetFullPath(wordNetDir);
+            var lexicon = new SynsetLexicon(wnPath, CreateContext.GetFullPath(extrasFname), true);
+            var morph = new Morph.Morphy(lexicon, wnPath);
 
-            using (var context = Data.WordNet.CreateContext(dbPath))
+            // now process documents
+            var collection = new DocumentCollection<WordNetEntry>
             {
-                var lexicon = new SynsetLexicon(context, CreateContext.GetFullPath(extrasFname), true);
-                var morph = new Morph.Morphy(context, wordNetDir);
+                Lexicon = lexicon,
+                Documents = new List<IDocument>()
+            };
 
-                // now process documents
-                var collection = new DocumentCollection
+            foreach (var document in inputs)
+            {
+                collection.Documents.Add(document);
+
+                foreach (var token in document.ChildrenOfType<TokenSpan>().Where(t => t.TokenClass == TokenClass.Word))
                 {
-                    Lexicon = lexicon,
-                    Documents = new List<IDocument>()
-                };
-
-                foreach (var document in inputs)
-                {
-                    collection.Documents.Add(document);
-
-                    foreach (var token in document.ChildrenOfType<TokenSpan>().Where(t => t.TokenClass == TokenClass.Word))
+                    var stemmedEntries = token.Possibilities.SelectMany(orig =>
                     {
-                        token.Lemmas = token.Lemmas.SelectMany(l =>
-                        {
-                            var stems = morph.GetStems(l.Lemma).ToList();
-                            return stems.Select(s => new TokenLemma { Weight = l.Weight / stems.Count, Lemma = s.Item2 });
-                        });
+                        var stems = morph.GetStems(orig.Lemma).ToList();
+                        var possibilities = stems.Select(stem => 
+                            new TokenPossibility
+                            {
+                                Indices = stem.Indices,
+                                Lemma = stem.Lemma,
+                                Weight = orig.Weight / stems.Count,
+                                Data = stem
+                            });
+                        return possibilities;
+                    })
+                    .ToList();
 
-                        foreach (var lemma in token.Lemmas)
-                            lexicon.AddLemma(lemma.Lemma);
+                    if (stemmedEntries.Count == 0)
+                    {
+                        foreach (var possibility in token.Possibilities)
+                        {
+                            var temp = possibility;
+                            if (addUnknown)
+                            {
+                                var newEntry = new WordNetEntry
+                                {
+                                    Lemma = possibility.Lemma,
+                                    PartOfSpeech = Data.SynsetType.Unknown
+                                };
+
+                                temp.Indices = lexicon.AddEntry(newEntry);
+                            }
+                            else
+                            {
+                                var indices = lexicon.GetIndices(temp.Lemma);
+                                temp.Indices = indices.Any() ? new HashSet<int>(indices) : SynsetLexicon.UnknownIndices;
+                            }
+                        };
+                    }
+                    else
+                    {
+                        token.Possibilities = stemmedEntries;
                     }
                 }
-
-                //
-                return new[] { collection };
             }
+
+            //
+            return new[] { collection };
         }
     }
 }

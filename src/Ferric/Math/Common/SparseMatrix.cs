@@ -70,6 +70,15 @@ namespace Ferric.Math.Common
             }
         }
 
+        #region Object Members
+
+        public override string ToString()
+        {
+            return "<SparseMatrix>";
+        }
+
+        #endregion
+
         #region Matrix<T> Members
 
         public override int Rows { get; protected set; }

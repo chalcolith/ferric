@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Ferric.Text.Common.Lexicon;
+using Ferric.Text.WordNet.Lexicon;
 
 namespace Ferric.Text.WordNet.Morph
 {
@@ -35,13 +37,14 @@ namespace Ferric.Text.WordNet.Morph
         };
 
         static readonly Regex ExceptionRegex = new Regex(@"(\S+)\s+(\S+)", RegexOptions.Compiled);
-        readonly Data.WordNet context;
+
+        readonly SynsetLexicon lexicon;
         readonly IDictionary<Data.SynsetType, IDictionary<string, string>> exceptions
             = new Dictionary<Data.SynsetType, IDictionary<string, string>>();
 
-        public Morphy(Data.WordNet context, string exceptionsDir)
+        public Morphy(SynsetLexicon lexicon, string exceptionsDir)
         {
-            this.context = context;
+            this.lexicon = lexicon;
 
             exceptions[Data.SynsetType.Noun] = LoadExceptions(Path.Combine(exceptionsDir, "noun.exc"));
             exceptions[Data.SynsetType.Verb] = LoadExceptions(Path.Combine(exceptionsDir, "verb.exc"));
@@ -49,24 +52,20 @@ namespace Ferric.Text.WordNet.Morph
             exceptions[Data.SynsetType.Adverb] = LoadExceptions(Path.Combine(exceptionsDir, "adv.exc"));
         }
 
-        public IEnumerable<Tuple<Data.SynsetType, string>> GetStems(string token)
+        public IEnumerable<WordNetEntry> GetStems(string token)
         {
             token = token.Trim().ToLowerInvariant();
 
             // check directly
-            var senses = context.WordSenses.Where(ws => ws.Lemma == token);
-            foreach (var ws in senses)
-                yield return Tuple.Create(ws.Synset.SynsetType, ws.Lemma);
+            foreach (var entry in lexicon.GetEntries(token))
+                yield return entry;
 
             // now check exceptions
-            foreach (var pos in exceptions)
+            foreach (var posExceptions in exceptions)
             {
-                foreach (var kv in pos.Value)
-                {
-                    senses = context.WordSenses.Where(ws => ws.Lemma == token && ws.Synset.SynsetType == pos.Key);
-                    foreach (var ws in senses)
-                        yield return Tuple.Create(pos.Key, kv.Value);
-                }
+                string stem;
+                if (posExceptions.Value.TryGetValue(token, out stem))
+                    yield return new WordNetEntry { Lemma = stem, PartOfSpeech = posExceptions.Key };
             }
 
             // now try rules
@@ -76,9 +75,8 @@ namespace Ferric.Text.WordNet.Morph
                 if (string.IsNullOrWhiteSpace(form))
                     continue;
 
-                senses = context.WordSenses.Where(ws => ws.Lemma == form && ws.Synset.SynsetType == rule.PartOfSpeech);
-                foreach (var ws in senses)
-                    yield return Tuple.Create(rule.PartOfSpeech, form);
+                foreach (var entry in lexicon.GetEntries(form).Where(l => l.PartOfSpeech == rule.PartOfSpeech))
+                    yield return entry;
             }
         }
 

@@ -183,10 +183,16 @@ namespace Ferric.Text.WordNet.Builder
         void WriteLemmas(BuilderInfo builderInfo)
         {
             Console.WriteLine("writing lemmas...");
+
             using (var tr = new StreamWriter(Path.GetFullPath(Path.Combine(BasePath, "lemmas.txt"))))
             {
-                foreach (var lemma in builderInfo.Lemmas)
-                    tr.WriteLine(lemma);
+                foreach (var synset in builderInfo.Synsets.Values)
+                {
+                    foreach (var wordSense in synset.Senses)
+                    {
+                        tr.WriteLine("{0} {1} {2}", synset.WordNetId, synset.SynsetType, wordSense.Lemma);
+                    }
+                }
             }
         }
 
