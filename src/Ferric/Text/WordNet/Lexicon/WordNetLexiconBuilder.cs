@@ -45,7 +45,7 @@ namespace Ferric.Text.WordNet.Lexicon
 
                 foreach (var token in document.ChildrenOfType<TokenSpan>().Where(t => t.TokenClass == TokenClass.Word))
                 {
-                    var stemmedEntries = token.Possibilities.SelectMany(orig =>
+                    var stemmedEntries = token.PossibleTokens.SelectMany(orig =>
                     {
                         var stems = morph.GetStems(orig.Lemma).ToList();
                         var possibilities = stems.Select(stem => 
@@ -62,7 +62,7 @@ namespace Ferric.Text.WordNet.Lexicon
 
                     if (stemmedEntries.Count == 0)
                     {
-                        foreach (var possibility in token.Possibilities)
+                        foreach (var possibility in token.PossibleTokens)
                         {
                             var temp = possibility;
                             if (addUnknown)
@@ -84,7 +84,7 @@ namespace Ferric.Text.WordNet.Lexicon
                     }
                     else
                     {
-                        token.Possibilities = stemmedEntries;
+                        token.PossibleTokens = stemmedEntries;
                     }
                 }
             }

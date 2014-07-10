@@ -26,7 +26,7 @@ namespace Ferric.Lang.English
                 if (token == null)
                     continue;
 
-                token.Possibilities = token.Possibilities.Select(l =>
+                token.PossibleTokens = token.PossibleTokens.Select(l =>
                 {
                     l.Lemma = Stem(l.Lemma);
                     return l;

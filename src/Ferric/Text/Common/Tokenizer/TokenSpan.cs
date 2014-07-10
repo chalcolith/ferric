@@ -26,24 +26,27 @@ namespace Ferric.Text.Common.Tokenizer
 
     public class TokenSpan : BaseSpan
     {
-        IList<TokenPossibility> possibilities;
+        IList<TokenPossibility> possibleTokens;
 
         public TokenClass TokenClass { get; internal set; }
         public string Text { get; protected set; }
         
-        public IEnumerable<TokenPossibility> Possibilities
+        public IEnumerable<TokenPossibility> PossibleTokens
         {
             get
             {
-                if (possibilities == null)
+                if (possibleTokens == null)
                 {
-                    possibilities = new List<TokenPossibility>() { new TokenPossibility { Weight = 1.0, Lemma = Text.Trim().ToLowerInvariant() } };
+                    possibleTokens = new List<TokenPossibility>() 
+                    { 
+                        new TokenPossibility { Weight = 1.0, Lemma = Text.Trim().ToLowerInvariant() } 
+                    };
                 }
-                return possibilities;
+                return possibleTokens;
             }
             set
             {
-                possibilities = value.ToList();
+                possibleTokens = value.ToList();
             }
         }
 
@@ -51,7 +54,10 @@ namespace Ferric.Text.Common.Tokenizer
         {
             set
             {
-                possibilities = new List<TokenPossibility>() { new TokenPossibility { Weight = 1.0, Lemma = value.Trim().ToLowerInvariant() } };
+                possibleTokens = new List<TokenPossibility>() 
+                { 
+                    new TokenPossibility { Weight = 1.0, Lemma = value.Trim().ToLowerInvariant() } 
+                };
             }
         }
 
@@ -67,7 +73,7 @@ namespace Ferric.Text.Common.Tokenizer
 
         public override string ToString()
         {
-            var ll = string.Join(", ", possibilities.Select(l => string.Format("{0}/{1}", l.Lemma, l.Weight)));
+            var ll = string.Join(", ", possibleTokens.Select(l => string.Format("{0}/{1}", l.Lemma, l.Weight)));
 
             return string.Format("{{ {0}:{1} {2}-{3} {4} \"{5}\":{{{6}}} }}", 
                 this.GetType().Name, Ordinal, CharPos, CharNext, TokenClass, 

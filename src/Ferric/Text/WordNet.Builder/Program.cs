@@ -45,7 +45,12 @@ namespace Ferric.Text.WordNet.Builder
                 using (var context = new Data.WordNet(csBuilder.ConnectionString))
                 {
                     Console.WriteLine("clearing...");
-                    context.Database.CreateIfNotExists();
+                    try
+                    {
+                        context.Database.CreateIfNotExists();
+                    }
+                    catch { }
+
                     context.Database.Delete();
                     context.Database.Create();
 

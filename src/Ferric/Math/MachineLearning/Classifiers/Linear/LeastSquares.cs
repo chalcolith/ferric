@@ -15,7 +15,7 @@ namespace Ferric.Math.MachineLearning.Classifiers.Linear
     /// <typeparam name="TInput">The type of the input features of this model.</typeparam>
     /// <typeparam name="TOutput">The type of the output features of this model.</typeparam>
     [Serializable]
-    public class LeastSquares<TInput, TOutput> : Classifier<TInput, TOutput>
+    public class LeastSquares<TInput, TOutput> : IClassifier<TInput, TOutput>
         where TInput : struct, IComparable
         where TOutput : struct, IComparable
     {

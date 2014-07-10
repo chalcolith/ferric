@@ -136,30 +136,54 @@ namespace Ferric.Config
             return transducer;
         }
 
+        static readonly string[] TypeNamePrefixes = new[]
+        {
+            "",
+            "Ferric.Text.Common",
+            "Ferric.Text",
+            "Ferric"
+        };
+
         static void FindType(XElement elem, CreateContext context, out string typeName, out Type type)
         {
-            typeName = elem.Name.LocalName;
+            var elemName = elem.Name.LocalName;
             var typeArgs = elem.Attributes("typeArgs").FirstOrDefault();
 
+            typeName = null;
             type = null;
-            if (typeArgs != null)
+            foreach (var prefix in TypeNamePrefixes)
             {
-                var args = typeArgs.Value.Split(',')
-                    .Select(name => GetLoadedType(name, context, expectTransducer: false))
-                    .Where(t => t != null)
-                    .ToArray();
-                if (args.Any())
+                var nameToTry = elemName;
+                if (!string.IsNullOrWhiteSpace(prefix))
+                    nameToTry = prefix + "." + nameToTry;
+
+                if (typeArgs != null)
                 {
-                    var gen = GetLoadedType(string.Format("{0}`{1}", typeName, args.Length), context, expectTransducer: false);
-                    if (gen != null)
-                        type = gen.MakeGenericType(args);
+                    var args = typeArgs.Value.Split(',')
+                        .Select(name => GetLoadedType(name, context, expectTransducer: false))
+                        .Where(t => t != null)
+                        .ToArray();
+                    if (args.Any())
+                    {
+                        var gen = GetLoadedType(string.Format("{0}`{1}", nameToTry, args.Length), 
+                            context, expectTransducer: false);
+                        if (gen != null)
+                            type = gen.MakeGenericType(args);
+                    }
+                }
+
+                if (type == null)
+                    type = GetLoadedType(nameToTry, context);
+
+                if (type != null)
+                {
+                    typeName = nameToTry;
+                    return;
                 }
             }
 
             if (type == null)
-                type = GetLoadedType(typeName, context);
-            if (type == null)
-                throw new Exception(string.Format("Unable to find a transducer of type {0}.", typeName));
+                throw new Exception(string.Format("Unable to find a transducer of type {0}.", elemName));
         }
 
         static IList<Assembly> allAssemblies;

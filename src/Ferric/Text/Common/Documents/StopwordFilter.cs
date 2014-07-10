@@ -26,7 +26,7 @@ namespace Ferric.Text.Common.Documents
                 if (token == null)
                     continue;
 
-                if (token.Possibilities.Any(l => stopWords.Contains(l.Lemma)))
+                if (token.PossibleTokens.Any(l => stopWords.Contains(l.Lemma)))
                     continue;
 
                 yield return input;

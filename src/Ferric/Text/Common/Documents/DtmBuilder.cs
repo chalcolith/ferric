@@ -35,7 +35,7 @@ namespace Ferric.Text.Common.Documents
                     foreach (var token in document.ChildrenOfType<TokenSpan>().Where(t => t.TokenClass == TokenClass.Word))
                     {
                         int num = 0;
-                        foreach (var entry in token.Possibilities)
+                        foreach (var entry in token.PossibleTokens)
                         {
                             if (entry.Indices != null)
                             {

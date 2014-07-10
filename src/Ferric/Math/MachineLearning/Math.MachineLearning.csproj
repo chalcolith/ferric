@@ -40,8 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Basic.cs" />
-    <Compile Include="Classifier.cs" />
     <Compile Include="Classifiers\Linear\LeastSquares.cs" />
+    <Compile Include="IClassifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
