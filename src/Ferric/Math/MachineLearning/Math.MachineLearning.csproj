@@ -40,7 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Basic.cs" />
-    <Compile Include="Classifiers\Linear\LeastSquares.cs" />
+    <Compile Include="Classifiers\LeastSquares.cs" />
+    <Compile Include="Classifiers\NaiveBayes\Multinomial.cs" />
     <Compile Include="IClassifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

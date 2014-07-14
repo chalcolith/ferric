@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Ferric.Math.Common;
-using Ferric.Math.MachineLearning.Classifiers.Linear;
+using Ferric.Math.MachineLearning.Classifiers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Ferric.Math.MachineLearning.Test.Classifiers.Linear
+namespace Ferric.Math.MachineLearning.Test.Classifiers
 {
     [TestClass]
     public class LeastSquaresTests
@@ -16,7 +16,7 @@ namespace Ferric.Math.MachineLearning.Test.Classifiers.Linear
         }
 
         [TestMethod]
-        public void Math_MachineLearning_Classifiers_Linear_LeastSquares()
+        public void Math_MachineLearning_Classifiers_LeastSquares()
         {
             const int num = 1000;
 
