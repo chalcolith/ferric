@@ -6,8 +6,8 @@
     <ProjectGuid>{5B0F32EE-9FE1-4694-93CC-15611493D661}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ferric.Math.MachineLearning.Test</RootNamespace>
-    <AssemblyName>Ferric.Math.MachineLearning.Test</AssemblyName>
+    <RootNamespace>Ferric.Math.MachineLearning.Tests</RootNamespace>
+    <AssemblyName>Ferric.Math.MachineLearning.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -50,6 +50,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\..\Ferric\Properties\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Classifiers\LeastSquaresTests.cs" />
     <Compile Include="Classifiers\NaiveBayesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

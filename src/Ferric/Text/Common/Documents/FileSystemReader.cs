@@ -41,4 +41,20 @@ namespace Ferric.Text.Common.Documents
             }
         }
     }
+
+    public class LoadFiles : BaseTransducer<string, string>
+    {
+        IEnumerable<string> paths;
+
+        public LoadFiles(ICreateContext context, string files)
+            : base(context)
+        {
+            paths = files.Split(',');
+        }
+
+        public override IEnumerable<string> Process(IEnumerable<string> inputs)
+        {
+            return paths;
+        }
+    }
 }

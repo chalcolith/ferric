@@ -39,6 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Ferric\Properties\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Basic.cs" />
     <Compile Include="Classifiers\LeastSquares.cs" />
     <Compile Include="Classifiers\NaiveBayes\Multinomial.cs" />

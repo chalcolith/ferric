@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7079B911-C6AD-48CF-9552-8F3975555D28}</ProjectGuid>
+    <ProjectGuid>{E264CF5D-95D2-4216-8BC4-FF1ECF927EEB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ferric.Text.Common.Tests</RootNamespace>
-    <AssemblyName>Ferric.Text.Common.Tests</AssemblyName>
+    <RootNamespace>Ferric.Text.Classifiers.Tests</RootNamespace>
+    <AssemblyName>Ferric.Text.Classifiers.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -53,14 +53,8 @@
     <Compile Include="..\..\Ferric\Properties\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="TokenizerTests.cs" />
+    <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Text.Common.csproj">
-      <Project>{42521ddd-9e6b-458f-87cf-df5a292bc17d}</Project>
-      <Name>Text.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

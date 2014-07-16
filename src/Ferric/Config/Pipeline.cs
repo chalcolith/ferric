@@ -65,7 +65,7 @@ namespace Ferric.Config
         static ITransducer CreateTransducer(XElement elem, CreateContext context, string typeName, Type type)
         {
             var atts = elem.Attributes()
-                .Where(att => att.Name != "typeargs")
+                .Where(att => att.Name != TypeArgsAttribute)
                 .ToDictionary(att => att.Name.LocalName, att => att.Value);
             if (!atts.ContainsKey(ContextParameterName))
                 atts.Add(ContextParameterName, "");
@@ -136,6 +136,8 @@ namespace Ferric.Config
             return transducer;
         }
 
+        const string TypeArgsAttribute = "types";
+
         static readonly string[] TypeNamePrefixes = new[]
         {
             "",
@@ -147,7 +149,7 @@ namespace Ferric.Config
         static void FindType(XElement elem, CreateContext context, out string typeName, out Type type)
         {
             var elemName = elem.Name.LocalName;
-            var typeArgs = elem.Attributes("typeArgs").FirstOrDefault();
+            var typeArgs = elem.Attributes(TypeArgsAttribute).FirstOrDefault();
 
             typeName = null;
             type = null;

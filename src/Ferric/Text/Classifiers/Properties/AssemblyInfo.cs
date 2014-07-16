@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Ferric.Text.WordNet")]
+[assembly: AssemblyTitle("Ferric.Text.Classifiers")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 
@@ -15,4 +15,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("8cc0012a-a99b-48de-a65c-60515a08d813")]
+[assembly: Guid("057c28d9-ecca-43d5-b24b-756866f742f1")]
