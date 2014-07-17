@@ -70,6 +70,11 @@ namespace Ferric.Math.Common
             }
         }
 
+        public override IEnumerator<Tuple<int, int, T>> GetNonzeroEnumerator()
+        {
+            return new NonzeroEnumerator(this);
+        }
+
         #region Object Members
 
         public override string ToString()
@@ -793,6 +798,63 @@ namespace Ferric.Math.Common
             result.values = null;
             result.row_offsets = null;
             result.col_offsets = null;
+        }
+
+        #endregion
+
+        #region Nonzero Enumerator
+
+        class NonzeroEnumerator : IEnumerator<Tuple<int, int, T>>
+        {
+            IEnumerator<KeyValuePair<Tuple<int, int>, T>> enumerator;
+            Tuple<int, int, T> current;
+
+            public NonzeroEnumerator(SparseMatrix<T> matrix)
+            {
+                matrix.ChangeToDok();
+                this.enumerator = matrix.dok.GetEnumerator();
+            }
+
+            #region IEnumerator<Tuple<int,int,T>> Members
+
+            public Tuple<int, int, T> Current
+            {
+                get { return current; }
+            }
+
+            #endregion
+
+            #region IDisposable Members
+
+            public void Dispose()
+            {
+                this.enumerator = null;
+            }
+
+            #endregion
+
+            #region IEnumerator Members
+
+            object System.Collections.IEnumerator.Current
+            {
+                get { return this.Current; }
+            }
+
+            public bool MoveNext()
+            {
+                if (enumerator.MoveNext())
+                {
+                    current = Tuple.Create(enumerator.Current.Key.Item1, enumerator.Current.Key.Item2, enumerator.Current.Value);
+                }
+                return false;
+            }
+
+            public void Reset()
+            {
+                enumerator.Reset();
+            }
+
+            #endregion
         }
 
         #endregion

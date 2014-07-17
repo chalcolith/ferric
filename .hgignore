@@ -11,3 +11,5 @@ data/english/wordnet/WordNet.mdf
 data/english/samples/adhoc.lex
 data/english/samples/wnextra.lex
 *.ldf
+data/english/samples/naivebayes/adhoc.lex
+data/english/samples/naivebayes/fortune.model

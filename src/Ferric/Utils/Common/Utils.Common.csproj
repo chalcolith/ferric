@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3357D17D-82B7-4C15-AD9A-3B2711908D3A}</ProjectGuid>
+    <ProjectGuid>{528C5D62-D785-43FF-8735-06F957CFE4D5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ferric.Text.Classifiers</RootNamespace>
-    <AssemblyName>Ferric.Text.Classifiers</AssemblyName>
+    <RootNamespace>Ferric.Utils.Common</RootNamespace>
+    <AssemblyName>Ferric.Utils.Common</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -42,27 +42,8 @@
     <Compile Include="..\..\Ferric\Properties\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Classifier.cs" />
-    <Compile Include="NaiveBayes\Multinomial\Trainer.cs" />
+    <Compile Include="CircularEnumerable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Math\Common\Math.Common.csproj">
-      <Project>{e1a05c02-6c09-45eb-90ff-1416819201e5}</Project>
-      <Name>Math.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Math\MachineLearning\Math.MachineLearning.csproj">
-      <Project>{622df0d6-5a3e-47d3-877a-dca7dfcd6490}</Project>
-      <Name>Math.MachineLearning</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Utils\Common\Utils.Common.csproj">
-      <Project>{528c5d62-d785-43ff-8735-06f957cfe4d5}</Project>
-      <Name>Utils.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common\Text.Common.csproj">
-      <Project>{42521ddd-9e6b-458f-87cf-df5a292bc17d}</Project>
-      <Name>Text.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

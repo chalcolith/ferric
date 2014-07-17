@@ -36,6 +36,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -53,8 +55,26 @@
     <Compile Include="..\..\Ferric\Properties\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="NaiveBayes\MultinomialTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Config\Config.csproj">
+      <Project>{7c36b0c0-bdb7-4a0e-a4f6-3075ec6e3db9}</Project>
+      <Name>Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Math\MachineLearning\Math.MachineLearning.csproj">
+      <Project>{622df0d6-5a3e-47d3-877a-dca7dfcd6490}</Project>
+      <Name>Math.MachineLearning</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Classifiers\Text.Classifiers.csproj">
+      <Project>{3357d17d-82b7-4c15-ad9a-3b2711908d3a}</Project>
+      <Name>Text.Classifiers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Text.Common.csproj">
+      <Project>{42521ddd-9e6b-458f-87cf-df5a292bc17d}</Project>
+      <Name>Text.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

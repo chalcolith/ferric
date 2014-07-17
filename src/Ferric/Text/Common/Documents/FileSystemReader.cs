@@ -12,9 +12,13 @@ namespace Ferric.Text.Common.Documents
     /// </summary>
     public class FileSystemReader : BaseTransducer<string, IDocument>
     {
-        public const string PathNameKey = "pathname";
-
         Encoding encoding = Encoding.UTF8;
+
+        public Encoding Encoding
+        {
+            get { return encoding; }
+            set { encoding = value; }
+        }
 
         public FileSystemReader(ICreateContext context)
             : base(context)
@@ -27,7 +31,7 @@ namespace Ferric.Text.Common.Documents
             foreach (var path in paths)
             {
                 var absPath = Path.GetFullPath(path);
-                using (var sr = new StreamReader(absPath, encoding))
+                using (var sr = new StreamReader(absPath, Encoding))
                 {
                     var spans = SubProcess(sr.ReadChars()).OfType<ISpan>();
                     var doc = new FileSystemDocument
@@ -37,6 +41,40 @@ namespace Ferric.Text.Common.Documents
                         Ordinal = ordinal++
                     };
                     yield return doc;
+                }
+            }
+        }
+    }
+
+    public class FileSystemReaderByLine : FileSystemReader
+    {
+        public FileSystemReaderByLine(ICreateContext context)
+            : base(context)
+        {
+        }
+
+        public override IEnumerable<IDocument> Process(IEnumerable<string> paths)
+        {
+            ulong ordinal = 0;
+            foreach (var path in paths)
+            {
+                var absPath = Path.GetFullPath(path);
+                using (var sr = new StreamReader(absPath, Encoding))
+                {
+                    int num = 0;
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        num++;
+                        var spans = SubProcess(line).OfType<ISpan>();
+                        var doc = new FileSystemDocument
+                        {
+                            FileName = string.Format("{0}:{1}", absPath, num),
+                            Children = spans,
+                            Ordinal = ordinal++
+                        };
+                        yield return doc;
+                    }
                 }
             }
         }
@@ -54,7 +92,7 @@ namespace Ferric.Text.Common.Documents
 
         public override IEnumerable<string> Process(IEnumerable<string> inputs)
         {
-            return paths;
+            return paths.Select(path => CreateContext.GetFullPath(path));
         }
     }
 }

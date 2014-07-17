@@ -13,6 +13,8 @@ namespace Ferric.Math.Common
         int Rows { get; }
         int Cols { get; }
         T this[int row, int col] { get; set; }
+
+        IEnumerator<Tuple<int, int, T>> GetNonzeroEnumerator();
     }
 
     public abstract class Matrix<T> : IMatrix<T>
@@ -31,6 +33,7 @@ namespace Ferric.Math.Common
         public abstract int Rows { get; protected set; }
         public abstract int Cols { get; protected set; }
         public abstract T this[int row, int col] { get; set; }
+        public abstract IEnumerator<Tuple<int, int, T>> GetNonzeroEnumerator();
 
         #endregion
 

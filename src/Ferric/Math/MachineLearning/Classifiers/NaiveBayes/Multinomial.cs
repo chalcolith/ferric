@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
 {
+    [Serializable]
     public class Multinomial<TOutput> : IClassifier<double, TOutput>
         where TOutput : struct, IComparable
     {
-        IDictionary<IEnumerable<TOutput>, double> prior = new Dictionary<IEnumerable<TOutput>, double>();
-        IDictionary<IEnumerable<TOutput>, IDictionary<int, double>> condProb =
-            new Dictionary<IEnumerable<TOutput>, IDictionary<int, double>>();
+        IDictionary<TOutput[], double> prior = new Dictionary<TOutput[], double>();
+        IDictionary<TOutput[], IDictionary<int, double>> condProb =
+            new Dictionary<TOutput[], IDictionary<int, double>>();
 
         public Multinomial()
         {
@@ -24,42 +25,41 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
         {
             if (trainingInputs.Count() == 0)
                 throw new ArgumentException("cannot train on an empty dataset", "trainingInputs");
-            
-            if (trainingInputs.Count() != trainingOutputs.Count())
-                throw new ArgumentException("there must be the same number of inputs as outputs");
 
-            int N = 0; // number of inputs
-            var inputsByClass = new Dictionary<IEnumerable<TOutput>, IList<IEnumerable<double>>>();
+            int numInputs = 0; // number of inputs
+            var inputsByTag = new Dictionary<TOutput[], IList<IEnumerable<double>>>();
 
-            // map inputs by class
+            // map inputs by tag
             var inputs = trainingInputs.GetEnumerator();
-            var classes = trainingOutputs.GetEnumerator();
-            while (inputs.MoveNext() && classes.MoveNext())
+            var tags = trainingOutputs.GetEnumerator();
+            while (inputs.MoveNext() && tags.MoveNext())
             {
-                N++;
-                IList<IEnumerable<double>> inClass;
-                if (!inputsByClass.TryGetValue(classes.Current, out inClass))
+                var tag = tags.Current.ToArray();
+
+                numInputs++;
+                IList<IEnumerable<double>> inputsInTag;
+                if (!inputsByTag.TryGetValue(tag, out inputsInTag))
                 {
-                    inClass = new List<IEnumerable<double>>();
-                    inputsByClass.Add(classes.Current, inClass);
+                    inputsInTag = new List<IEnumerable<double>>();
+                    inputsByTag.Add(tag, inputsInTag);
                 }
-                inClass.Add(inputs.Current);
+                inputsInTag.Add(inputs.Current);
             }
 
             // now get prior prob and collect counts
-            foreach (var kv in inputsByClass)
+            foreach (var kv in inputsByTag)
             {
-                var cls = kv.Key;
-                var inClass = kv.Value;
+                var tag = kv.Key;
+                var inputsInTag = kv.Value;
 
-                if (inClass.Count == 0)
+                if (inputsInTag.Count == 0)
                     continue;
 
-                prior[cls] = inClass.Count / N;
+                prior[tag] = inputsInTag.Count / numInputs;
 
-                var V = inClass[0].Count();
+                var V = inputsInTag[0].Count();
                 var counts = new double[V];
-                foreach (var incls in inClass)
+                foreach (var incls in inputsInTag)
                 {
                     int i = 0;
                     foreach (var v in incls)
@@ -76,10 +76,10 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
 
                 // calculate conditional probability
                 IDictionary<int, double> probByFeature;
-                if (!condProb.TryGetValue(cls, out probByFeature))
+                if (!condProb.TryGetValue(tag, out probByFeature))
                 {
                     probByFeature = new Dictionary<int, double>();
-                    condProb.Add(cls, probByFeature);
+                    condProb.Add(tag, probByFeature);
                 }
 
                 for (int t = 0; t < V; t++)
@@ -128,17 +128,20 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
 
         public IEnumerable<TOutput> Classify(IEnumerable<double> input)
         {
+            input = input.ToArray();
             double maxScore = 0;
-            IEnumerable<TOutput> maxCls = null;
+            IEnumerable<TOutput> bestTag = condProb.Keys.First();
 
             foreach (var kv in condProb)
             {
-                var cls = kv.Key;
+                var tag = kv.Key;
                 var probByFeature = kv.Value;
 
-                double score = prior[cls];
+                double score = prior[tag];
 
                 int V = input.Count();
+
+
                 for (int t = 0; t < V; t++)
                 {
                     score += input.ElementAt(t) * System.Math.Log(probByFeature[t]);
@@ -147,11 +150,11 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
                 if (score > maxScore)
                 {
                     maxScore = score;
-                    maxCls = cls;
+                    bestTag = tag;
                 }
             }
 
-            return maxCls;
+            return bestTag;
         }
 
         #endregion
@@ -160,12 +163,16 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
 
         public Multinomial(SerializationInfo info, StreamingContext context)
         {
-            throw new NotImplementedException();
+            this.prior = (IDictionary<TOutput[], double>)
+                info.GetValue("prior", typeof(IDictionary<TOutput[], double>));
+            this.condProb = (IDictionary<TOutput[], IDictionary<int, double>>)
+                info.GetValue("condProb", typeof(IDictionary<TOutput[], IDictionary<int, double>>));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            throw new NotImplementedException();
+            info.AddValue("prior", this.prior);
+            info.AddValue("condProb", this.condProb);
         }
 
         #endregion

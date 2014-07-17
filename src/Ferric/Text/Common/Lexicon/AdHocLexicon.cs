@@ -8,6 +8,28 @@ using Ferric.Text.Common.Tokenizer;
 
 namespace Ferric.Text.Common.Lexicon
 {
+    public class AdHocLexicon : BaseTransducer<IDocument, IDocumentCollection<string>>
+    {
+        FlatFileLexicon lexicon;
+
+        public AdHocLexicon(ICreateContext context, string file)
+            : base(context)
+        {
+            this.lexicon = new FlatFileLexicon(CreateContext.GetFullPath(file), false);
+        }
+
+        public override IEnumerable<IDocumentCollection<string>> Process(IEnumerable<IDocument> inputs)
+        {
+            var collection = new DocumentCollection<string>()
+            {
+                Lexicon = lexicon,
+                Documents = inputs.ToList()
+            };
+
+            return new[] { collection };
+        }
+    }
+
     public class AdHocLexiconBuilder : BaseTransducer<IDocument, IDocumentCollection<string>>
     {
         string fname;

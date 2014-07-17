@@ -133,6 +133,11 @@ namespace Ferric.Math.Common
 
         #region Matrix<T> Members
 
+        public override IEnumerator<Tuple<int, int, T>> GetNonzeroEnumerator()
+        {
+            return new NonzeroEnumerator(this);
+        }
+
         public override Matrix<T> Transpose()
         {
             var res = new DenseMatrix<T>(this.Cols, this.Rows);
@@ -611,6 +616,75 @@ namespace Ferric.Math.Common
         {
             info.AddValue("squareData", this.squareData);
             info.AddValue("jaggedData", this.jaggedData);
+        }
+
+        #endregion
+
+        #region Nonzero Enumerator
+
+        class NonzeroEnumerator : IEnumerator<Tuple<int, int, T>>
+        {
+            DenseMatrix<T> matrix;
+            int row;
+            int col;
+            Tuple<int, int, T> current;
+
+            public NonzeroEnumerator(DenseMatrix<T> matrix)
+            {
+                this.matrix = matrix;
+                Reset();
+            }
+
+            #region IEnumerator<KeyValuePair<int,T>> Members
+
+            public Tuple<int, int, T> Current
+            {
+                get { return current; }
+            }
+
+            #endregion
+
+            #region IDisposable Members
+
+            public void Dispose()
+            {
+                matrix = null;
+            }
+
+            #endregion
+
+            #region IEnumerator Members
+
+            object System.Collections.IEnumerator.Current
+            {
+                get { return this.Current; }
+            }
+
+            public bool MoveNext()
+            {
+                do
+                {
+                    if (++col >= matrix.Cols)
+                    {
+                        if (++row >= matrix.Rows)
+                            return false;
+                        col = 0;
+                    }
+
+                    current = Tuple.Create(row, col, matrix[row, col]);
+                }
+                while (current.Item3.Equals(default(T)));
+
+                return true;
+            }
+
+            public void Reset()
+            {
+                row = 0;
+                col = -1;
+            }
+
+            #endregion
         }
 
         #endregion
