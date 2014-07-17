@@ -52,7 +52,14 @@ namespace Ferric.Text.Classifiers.Tests.NaiveBayes
 
                 if (VectorsMatch(exp.Current, act.Current, 0.1))
                     correct++;
+
+                hasExp = hasAct = false;
             }
+
+            Assert.IsTrue(total > 0);
+
+            var ratio = correct / total;
+            Assert.IsTrue(ratio > 0.8);
         }
 
         public bool VectorsMatch(IEnumerable<double> a, IEnumerable<double> b, double epsilon)
@@ -71,6 +78,8 @@ namespace Ferric.Text.Classifiers.Tests.NaiveBayes
                 var delta = System.Math.Abs(ae.Current - be.Current);
                 if (delta > epsilon)
                     return false;
+
+                hasA = hasB = false;
             }
 
             return true;

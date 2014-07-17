@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Ferric.Math.Common
 {
     public class DenseVector<T> : DenseMatrix<T>, IVector<T>
-        where T: struct, IComparable
+        where T: struct, IComparable<T>
     {
         public DenseVector(int cols)
             : base(1, cols)

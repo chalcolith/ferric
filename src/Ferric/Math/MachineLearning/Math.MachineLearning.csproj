@@ -49,6 +49,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Utils\Common\Utils.Common.csproj">
+      <Project>{528c5d62-d785-43ff-8735-06f957cfe4d5}</Project>
+      <Name>Utils.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common\Math.Common.csproj">
       <Project>{e1a05c02-6c09-45eb-90ff-1416819201e5}</Project>
       <Name>Math.Common</Name>

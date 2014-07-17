@@ -21,8 +21,8 @@ namespace Ferric.Tests
         [TestMethod]
         public void Ferric_Pipeline_TokenizerPipeline()
         {
-            var configPath = Path.GetFullPath(@"..\..\..\..\data\english\samples\tokenize.config");
-            var textPath = Path.GetFullPath(@"..\..\..\..\data\english\samples\sample1.txt");
+            var configPath = Path.GetFullPath(@"..\..\..\..\..\data\english\samples\tokenize.config");
+            var textPath = Path.GetFullPath(@"..\..\..\..\..\data\english\samples\sample1.txt");
 
             var transducer = Pipeline.Load(configPath);
             var results = transducer.Process(new[] { textPath });
@@ -43,8 +43,8 @@ namespace Ferric.Tests
         [TestMethod]
         public void Ferric_Pipeline_DTMPipeline()
         {
-            var configPath = Path.GetFullPath(@"..\..\..\..\data\english\samples\dtm.config");
-            var textFiles = Enumerable.Range(0, 3).Select(i => Path.GetFullPath(string.Format(@"..\..\..\..\data\english\samples\sample{0}.txt", i+1)));
+            var configPath = Path.GetFullPath(@"..\..\..\..\..\data\english\samples\dtm.config");
+            var textFiles = Enumerable.Range(0, 3).Select(i => Path.GetFullPath(string.Format(@"..\..\..\..\..\data\english\samples\sample{0}.txt", i+1)));
 
             const string expected = @"documents: 3
 lexemes:   12	Ferric.Text.Common.Lexicon.FlatFileLexicon

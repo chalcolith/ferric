@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Ferric.Math.Common
 {
     public class SparseVector<T> : SparseMatrix<T>, IVector<T>
-        where T : struct, IComparable
+        where T : struct, IComparable<T>
     {
         public SparseVector(int cols)
             : base(1, cols)

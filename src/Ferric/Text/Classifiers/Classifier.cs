@@ -12,6 +12,7 @@ using Ferric.Text.Common.Documents;
 namespace Ferric.Text.Classifiers
 {
     public class Classifier<TLexiconEntry, TOutput> : BaseTransducer<IDocumentCollection<TLexiconEntry>, IEnumerable<TOutput>>
+        where TOutput : IComparable<TOutput>
     {
         string modelPath;
         IClassifier<double, TOutput> classifier;
@@ -37,7 +38,7 @@ namespace Ferric.Text.Classifiers
                 foreach (var row in collection.DocumentTermMatrix)
                 {
                     var result = classifier.Classify(row);
-                    yield return result;
+                    yield return result.First().Output;
                 }
             }
         }

@@ -7,18 +7,21 @@ using System.Threading.Tasks;
 
 namespace Ferric.Math.Common
 {
-    public interface IMatrix<T> : IEnumerable<IEnumerable<T>>, ISerializable
-        where T : struct, IComparable
+    public interface INonzeroSequence<T>
     {
-        int Rows { get; }
-        int Cols { get; }
-        T this[int row, int col] { get; set; }
-
         IEnumerator<Tuple<int, int, T>> GetNonzeroEnumerator();
     }
 
+    public interface IMatrix<T> : IEnumerable<IEnumerable<T>>, INonzeroSequence<T>, ISerializable
+        where T : struct, IComparable<T>
+    {
+        int Rows { get; }
+        int Cols { get; }
+        T this[int row, int col] { get; set; }        
+    }
+
     public abstract class Matrix<T> : IMatrix<T>
-        where T : struct, IComparable
+        where T : struct, IComparable<T>
     {
         public abstract Matrix<T> Transpose();
         public abstract Matrix<T> ScalarMultiply(T n, bool inPlace = false);
@@ -284,7 +287,7 @@ namespace Ferric.Math.Common
         #region Utilities
 
         public static bool IsZero<Tt>(Tt n)
-            where Tt : struct, IComparable
+            where Tt : struct, IComparable<Tt>
         {
             if (typeof(Tt) == typeof(double))
             {

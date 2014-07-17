@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Ferric.Math.Common
 {
     public class SparseMatrix<T> : Matrix<T>, ISerializable
-        where T : struct, IComparable
+        where T : struct, IComparable<T>
     {
         object changeLock = new object();
         IDictionary<Tuple<int, int>, T> dok = null;
@@ -710,7 +710,7 @@ namespace Ferric.Math.Common
         }
 
         static void ScalarOp<Tt>(SparseMatrix<Tt> src, SparseMatrix<Tt> dest, Func<Tt, Tt> f)
-            where Tt : struct, IComparable
+            where Tt : struct, IComparable<Tt>
         {
             if (src != dest)
             {
@@ -743,7 +743,7 @@ namespace Ferric.Math.Common
         }
 
         static void AdditiveOp<Tt>(SparseMatrix<Tt> a, IMatrix<Tt> b, SparseMatrix<T> result, Func<Tt, Tt, Tt> add)
-            where Tt : struct, IComparable
+            where Tt : struct, IComparable<Tt>
         {
             var new_dok = new Dictionary<Tuple<int, int>, Tt>();
 
@@ -776,7 +776,7 @@ namespace Ferric.Math.Common
         }
 
         static void Multiply<Tt>(SparseMatrix<Tt> a, IMatrix<Tt> b, SparseMatrix<T> result, Func<Tt, Tt, Tt> add, Func<Tt, Tt, Tt> mul, Func<Tt, bool> isZero)
-            where Tt : struct, IComparable
+            where Tt : struct, IComparable<Tt>
         {
             // TODO: use a faster algo
             var new_dok = new Dictionary<Tuple<int, int>, Tt>();

@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Ferric.Math.Common;
+using Ferric.Utils.Common;
 
 namespace Ferric.Math.MachineLearning.Classifiers
 {
@@ -16,8 +17,8 @@ namespace Ferric.Math.MachineLearning.Classifiers
     /// <typeparam name="TOutput">The type of the output features of this model.</typeparam>
     [Serializable]
     public class LeastSquares<TInput, TOutput> : IClassifier<TInput, TOutput>
-        where TInput : struct, IComparable
-        where TOutput : struct, IComparable
+        where TInput : struct, IComparable<TInput>
+        where TOutput : struct, IComparable<TOutput>
     {
         Func<TOutput, TInput> toInput;
         Func<TInput, TOutput> toOutput;
@@ -34,6 +35,18 @@ namespace Ferric.Math.MachineLearning.Classifiers
         }
 
         #region Classifier<T> Members
+
+        public IEnumerable<IOutputClass<TOutput>> Classify(IEnumerable<TInput> input)
+        {
+            return Classify((Matrix<TInput>)new SparseVector<TInput>(input));
+        }
+
+        public IEnumerable<IOutputClass<TOutput>> Classify(Matrix<TInput> input)
+        {
+            var result = input * beta;
+            var row = Enumerable.Range(0, result.Cols).Select(i => toOutput(result[0, i]));
+            return new[] { new OutputClass<TOutput>(1.0, new DenseVector<TOutput>(row, copy: true)) };
+        }
 
         public void TrainModel(IEnumerable<IEnumerable<TInput>> trainingInputs, IEnumerable<IEnumerable<TOutput>> trainingOutputs)
         {
@@ -54,8 +67,8 @@ namespace Ferric.Math.MachineLearning.Classifiers
             beta = (Xt * X).Inverse() * Xt * y;
         }
 
-        public double TestModel(IEnumerable<IEnumerable<TInput>> testingInputs, 
-            IEnumerable<IEnumerable<TOutput>> testingOutputs, 
+        public double TestModel(IEnumerable<IEnumerable<TInput>> testingInputs,
+            IEnumerable<IEnumerable<TOutput>> testingOutputs,
             Func<TOutput, TOutput, bool> matches = null)
         {
             if (beta == null)
@@ -69,7 +82,7 @@ namespace Ferric.Math.MachineLearning.Classifiers
             var expected = testingOutputs.GetEnumerator();
             while (input.MoveNext() && expected.MoveNext())
             {
-                var res = Classify(input.Current).GetEnumerator();
+                var res = Classify(input.Current).First().Output.GetEnumerator();
                 var exp = expected.Current.GetEnumerator();
                 bool equal = true;
                 while (res.MoveNext() && exp.MoveNext())
@@ -85,18 +98,6 @@ namespace Ferric.Math.MachineLearning.Classifiers
                 return sum / total;
             else
                 return double.NaN;
-        }
-
-        public IVector<TOutput> Classify(Matrix<TInput> input)
-        {
-            var result = input * beta;
-            var row = Enumerable.Range(0, result.Cols).Select(i => toOutput(result[0, i]));
-            return new DenseVector<TOutput>(row, copy: true);
-        }
-
-        public IEnumerable<TOutput> Classify(IEnumerable<TInput> input)
-        {
-            return Classify((Matrix<TInput>)new SparseVector<TInput>(input));
         }
 
         #endregion

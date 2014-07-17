@@ -9,10 +9,10 @@ namespace Ferric.Math.MachineLearning.Test.Classifiers
     [TestClass]
     public class LeastSquaresTests
     {
-        enum COutput
+        static class COutput
         {
-            Orange,
-            Blue
+            public const int Orange = 0;
+            public const int Blue = 1;
         }
 
         [TestMethod]
@@ -42,7 +42,7 @@ namespace Ferric.Math.MachineLearning.Test.Classifiers
             var testingInputs = inputs.Skip(num * 2 / 3).ToArray();
             var testingOutputs = outputs.Skip(num * 2 / 3).ToArray();
 
-            var cl = new LeastSquares<double, COutput>(2, 2, o => (double)(int)o, i => i < 0.5 ? COutput.Orange : COutput.Blue);
+            var cl = new LeastSquares<double, int>(2, 2, o => (double)(int)o, i => i < 0.5 ? COutput.Orange : COutput.Blue);
             cl.TrainModel(trainingInputs, trainingOutputs);
 
             var pct = cl.TestModel(testingInputs, testingOutputs);

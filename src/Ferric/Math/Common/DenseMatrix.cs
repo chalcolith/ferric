@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Ferric.Math.Common
 {
     public class DenseMatrix<T> : Matrix<T>
-        where T : struct, IComparable
+        where T : struct, IComparable<T>
     {
         protected IEnumerable<IEnumerable<T>> jaggedData = null;
         protected T[,] squareData = null;

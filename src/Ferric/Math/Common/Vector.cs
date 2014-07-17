@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Ferric.Math.Common
 {
     public interface IVector<T> : IEnumerable<T>
-        where T : struct, IComparable
+        where T : struct, IComparable<T>
     {
         T this[int i] { get; set; }
         int Dimensions { get; }
