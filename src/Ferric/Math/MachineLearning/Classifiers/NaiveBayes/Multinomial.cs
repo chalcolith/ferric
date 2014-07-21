@@ -41,7 +41,7 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
                 for (int t = 0; t < V; t++)
                 {
                     if (array[t] > 0)
-                        score += System.Math.Log(prob[t]);
+                        score += prob[t];
                 }
 
                 return new OutputClass<TOutput>(score, oc.Output);
@@ -50,11 +50,9 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
             .ToList();
 
             // normalize weights
-            double total = 0;
-            foreach (var oc in outputClasses)
-                total += oc.Weight;
+            double total = System.Math.Abs(outputClasses.Sum(oc => oc.Weight));
 
-            if (total > 0)
+            if (total > Constants.Epsilon)
             {
                 foreach (var oc in outputClasses)
                     oc.Weight = oc.Weight / total;
@@ -94,7 +92,7 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
                 if (inputsInOc.Count == 0)
                     continue;
 
-                priorByOutputClass[oc] = (double)inputsInOc.Count / (double)numInputs;
+                priorByOutputClass[oc] = System.Math.Log((double)inputsInOc.Count / (double)numInputs);
 
                 double[] counts = null;
                 foreach (var inOc in inputsInOc)
@@ -126,7 +124,7 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
 
                 for (int t = 0; t < counts.Length; t++)
                 {
-                    probByFeature.Add(t, (counts[t] + 1) / norm);
+                    probByFeature.Add(t, System.Math.Log((counts[t] + 1) / norm));
                 }
             }
         }

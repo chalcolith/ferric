@@ -30,7 +30,7 @@ namespace Ferric.Text.Common
 
         public IEnumerable Process(IEnumerable inputs)
         {
-            return Process((IEnumerable<TIn>)inputs).ToList();
+            return Process((IEnumerable<TIn>)inputs);
         }
 
         public abstract IEnumerable<TOut> Process(IEnumerable<TIn> inputs);
@@ -70,6 +70,19 @@ namespace Ferric.Text.Common
             }
 
             return lastEnumerable;
+        }
+    }
+
+    public class PassThroughTransducer : BaseTransducer<string, object>
+    {
+        public PassThroughTransducer(ICreateContext context)
+            : base(context)
+        {
+        }
+
+        public override IEnumerable<object> Process(IEnumerable<string> inputs)
+        {
+            return SubProcess(inputs).OfType<object>();
         }
     }
 }

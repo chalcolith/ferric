@@ -46,9 +46,9 @@ namespace Ferric.Text.Classifiers
 
     public static class Classifier
     {
-        public static IList<IEnumerable<double>> GetTags(string path)
+        public static IList<IEnumerable<double>> GetOutputClasses(string path)
         {
-            IList<IEnumerable<double>> tags = new List<IEnumerable<double>>();
+            var outputClasses = new List<IEnumerable<double>>();
             using (var sr = new StreamReader(path))
             {
                 int num = 0;
@@ -57,15 +57,15 @@ namespace Ferric.Text.Classifiers
                 {
                     ++num;
 
-                    double tag;
-                    if (!double.TryParse(line, out tag))
-                        throw new Exception(string.Format("Invalid tag '{0}' at {1} line {2}", line, path, num));
+                    double oc;
+                    if (!double.TryParse(line, out oc))
+                        throw new Exception(string.Format("Invalid output class '{0}' at {1} line {2}", line, path, num));
 
-                    tags.Add(new[] { tag });
+                    outputClasses.Add(new[] { oc });
                 }
             }
 
-            return tags;
+            return outputClasses;
         }
     }
 }

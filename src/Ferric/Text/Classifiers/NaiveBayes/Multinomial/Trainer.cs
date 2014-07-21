@@ -27,7 +27,7 @@ namespace Ferric.Text.Classifiers.NaiveBayes.Multinomial
         public override IEnumerable<string> Process(IEnumerable<IDocumentCollection<TLexiconEntry>> inputs)
         {
             // get tags
-            var tags = Classifier.GetTags(CreateContext.GetFullPath(tagsPath));
+            var tags = Classifier.GetOutputClasses(CreateContext.GetFullPath(tagsPath));
 
             // now train
             IEnumerable<IEnumerable<double>> counts = inputs.SelectMany(dtm => dtm.DocumentTermMatrix);

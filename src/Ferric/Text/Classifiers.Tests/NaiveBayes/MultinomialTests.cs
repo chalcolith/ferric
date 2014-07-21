@@ -26,24 +26,24 @@ namespace Ferric.Text.Classifiers.Tests.NaiveBayes
 
             // get testing tags
             var testTagPath = Path.GetFullPath(dataDir + @"\naivebayes\testlabels.txt");
-            var expected = Classifier.GetTags(testTagPath);
+            var expected = Classifier.GetOutputClasses(testTagPath);
 
             // classify
             var testConfig = Path.GetFullPath(dataDir + @"\naivebayes_multinomial_test.config");
             var tester = Pipeline.Load(testConfig);
-            var actual = tester.Process(Enumerable.Empty<string>()).OfType<IEnumerable<double>>();
+            var actual = tester.Process(Enumerable.Empty<string>()).OfType<IEnumerable<double>>().ToList();
 
             // test
             double total = 0;
             double correct = 0;
 
-            bool hasExp = false;
             IEnumerator<IEnumerable<double>> exp = expected.GetEnumerator();
-
-            bool hasAct = false;
             IEnumerator<IEnumerable<double>> act = actual.GetEnumerator();
 
-            while ((hasExp = exp.MoveNext()) == true || (hasAct = act.MoveNext()) == true)
+            bool hasExp = exp.MoveNext();
+            bool hasAct = act.MoveNext();
+
+            while (hasExp || hasAct)
             {
                 total++;
 
@@ -53,7 +53,8 @@ namespace Ferric.Text.Classifiers.Tests.NaiveBayes
                 if (VectorsMatch(exp.Current, act.Current, 0.1))
                     correct++;
 
-                hasExp = hasAct = false;
+                hasExp = exp.MoveNext();
+                hasAct = act.MoveNext();
             }
 
             Assert.IsTrue(total > 0);
@@ -64,13 +65,13 @@ namespace Ferric.Text.Classifiers.Tests.NaiveBayes
 
         public bool VectorsMatch(IEnumerable<double> a, IEnumerable<double> b, double epsilon)
         {
-            var hasA = false;
             var ae = a.GetEnumerator();
-
-            var hasB = false;
             var be = b.GetEnumerator();
 
-            while ((hasA = ae.MoveNext()) == true || (hasB = be.MoveNext()) == true)
+            bool hasA = ae.MoveNext();
+            bool hasB = be.MoveNext();
+
+            while (hasA || hasB)
             {
                 if (hasA != hasB)
                     return false;
@@ -79,7 +80,8 @@ namespace Ferric.Text.Classifiers.Tests.NaiveBayes
                 if (delta > epsilon)
                     return false;
 
-                hasA = hasB = false;
+                hasA = ae.MoveNext();
+                hasB = be.MoveNext();
             }
 
             return true;

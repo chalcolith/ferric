@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace Ferric.Math.Common
 {
+    public static class Constants
+    {
+        public const double Epsilon = 1.0e-20;
+    }
+
     public static class Functions
     {
+
 
         #region Beta Function
 
