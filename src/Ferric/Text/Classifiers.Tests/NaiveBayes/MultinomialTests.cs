@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Ferric.Config;
+using Ferric.Math.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ferric.Text.Classifiers.Tests.NaiveBayes
@@ -50,7 +51,7 @@ namespace Ferric.Text.Classifiers.Tests.NaiveBayes
                 if (hasExp != hasAct)
                     continue;
 
-                if (VectorsMatch(exp.Current, act.Current, 0.1))
+                if (VectorsMatch(exp.Current, act.Current, Constants.Epsilon))
                     correct++;
 
                 hasExp = exp.MoveNext();

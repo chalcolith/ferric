@@ -63,6 +63,10 @@
       <Project>{7c36b0c0-bdb7-4a0e-a4f6-3075ec6e3db9}</Project>
       <Name>Config</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Math\Common\Math.Common.csproj">
+      <Project>{e1a05c02-6c09-45eb-90ff-1416819201e5}</Project>
+      <Name>Math.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Math\MachineLearning\Math.MachineLearning.csproj">
       <Project>{622df0d6-5a3e-47d3-877a-dca7dfcd6490}</Project>
       <Name>Math.MachineLearning</Name>

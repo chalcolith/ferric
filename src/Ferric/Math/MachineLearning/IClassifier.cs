@@ -13,10 +13,15 @@ namespace Ferric.Math.MachineLearning
     public interface IClassifier<TInput, TOutput> : ISerializable
         where TOutput : IComparable<TOutput>
     {
+        /// <summary>
+        /// Takes an input vector and calculates its class(es).
+        /// </summary>
+        /// <param name="input">Vector of inputs.</param>
+        /// <returns>One or more possible classes for the input, with weights.</returns>
         IEnumerable<IOutputClass<TOutput>> Classify(IEnumerable<TInput> input);
 
         void TrainModel(IEnumerable<IEnumerable<TInput>> trainingInputs, IEnumerable<IEnumerable<TOutput>> trainingOutputs);
-        double TestModel(IEnumerable<IEnumerable<TInput>> testingInputs, IEnumerable<IEnumerable<TOutput>> testingOutputs, Func<TOutput, TOutput, bool> matches);  
+        double TestModel(IEnumerable<IEnumerable<TInput>> testingInputs, IEnumerable<IEnumerable<TOutput>> testingOutputs, Func<TOutput, TOutput, double> calcMatch);
     }
 
     public interface IOutputClass<T> : IComparable<IOutputClass<T>>

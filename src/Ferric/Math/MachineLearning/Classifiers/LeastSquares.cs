@@ -16,7 +16,7 @@ namespace Ferric.Math.MachineLearning.Classifiers
     /// <typeparam name="TInput">The type of the input features of this model.</typeparam>
     /// <typeparam name="TOutput">The type of the output features of this model.</typeparam>
     [Serializable]
-    public class LeastSquares<TInput, TOutput> : IClassifier<TInput, TOutput>
+    public class LeastSquares<TInput, TOutput> : BaseClassifier<TInput, TOutput>
         where TInput : struct, IComparable<TInput>
         where TOutput : struct, IComparable<TOutput>
     {
@@ -34,9 +34,9 @@ namespace Ferric.Math.MachineLearning.Classifiers
             this.toOutput = toOutput ?? (i => (TOutput)Convert.ChangeType(i, typeof(TOutput)));
         }
 
-        #region Classifier<T> Members
+        #region IClassifier<TInput, TOutput> Members
 
-        public IEnumerable<IOutputClass<TOutput>> Classify(IEnumerable<TInput> input)
+        public override IEnumerable<IOutputClass<TOutput>> Classify(IEnumerable<TInput> input)
         {
             return Classify((Matrix<TInput>)new SparseVector<TInput>(input));
         }
@@ -48,7 +48,7 @@ namespace Ferric.Math.MachineLearning.Classifiers
             return new[] { new OutputClass<TOutput>(1.0, new DenseVector<TOutput>(row, copy: true)) };
         }
 
-        public void TrainModel(IEnumerable<IEnumerable<TInput>> trainingInputs, IEnumerable<IEnumerable<TOutput>> trainingOutputs)
+        public override void TrainModel(IEnumerable<IEnumerable<TInput>> trainingInputs, IEnumerable<IEnumerable<TOutput>> trainingOutputs)
         {
             var X = new SparseMatrix<TInput>(trainingInputs);
             SparseMatrix<TInput> y;
@@ -67,37 +67,14 @@ namespace Ferric.Math.MachineLearning.Classifiers
             beta = (Xt * X).Inverse() * Xt * y;
         }
 
-        public double TestModel(IEnumerable<IEnumerable<TInput>> testingInputs,
+        public override double TestModel(IEnumerable<IEnumerable<TInput>> testingInputs,
             IEnumerable<IEnumerable<TOutput>> testingOutputs,
-            Func<TOutput, TOutput, bool> matches = null)
+            Func<TOutput, TOutput, double> calcMatch = null)
         {
             if (beta == null)
                 throw new ArgumentException("Model has not been trained");
 
-            if (matches == null)
-                matches = (a, b) => a.Equals(b);
-
-            double sum = 0, total = 0;
-            var input = testingInputs.GetEnumerator();
-            var expected = testingOutputs.GetEnumerator();
-            while (input.MoveNext() && expected.MoveNext())
-            {
-                var res = Classify(input.Current).First().Output.GetEnumerator();
-                var exp = expected.Current.GetEnumerator();
-                bool equal = true;
-                while (res.MoveNext() && exp.MoveNext())
-                {
-                    equal = equal && matches(exp.Current, res.Current);
-                }
-                total += 1;
-                if (equal)
-                    sum += 1;
-            }
-
-            if (total > 1.0e-20)
-                return sum / total;
-            else
-                return double.NaN;
+            return base.TestModel(testingInputs, testingOutputs, calcMatch);
         }
 
         #endregion
@@ -109,7 +86,7 @@ namespace Ferric.Math.MachineLearning.Classifiers
             beta = (Matrix<TInput>)info.GetValue("beta", typeof(Matrix<TInput>));
         }
 
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("beta", this.beta);
         }

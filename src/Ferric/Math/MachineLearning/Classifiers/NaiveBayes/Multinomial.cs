@@ -5,12 +5,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Ferric.Math.Common;
+using Ferric.Math.MachineLearning;
 using Ferric.Utils.Common;
 
 namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
 {
     [Serializable]
-    public class Multinomial<TOutput> : IClassifier<double, TOutput>
+    public class Multinomial<TOutput> : BaseClassifier<double, TOutput>
         where TOutput : struct, IComparable<TOutput>
     {
         IDictionary<IOutputClass<TOutput>, double> priorByOutputClass = 
@@ -25,7 +26,7 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
 
         #region IClassifier<TInput,TOutput> Members
 
-        public IEnumerable<IOutputClass<TOutput>> Classify(IEnumerable<double> input)
+        public override IEnumerable<IOutputClass<TOutput>> Classify(IEnumerable<double> input)
         {
             var array = input.ToArray();
 
@@ -61,7 +62,7 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
             return outputClasses;
         }
 
-        public void TrainModel(IEnumerable<IEnumerable<double>> trainingInputs, IEnumerable<IEnumerable<TOutput>> trainingOutputs)
+        public override void TrainModel(IEnumerable<IEnumerable<double>> trainingInputs, IEnumerable<IEnumerable<TOutput>> trainingOutputs)
         {
             int numInputs = 0; // number of inputs
             var inputsByOutputClass = new Dictionary<IOutputClass<TOutput>, IList<IEnumerable<double>>>();
@@ -129,46 +130,6 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
             }
         }
 
-        public double TestModel(IEnumerable<IEnumerable<double>> testingInputs, 
-            IEnumerable<IEnumerable<TOutput>> testingOutputs,
-            Func<TOutput, TOutput, bool> matches)
-        {
-            double total = 0, correct = 0;
-            bool hasInput = false, hasOutput = false;
-
-            var ei = testingInputs.GetEnumerator();
-            var eo = testingOutputs.GetEnumerator();
-
-            while ((hasInput = ei.MoveNext()) || (hasOutput = eo.MoveNext()))
-            {
-                total = total + 1.0;
-                if (hasInput && hasOutput)
-                {
-                    var expected = eo.Current;
-                    var actual = Classify(ei.Current).First().Output;
-
-                    bool correctResult = true;
-                    actual.Match(expected, (a, e) =>
-                    {
-                        if (!matches(a, e))
-                        {
-                            correctResult = false;
-                            return false;
-                        }
-                        return true;
-                    },
-                    null);
-
-                    if (correctResult)
-                        correct += 1.0;
-                }
-            }
-
-            return total > 0
-                ? correct / total
-                : double.NaN;
-        }
-
         #endregion
 
         #region ISerializable Members
@@ -181,7 +142,7 @@ namespace Ferric.Math.MachineLearning.Classifiers.NaiveBayes
                 info.GetValue("condProb", typeof(IDictionary<IOutputClass<TOutput>, IDictionary<int, double>>));
         }
 
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("prior", this.priorByOutputClass);
             info.AddValue("condProb", this.condProbByOutputClass);
