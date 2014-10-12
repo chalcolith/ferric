@@ -399,14 +399,10 @@ namespace Ferric.Math.Common
 
                 for (var i = 0; i < c.Rows; ++i)
                 {
-                    for (var j = 0; j < c.Cols; ++j)
+                    for (var k = 0; k < this.Cols; ++k)
                     {
-                        double sum = 0;
-                        for (var k = 0; k < this.Cols; ++k)
-                        {
-                            sum += a[i, k] * b[k, j];
-                        }
-                        c[i, j] = sum;
+                        for (var j = 0; j < c.Cols; ++j)
+                            c[i, j] += a[i, k] * b[k, j];
                     }
                 }
             }
@@ -418,14 +414,10 @@ namespace Ferric.Math.Common
 
                 for (var i = 0; i < c.Rows; ++i)
                 {
-                    for (var j = 0; j < c.Cols; ++j)
+                    for (var k = 0; k < this.Cols; ++k)
                     {
-                        int sum = 0;
-                        for (var k = 0; k < this.Cols; ++k)
-                        {
-                            sum += a[i, k] * b[k, j];
-                        }
-                        c[i, j] = sum;
+                        for (var j = 0; j < c.Cols; ++j)
+                            c[i, j] += a[i, k] * b[k, j];
                     }
                 }
             }
